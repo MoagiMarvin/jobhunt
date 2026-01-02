@@ -1,72 +1,254 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, FileText, Sparkles } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X } from "lucide-react";
 
 export default function ProfilePage() {
     const [cvText, setCvText] = useState("");
+
+    // Mock user state
+    const [user, setUser] = useState({
+        name: "Moagi Marvin", // Default mock name
+        email: "moagi@example.com", // Default mock email
+        phone: "+27 61 234 5678", // Default mock phone
+        avatar: "MM"
+    });
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedUser, setEditedUser] = useState(user);
+
+    const handleSave = () => {
+        setUser(editedUser);
+        setIsEditing(false);
+        // In a real app, this would make an API call
+    };
+
+    const handleCancel = () => {
+        setEditedUser(user);
+        setIsEditing(false);
+    };
+
+    const handleLogout = () => {
+        // Mock logout - in real app this would clear tokens and redirect
+        console.log("Logging out...");
+        alert("Logged out successfully (Mock)");
+    };
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
             <div className="max-w-4xl mx-auto px-6 py-12">
                 <div className="space-y-2 mb-8">
-                    <h1 className="text-3xl font-bold text-primary">Master CV Profile</h1>
+                    <h1 className="text-3xl font-bold text-primary">Your Profile</h1>
                     <p className="text-slate-600">
-                        Upload or paste your complete CV. This will be your master profile used to generate tailored CVs.
+                        Manage your personal details and master CV.
                     </p>
                 </div>
 
-                <div className="space-y-6">
-                    {/* Upload Section */}
-                    <div className="border-2 border-dashed border-blue-200 bg-white rounded-xl p-12 text-center hover:border-blue-400 transition-all">
-                        <Upload className="w-12 h-12 mx-auto mb-4 text-accent" />
-                        <h3 className="text-lg font-semibold text-primary mb-2">Upload CV</h3>
-                        <p className="text-sm text-slate-600 mb-4">
-                            Drag and drop your CV (PDF, DOCX) or click to browse
-                        </p>
-                        <button className="px-6 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-primary text-sm font-medium transition-all border border-slate-200">
-                            Choose File
-                        </button>
-                    </div>
-
-                    {/* OR Divider */}
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-slate-200"></div>
+                <div className="space-y-8">
+                    {/* User Details Card */}
+                    <div className="bg-white rounded-xl p-8 border-2 border-blue-100 shadow-sm relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4">
+                            <button
+                                onClick={handleLogout}
+                                className="text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
                         </div>
-                        <div className="relative flex justify-center text-xs">
-                            <span className="px-2 bg-gradient-to-br from-blue-50 to-purple-50 text-slate-500 font-medium">OR</span>
+
+                        <div className="flex flex-col md:flex-row gap-8 items-start">
+                            {/* Avatar */}
+                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shrink-0">
+                                {user.avatar}
+                            </div>
+
+                            {/* Details Form */}
+                            <div className="flex-1 space-y-4 w-full">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-xl font-bold text-primary">Personal Information</h2>
+                                    {!isEditing ? (
+                                        <button
+                                            onClick={() => setIsEditing(true)}
+                                            className="text-accent hover:text-blue-700 text-sm font-semibold flex items-center gap-1"
+                                        >
+                                            <Edit2 className="w-3 h-3" />
+                                            Edit Details
+                                        </button>
+                                    ) : (
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={handleCancel}
+                                                className="text-slate-500 hover:text-slate-700 text-sm font-semibold flex items-center gap-1 p-1 px-2 rounded hover:bg-slate-100"
+                                            >
+                                                <X className="w-3 h-3" />
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleSave}
+                                                className="text-green-600 hover:text-green-700 text-sm font-semibold flex items-center gap-1 p-1 px-2 rounded hover:bg-green-50"
+                                            >
+                                                <Save className="w-3 h-3" />
+                                                Save
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="grid gap-4">
+                                    {/* Name */}
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-medium text-slate-500 flex items-center gap-2">
+                                            <User className="w-4 h-4" />
+                                            Full Name
+                                        </label>
+                                        {isEditing ? (
+                                            <input
+                                                type="text"
+                                                value={editedUser.name}
+                                                onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+                                                className="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-primary"
+                                            />
+                                        ) : (
+                                            <p className="text-lg font-semibold text-primary">{user.name}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Email */}
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-medium text-slate-500 flex items-center gap-2">
+                                            <Mail className="w-4 h-4" />
+                                            Email Address
+                                        </label>
+                                        <p className="text-lg font-semibold text-slate-700 opacity-80 cursor-not-allowed" title="Email cannot be changed">
+                                            {user.email}
+                                        </p>
+                                    </div>
+
+                                    {/* Phone */}
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-medium text-slate-500 flex items-center gap-2">
+                                            <Phone className="w-4 h-4" />
+                                            WhatsApp Number
+                                        </label>
+                                        {isEditing ? (
+                                            <input
+                                                type="tel"
+                                                value={editedUser.phone}
+                                                onChange={(e) => setEditedUser({ ...editedUser, phone: e.target.value })}
+                                                placeholder="+27..."
+                                                className="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-primary"
+                                            />
+                                        ) : (
+                                            <p className="text-lg font-semibold text-primary">{user.phone}</p>
+                                        )}
+                                        <p className="text-xs text-slate-400">Used for WhatsApp notifications</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Paste Section */}
-                    <div className="space-y-3">
-                        <label className="text-sm font-semibold flex items-center gap-2 text-primary">
-                            <FileText className="w-4 h-4" />
-                            Paste CV Text
-                        </label>
-                        <textarea
-                            value={cvText}
-                            onChange={(e) => setCvText(e.target.value)}
-                            placeholder="Paste your complete CV text here..."
-                            className="w-full h-96 bg-white border-2 border-slate-200 rounded-lg p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 font-mono"
-                        />
-                    </div>
+                    {/* Master CV Section */}
+                    <div className="space-y-6 pt-6 border-t border-slate-200">
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-bold text-primary">Master CV Profile</h2>
+                            <p className="text-slate-600 text-sm">
+                                Upload an existing CV, create one from scratch, or paste your details.
+                            </p>
+                        </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-3">
-                        <button className="flex-1 py-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2">
-                            <Sparkles className="w-5 h-5" />
-                            Save Master CV
-                        </button>
-                        <button className="px-8 py-4 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all border border-slate-200">
-                            Clear
-                        </button>
-                    </div>
+                        {/* Options Grid */}
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {/* Upload Section */}
+                            <div className="border-2 border-dashed border-blue-200 bg-white rounded-xl p-6 text-center hover:border-blue-400 transition-all flex flex-col items-center justify-center group cursor-pointer">
+                                <Upload className="w-8 h-8 mb-3 text-blue-400 group-hover:text-blue-600 transition-colors" />
+                                <h3 className="text-md font-semibold text-primary mb-1">Upload File</h3>
+                                <p className="text-xs text-slate-500 mb-3">
+                                    PDF or DOCX
+                                </p>
+                                <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 text-blue-600 text-xs font-medium transition-all border border-blue-100 group-hover:border-blue-200">
+                                    Choose File
+                                </button>
+                            </div>
 
-                    {/* Info Box */}
-                    <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 text-sm text-slate-700">
-                        <strong className="text-primary">💡 Tip:</strong> Include all your skills, experiences, projects, and achievements. The AI will select the most relevant ones for each job application.
+                            {/* Create from Scratch Section */}
+                            <div className="border-2 border-dashed border-purple-200 bg-white rounded-xl p-6 text-center hover:border-purple-400 transition-all flex flex-col items-center justify-center group cursor-pointer"
+                                onClick={() => {
+                                    const template = `PROFESSIONAL SUMMARY
+--------------------
+[Write a short summary about your professional background and key achievements...]
+
+SKILLS
+------
+• Skill 1
+• Skill 2
+• Skill 3
+
+EXPERIENCE
+----------
+[Job Title] | [Company Name] | [Dates]
+• achieved X...
+• led Y...
+
+EDUCATION
+---------
+[Degree] | [University] | [Year]
+`;
+                                    setCvText(template);
+                                }}
+                            >
+                                <Sparkles className="w-8 h-8 mb-3 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                                <h3 className="text-md font-semibold text-primary mb-1">Create from Scratch</h3>
+                                <p className="text-xs text-slate-500 mb-3">
+                                    Don't have a CV?
+                                </p>
+                                <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-purple-50 text-purple-600 text-xs font-medium transition-all border border-purple-100 group-hover:border-purple-200">
+                                    Use Template
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Text Area Section */}
+                        <div className="space-y-3 relative">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-semibold flex items-center gap-2 text-primary">
+                                    <FileText className="w-4 h-4" />
+                                    CV Content
+                                </label>
+                                {cvText && (
+                                    <span className="text-xs text-green-600 font-medium animate-pulse">
+                                        Content active
+                                    </span>
+                                )}
+                            </div>
+
+                            <textarea
+                                value={cvText}
+                                onChange={(e) => setCvText(e.target.value)}
+                                placeholder="Paste your CV text here or use the options above..."
+                                className="w-full h-80 bg-white border-2 border-slate-200 rounded-lg p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 font-mono leading-relaxed"
+                            />
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                            <button className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                                <Save className="w-4 h-4" />
+                                Save Master Profile
+                            </button>
+                            <button
+                                onClick={() => setCvText("")}
+                                className="px-6 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all border border-slate-200 text-sm"
+                            >
+                                Clear
+                            </button>
+                        </div>
+
+                        {/* Info Box */}
+                        <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 text-sm text-slate-700">
+                            <strong className="text-primary">💡 Tip:</strong> Include all your skills, experiences, projects, and achievements. The AI will select the most relevant ones for each job application.
+                        </div>
                     </div>
                 </div>
             </div>
