@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X } from "lucide-react";
+import Link from "next/link";
 
 export default function ProfilePage() {
     const [cvText, setCvText] = useState("");
@@ -173,40 +174,17 @@ export default function ProfilePage() {
                             </div>
 
                             {/* Create from Scratch Section */}
-                            <div className="border-2 border-dashed border-purple-200 bg-white rounded-xl p-6 text-center hover:border-purple-400 transition-all flex flex-col items-center justify-center group cursor-pointer"
-                                onClick={() => {
-                                    const template = `PROFESSIONAL SUMMARY
---------------------
-[Write a short summary about your professional background and key achievements...]
-
-SKILLS
-------
-• Skill 1
-• Skill 2
-• Skill 3
-
-EXPERIENCE
-----------
-[Job Title] | [Company Name] | [Dates]
-• achieved X...
-• led Y...
-
-EDUCATION
----------
-[Degree] | [University] | [Year]
-`;
-                                    setCvText(template);
-                                }}
-                            >
+                            {/* Create from Scratch Section */}
+                            <Link href="/profile/create" className="border-2 border-dashed border-purple-200 bg-white rounded-xl p-6 text-center hover:border-purple-400 transition-all flex flex-col items-center justify-center group cursor-pointer">
                                 <Sparkles className="w-8 h-8 mb-3 text-purple-400 group-hover:text-purple-600 transition-colors" />
                                 <h3 className="text-md font-semibold text-primary mb-1">Create from Scratch</h3>
                                 <p className="text-xs text-slate-500 mb-3">
                                     Don't have a CV?
                                 </p>
                                 <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-purple-50 text-purple-600 text-xs font-medium transition-all border border-purple-100 group-hover:border-purple-200">
-                                    Use Template
+                                    Open Builder
                                 </button>
-                            </div>
+                            </Link>
                         </div>
 
                         {/* Text Area Section */}
