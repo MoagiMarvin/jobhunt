@@ -7,6 +7,7 @@ create table public.profiles (
   portfolio_url text,
   phone text,
   summary text, -- The "Master Summary"
+  master_cv JSONB DEFAULT '{}'::jsonb, -- The "Master Profile" (Skills, Exp, Edu, etc.)
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
