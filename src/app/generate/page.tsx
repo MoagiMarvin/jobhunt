@@ -1,26 +1,63 @@
 "use client";
 
-import { useState } from "react";
-import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 export default function GeneratePage() {
+    return (
+        <Suspense fallback={<div className="p-20 text-center"><Loader2 className="animate-spin mx-auto w-10 h-10 text-blue-500" /></div>}>
+            <GenerateContent />
+        </Suspense>
+    );
+}
+
+function GenerateContent() {
+    const searchParams = useSearchParams();
+    const linkParam = searchParams.get('link');
+
     const [jobLink, setJobLink] = useState("");
     const [manualJD, setManualJD] = useState("");
     const [activeTab, setActiveTab] = useState<"link" | "manual">("link");
     const [isScraped, setIsScraped] = useState(false);
+    const [isScraping, setIsScraping] = useState(false);
+    const [scrapedRequirements, setScrapedRequirements] = useState<string[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
-    const scrapedRequirements = [
-        "5+ years of software development experience",
-        "Strong proficiency in Python and JavaScript",
-        "Experience with React and Node.js",
-        "Knowledge of Docker and Kubernetes",
-        "Bachelor's degree in Computer Science or related field",
-        "Excellent problem-solving skills",
-        "Experience with cloud platforms (AWS/GCP/Azure)",
-    ];
+    // Auto-fill and scrape if link is present in URL
+    useEffect(() => {
+        if (linkParam) {
+            setJobLink(linkParam);
+            setActiveTab("link");
+            handleScrape(linkParam);
+        }
+    }, [linkParam]);
 
-    const handleScrape = () => {
-        setIsScraped(true);
+    const handleScrape = async (targetUrl?: string) => {
+        const urlToScrape = targetUrl || jobLink;
+        if (!urlToScrape || !urlToScrape.startsWith('http')) {
+            alert("Please enter a valid job link.");
+            return;
+        }
+
+        setIsScraping(true);
+        setIsScraped(false);
+        setError(null);
+
+        try {
+            const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(urlToScrape)}`);
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.error);
+
+            setScrapedRequirements(data.requirements || []);
+            setIsScraped(true);
+        } catch (err: any) {
+            console.error("Scraping failed:", err);
+            setError(err.message || "Failed to extract requirements.");
+        } finally {
+            setIsScraping(false);
+        }
     };
 
     const handleManualProcess = () => {
@@ -28,7 +65,8 @@ export default function GeneratePage() {
             alert("Please paste the job description first.");
             return;
         }
-        // Logic to extract requirements from manual text would go here
+        // Simplified manual process
+        setScrapedRequirements(manualJD.split('\n').filter(l => l.trim().length > 20).slice(0, 10));
         setIsScraped(true);
     };
 
@@ -75,10 +113,12 @@ export default function GeneratePage() {
                                             className="flex-1 bg-white border-2 border-slate-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400"
                                         />
                                         <button
-                                            onClick={handleScrape}
-                                            className="px-6 py-3 rounded-lg bg-accent hover:bg-blue-600 text-white font-semibold transition-all shadow-md"
+                                            onClick={() => handleScrape()}
+                                            disabled={isScraping}
+                                            className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
                                         >
-                                            Scrape
+                                            {isScraping ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                                            {isScraping ? "Scraping..." : "Scrape"}
                                         </button>
                                     </div>
                                 ) : (
@@ -91,40 +131,60 @@ export default function GeneratePage() {
                                         />
                                         <button
                                             onClick={handleManualProcess}
-                                            className="w-full py-3 rounded-lg bg-accent hover:bg-blue-600 text-white font-bold transition-all shadow-md"
+                                            className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-md"
                                         >
                                             Analyze Text
                                         </button>
+                                    </div>
+                                )}
+
+                                {error && (
+                                    <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-100 flex items-center gap-3 text-red-600 text-sm">
+                                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                        <p>{error}</p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Scraped Requirements */}
-                        {isScraped && (
+                        {(isScraped || isScraping) && (
                             <>
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-sm font-semibold flex items-center gap-2 text-primary">
-                                            <FileText className="w-4 h-4 text-accent" />
+                                        <label className="text-sm font-semibold flex items-center gap-2 text-slate-900">
+                                            <FileText className="w-4 h-4 text-blue-600" />
                                             Extracted Requirements
                                         </label>
                                         <span className="text-xs text-slate-500 font-medium">Editable</span>
                                     </div>
                                     <div className="p-4 rounded-lg bg-white border-2 border-blue-100 space-y-2 max-h-64 overflow-y-auto">
-                                        {scrapedRequirements.map((req, i) => (
-                                            <div key={i} className="flex items-start gap-2 text-sm">
-                                                <span className="text-accent mt-0.5">•</span>
-                                                <input
-                                                    type="text"
-                                                    defaultValue={req}
-                                                    className="flex-1 bg-transparent border-none outline-none text-slate-700 focus:text-accent transition-colors"
-                                                />
+                                        {isScraping ? (
+                                            <div className="py-10 text-center">
+                                                <Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-2" />
+                                                <p className="text-xs text-slate-500 font-medium">Analyzing job ad...</p>
                                             </div>
-                                        ))}
-                                        <button className="text-xs text-slate-500 hover:text-accent transition-colors mt-2 font-medium">
-                                            + Add requirement
-                                        </button>
+                                        ) : (
+                                            <>
+                                                {scrapedRequirements.length > 0 ? (
+                                                    scrapedRequirements.map((req, i) => (
+                                                        <div key={i} className="flex items-start gap-2 text-sm">
+                                                            <span className="text-blue-600 mt-0.5">•</span>
+                                                            <input
+                                                                type="text"
+                                                                defaultValue={req}
+                                                                className="flex-1 bg-transparent border-none outline-none text-slate-700 focus:text-blue-600 transition-colors"
+                                                            />
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <p className="text-sm text-slate-500 text-center py-4">No specific requirements found. Try manual paste.</p>
+                                                )}
+                                                <button className="text-xs text-slate-500 hover:text-blue-600 transition-colors mt-2 font-medium">
+                                                    + Add requirement
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 
