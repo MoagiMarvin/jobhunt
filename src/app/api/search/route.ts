@@ -76,21 +76,25 @@ async function scrapePNet(query: string) {
         const articles = $('article, .job-item, .res-card, [data-at="job-item"]');
 
         articles.each((i, el) => {
-            // Find a direct job-ad link FIRST
-            const directLinkEl = $(el).find('a[href*="/job-ad/"]').first();
-            const fallbackLinkEl = $(el).find('a').first();
-            const linkEl = directLinkEl.length > 0 ? directLinkEl : fallbackLinkEl;
-
             const titleEl = $(el).find('h2, h3, [data-at="job-item-title"], .job-title, .res-card__title').first();
+
+            // TARGETED LINK EXTRACTION: Find the link INSIDE the title or the title itself if it's an <a>
+            const titleLink = titleEl.find('a').first().length > 0 ? titleEl.find('a').first() : (titleEl.is('a') ? titleEl : null);
+
+            // FALLBACK: Look for direct job-ad links elsewhere in the card if title link is missing
+            const directLinkEl = $(el).find('a[href*="/job-ad/"]').first();
+            const linkEl = titleLink || directLinkEl;
+
             const companyEl = $(el).find('[data-at="job-item-company-name"], .res-card__subtitle, .company').first();
             const locationEl = $(el).find('[data-at="job-item-location"], .res-card__metadata--location, .location').first();
 
             const title = titleEl.text().trim();
-            const link = linkEl.attr('href');
+            const link = linkEl ? linkEl.attr('href') : null;
             const company = companyEl.text().trim();
             const location = locationEl.text().trim();
 
-            // Quality Filter: Discard malformed banner results or results without real data
+            // Quality Filter: MUST have Title, Link, Company, and Location to be valid.
+            // Banners and "Top Jobs" headers usually fail this check.
             if (title && link && company && location && isRelevant(title, query)) {
                 // Ensure link is direct to the job-ad if possible
                 const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
