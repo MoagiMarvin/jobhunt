@@ -9,6 +9,7 @@ export default function SearchPage() {
     const [query, setQuery] = useState("");
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [loadingSources, setLoadingSources] = useState<string[]>([]);
     const [hasSearched, setHasSearched] = useState(false);
 
     const handleSearch = async (e?: React.FormEvent) => {
@@ -18,17 +19,38 @@ export default function SearchPage() {
         setLoading(true);
         setHasSearched(true);
         setJobs([]);
+        setLoadingSources(['pnet', 'linkedin', 'careers24', 'adzuna']);
 
         try {
-            const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
-            const data = await res.json();
-            if (data.jobs) {
-                setJobs(data.jobs);
+            // 1. Fetch PNet immediately for speed
+            const pnetRes = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=pnet`);
+            const pnetData = await pnetRes.json();
+            if (pnetData.jobs) {
+                setJobs(pnetData.jobs);
             }
+            setLoadingSources(prev => prev.filter(s => s !== 'pnet'));
+            setLoading(false); // Stop main spinner as we have results
+
+            // 2. Fetch others in background
+            const backgroundSources = ['linkedin', 'careers24', 'adzuna'];
+            backgroundSources.forEach(async (source) => {
+                try {
+                    const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=${source}`);
+                    const data = await res.json();
+                    if (data.jobs && data.jobs.length > 0) {
+                        setJobs(prev => [...prev, ...data.jobs]);
+                    }
+                } catch (err) {
+                    console.error(`Background fetch failed for ${source}:`, err);
+                } finally {
+                    setLoadingSources(prev => prev.filter(s => s !== source));
+                }
+            });
+
         } catch (error) {
-            console.error("Search failed:", error);
-        } finally {
+            console.error("Initial search failed:", error);
             setLoading(false);
+            setLoadingSources([]);
         }
     };
 
@@ -65,11 +87,30 @@ export default function SearchPage() {
                     </div>
                 </form>
 
-                {/* Loading State */}
+                {/* Loading Status Bar */}
+                {hasSearched && loadingSources.length > 0 && (
+                    <div className="mb-6 flex flex-wrap gap-2 items-center">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Scanning:</span>
+                        {['pnet', 'linkedin', 'careers24', 'adzuna'].map(source => (
+                            <div
+                                key={source}
+                                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${loadingSources.includes(source)
+                                        ? 'bg-blue-50 text-blue-500 border-blue-200 animate-pulse'
+                                        : 'bg-green-50 text-green-600 border-green-200 opacity-60'
+                                    }`}
+                            >
+                                {source === 'adzuna' ? 'INDEED (SA)' : source.toUpperCase()}
+                                {loadingSources.includes(source) ? '...' : ' ✓'}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Main Spinner (Only for first load) */}
                 {loading && (
                     <div className="text-center py-20 bg-white/50 rounded-2xl border border-blue-100 mb-10">
                         <Loader2 className="w-10 h-10 text-blue-500 animate-spin mx-auto mb-4" />
-                        <p className="text-slate-600 font-medium">Scanning PNet & LinkedIn...</p>
+                        <p className="text-slate-600 font-medium">Starting Search Engines...</p>
                     </div>
                 )}
 
