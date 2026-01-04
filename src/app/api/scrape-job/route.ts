@@ -29,53 +29,84 @@ export async function GET(request: Request) {
         const $ = cheerio.load(html);
 
         let requirements: string[] = [];
+        const headingKeywords = ['requirement', 'duty', 'responsibility', 'qualification', 'education', 'key responsibility', 'what you will need', 'minimum requirement', 'skills', 'skilled'];
 
-        // --- SOURCE SPECIFIC SELECTORS ---
+        // --- 1. MANDATORY KEYWORDS (Grade 10 / Matric) ---
+        $('p, li, div, span').each((i, el) => {
+            const text = $(el).text().trim();
+            const lower = text.toLowerCase();
+            if ((lower.includes('matric') || lower.includes('grade 10') || lower.includes('grad 10') || lower.includes('matrixc')) && text.length < 500) {
+                if (!requirements.includes(text)) requirements.push(text);
+            }
+        });
 
-        if (url.includes('pnet.co.za')) {
-            // PNet Specific - More aggressive selectors
-            $('[data-at="job-ad-content"], .listing-content, .job-description, .details-section, .at-section-text-description-content, .card-content')
-                .find('li, p, div').each((i, el) => {
-                    const text = $(el).text().trim();
-                    if (text.length > 25 && text.length < 600 && !text.includes('Apply')) {
-                        requirements.push(text);
+        // --- 2. HEADING-BASED SECTION EXTRACTION ---
+        // We look for headings and grab siblings until the next heading
+        $('h1, h2, h3, h4, h5, h6, strong, b, .at-section-text-description-title').each((i, el) => {
+            const headingText = $(el).text().trim();
+            const lowerHeading = headingText.toLowerCase();
+
+            if (headingKeywords.some(kw => lowerHeading.includes(kw))) {
+                // Add the heading itself for context
+                requirements.push(`SECTION: ${headingText}`);
+
+                // Grab siblings until next header or container end
+                let next = $(el).next();
+                let limit = 0;
+                while (next.length > 0 && limit < 15) {
+                    if (next.is('h1, h2, h3, h4, h5, h6, strong, b')) break;
+
+                    const siblingText = next.text().trim();
+                    if (siblingText.length > 15 && siblingText.length < 1000) {
+                        // If it has children (like a list), grab those specifically
+                        const listItems = next.find('li');
+                        if (listItems.length > 0) {
+                            listItems.each((j, li) => {
+                                const liText = $(li).text().trim();
+                                if (liText) requirements.push(liText);
+                            });
+                        } else {
+                            requirements.push(siblingText);
+                        }
                     }
-                });
-        }
-        else if (url.includes('careers24.com')) {
-            // Careers24 Specific
-            $('.job-description, .vacancy-details, #job-description, .c24-vacancy-details').find('li, p').each((i, el) => {
-                const text = $(el).text().trim();
-                if (text.length > 20 && text.length < 500) requirements.push(text);
-            });
-        }
-        else if (url.includes('linkedin.com')) {
-            // LinkedIn Specific
-            $('.description__text, .show-more-less-html__markup, .jobs-description-content__text').find('li, p').each((i, el) => {
-                const text = $(el).text().trim();
-                if (text.length > 20 && text.length < 500) requirements.push(text);
-            });
-        }
-        else {
-            // Generic Fallback - Search for sections that look like requirements
-            $('article, main, #main-content, .content').find('li, p').each((i, el) => {
-                const text = $(el).text().trim();
-                if (text.length > 30 && text.length < 500) {
-                    const lower = text.toLowerCase();
-                    if (lower.includes('requirement') || lower.includes('must') || lower.includes('experience') || lower.includes('skills')) {
-                        requirements.push(text);
-                    }
+                    next = next.next();
+                    limit++;
                 }
-            });
+            }
+        });
+
+        // --- 3. SOURCE SPECIFIC FALLBACKS (If sections didn't catch enough) ---
+        if (requirements.length < 5) {
+            if (url.includes('pnet.co.za')) {
+                $('[data-at="job-ad-content"], .listing-content, .job-description, .details-section, .at-section-text-description-content, .card-content')
+                    .find('li, p').each((i, el) => {
+                        const text = $(el).text().trim();
+                        if (text.length > 25 && text.length < 600 && !text.includes('Apply')) {
+                            requirements.push(text);
+                        }
+                    });
+            }
+            else if (url.includes('careers24.com')) {
+                $('.job-description, .vacancy-details, #job-description, .c24-vacancy-details').find('li, p').each((i, el) => {
+                    const text = $(el).text().trim();
+                    if (text.length > 20 && text.length < 500) requirements.push(text);
+                });
+            }
+            else if (url.includes('linkedin.com')) {
+                $('.description__text, .show-more-less-html__markup, .jobs-description-content__text').find('li, p').each((i, el) => {
+                    const text = $(el).text().trim();
+                    if (text.length > 20 && text.length < 500) requirements.push(text);
+                });
+            }
         }
 
         // Final cleanup: remove duplicates and very short lines
         let uniqueReqs = Array.from(new Set(requirements))
-            .filter(r => r.length > 15)
-            .slice(0, 15); // Limit to top 15 requirements
+            .filter(r => r.length > 5)
+            .slice(0, 25);
 
         if (uniqueReqs.length === 0) {
-            // Ultimate fallback: Just get all decent-sized paragraphs in the main body
+            // Ultimate fallback
             $('article, main, .job-ad-content').find('p, li').each((i, el) => {
                 const text = $(el).text().trim();
                 if (text.length > 50 && text.length < 400 && !text.includes('cookie')) {
