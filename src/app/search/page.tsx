@@ -19,36 +19,49 @@ export default function SearchPage() {
         setLoading(true);
         setHasSearched(true);
         setJobs([]);
-        setLoadingSources(['pnet', 'linkedin', 'careers24', 'adzuna']);
+
+        // Sources we scan: PNet is immediate, others are background
+        const allSources = ['pnet', 'linkedin', 'careers24', 'indeed'];
+        setLoadingSources(allSources);
 
         try {
-            // 1. Fetch PNet immediately for speed
+            // 1. Fetch PNet IMMEDIATELY (Primary Source)
             const pnetRes = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=pnet`);
             const pnetData = await pnetRes.json();
-            if (pnetData.jobs) {
+
+            if (pnetData.jobs && pnetData.jobs.length > 0) {
                 setJobs(pnetData.jobs);
             }
-            setLoadingSources(prev => prev.filter(s => s !== 'pnet'));
-            setLoading(false); // Stop main spinner as we have results
 
-            // 2. Fetch others in background
-            const backgroundSources = ['linkedin', 'careers24', 'adzuna'];
-            backgroundSources.forEach(async (source) => {
+            setLoading(false); // Stop main spinner as we have results
+            setLoadingSources(prev => prev.filter(s => s !== 'pnet'));
+
+            // 2. Fetch others in BACKGROUND
+            const backgroundSources = ['linkedin', 'careers24', 'indeed'];
+
+            backgroundSources.forEach(async (src) => {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 12000); // 12s safety timeout per board
+
                 try {
-                    const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=${source}`);
+                    const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=${src}`, {
+                        signal: controller.signal
+                    });
                     const data = await res.json();
+
                     if (data.jobs && data.jobs.length > 0) {
                         setJobs(prev => [...prev, ...data.jobs]);
                     }
                 } catch (err) {
-                    console.error(`Background fetch failed for ${source}:`, err);
+                    console.error(`[Search] Background source ${src} failed or timed out:`, err);
                 } finally {
-                    setLoadingSources(prev => prev.filter(s => s !== source));
+                    clearTimeout(timer);
+                    setLoadingSources(prev => prev.filter(s => s !== src));
                 }
             });
 
         } catch (error) {
-            console.error("Initial search failed:", error);
+            console.error("[Search] Critical search failure:", error);
             setLoading(false);
             setLoadingSources([]);
         }
@@ -91,15 +104,15 @@ export default function SearchPage() {
                 {hasSearched && loadingSources.length > 0 && (
                     <div className="mb-6 flex flex-wrap gap-2 items-center">
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Scanning:</span>
-                        {['pnet', 'linkedin', 'careers24', 'adzuna'].map(source => (
+                        {['pnet', 'linkedin', 'careers24', 'indeed'].map(source => (
                             <div
                                 key={source}
                                 className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${loadingSources.includes(source)
-                                        ? 'bg-blue-50 text-blue-500 border-blue-200 animate-pulse'
-                                        : 'bg-green-50 text-green-600 border-green-200 opacity-60'
+                                    ? 'bg-blue-50 text-blue-500 border-blue-200 animate-pulse'
+                                    : 'bg-green-50 text-green-600 border-green-200 opacity-60'
                                     }`}
                             >
-                                {source === 'adzuna' ? 'INDEED (SA)' : source.toUpperCase()}
+                                {source.toUpperCase()}
                                 {loadingSources.includes(source) ? '...' : ' ✓'}
                             </div>
                         ))}

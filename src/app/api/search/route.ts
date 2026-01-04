@@ -1,56 +1,236 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 
+// Search API for JobHunt (v3.0 - Integrated with User Reference Logic)
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query');
-    const source = searchParams.get('source'); // Optional parameter to fetch only one source
+    const source = searchParams.get('source');
 
     if (!query) {
         return NextResponse.json({ error: 'Query required' }, { status: 400 });
     }
 
-    // If a specific source is requested, only run that one (for background loading)
     if (source) {
         let jobs: any[] = [];
-        switch (source.toLowerCase()) {
-            case 'pnet': jobs = await scrapePNet(query); break;
-            case 'linkedin': jobs = await scrapeLinkedIn(query); break;
-            case 'careers24': jobs = await scrapeCareers24(query); break;
-            case 'adzuna': jobs = await scrapeAdzuna(query); break;
-            case 'indeed': jobs = await scrapeAdzuna(query); break; // Legacy fallback
+        try {
+            switch (source.toLowerCase()) {
+                case 'pnet': jobs = await scrapePNet(query); break;
+                case 'linkedin': jobs = await scrapeLinkedIn(query); break;
+                case 'careers24': jobs = await scrapeCareers24(query); break;
+                case 'adzuna':
+                case 'indeed': jobs = await scrapeAdzuna(query); break;
+            }
+        } catch (e) {
+            console.error(`[API] Source error (${source}):`, e);
         }
         return NextResponse.json({ jobs });
     }
 
-    // Default: Run all in parallel (for legacy support or thorough searches)
-    const [pnetJobs, linkedinJobs, careersJobs, adzunaJobs] = await Promise.all([
+    // Parallel fetch fallback
+    const results = await Promise.all([
         scrapePNet(query).catch(() => []),
         scrapeLinkedIn(query).catch(() => []),
         scrapeCareers24(query).catch(() => []),
         scrapeAdzuna(query).catch(() => [])
     ]);
 
-    return NextResponse.json({ jobs: [...pnetJobs, ...linkedinJobs, ...careersJobs, ...adzunaJobs] });
+    return NextResponse.json({ jobs: results.flat() });
 }
 
-// Scrape Adzuna SA (Now replaces Indeed)
-async function scrapeAdzuna(query: string) {
-    try {
-        console.log(`[Scraper] Starting Adzuna for: ${query}`);
-        const url = `https://www.adzuna.co.za/search?q=${encodeURIComponent(query)}`;
+/**
+ * RELEVANCE GUARD: Ensures the job title actually contains the search query.
+ * Prevents "Junior Accountant" for "Driver" searches.
+ */
+function isRelevant(title: string, query: string): boolean {
+    const keywords = query.toLowerCase().split(/\s+/).filter(k => k.length >= 2);
+    if (keywords.length === 0) return true;
+    const titleLower = title.toLowerCase();
+    return keywords.some(keyword => titleLower.includes(keyword));
+}
 
-        const response = await fetch(url, {
+// --- SCRAPERS ---
+
+async function scrapePNet(query: string) {
+    try {
+        // Optimized SEO URL Pattern from reference
+        const keyword = query.trim().replace(/\s+/g, '-').toLowerCase();
+        const url = `https://www.pnet.co.za/jobs/${keyword}`;
+
+        const res = await fetch(url, {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
+                'Referer': 'https://www.pnet.co.za/',
             },
-            cache: 'no-store'
+            signal: AbortSignal.timeout(12000)
+        });
+        if (!res.ok) return [];
+
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const jobs: any[] = [];
+
+        // Broad Selectors focusing on the job cards
+        const articles = $('article, .job-item, .res-card, [data-at="job-item"]');
+
+        articles.each((i, el) => {
+            // Find a direct job-ad link FIRST
+            const directLinkEl = $(el).find('a[href*="/job-ad/"]').first();
+            const fallbackLinkEl = $(el).find('a').first();
+            const linkEl = directLinkEl.length > 0 ? directLinkEl : fallbackLinkEl;
+
+            const titleEl = $(el).find('h2, h3, [data-at="job-item-title"], .job-title, .res-card__title').first();
+            const companyEl = $(el).find('[data-at="job-item-company-name"], .res-card__subtitle, .company').first();
+            const locationEl = $(el).find('[data-at="job-item-location"], .res-card__metadata--location, .location').first();
+
+            const title = titleEl.text().trim();
+            const link = linkEl.attr('href');
+            const company = companyEl.text().trim();
+            const location = locationEl.text().trim();
+
+            // Quality Filter: Discard malformed banner results or results without real data
+            if (title && link && company && location && isRelevant(title, query)) {
+                // Ensure link is direct to the job-ad if possible
+                const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
+
+                jobs.push({
+                    id: `pnet-${Date.now()}-${i}`,
+                    title,
+                    company,
+                    location,
+                    link: fullLink,
+                    source: 'PNet'
+                });
+            }
         });
 
-        if (!response.ok) return [];
+        // "Plan B" Fallback Strategy from reference - only if standard cards fail
+        if (jobs.length === 0) {
+            $('a[href*="/job-ad/"]').each((i, el) => {
+                const title = $(el).text().trim();
+                const link = $(el).attr('href');
+                if (title.length > 5 && link && isRelevant(title, query) && !title.includes('Login')) {
+                    const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
+                    jobs.push({
+                        id: `pnet-fb-${Date.now()}-${i}`,
+                        title,
+                        company: "PNet Listing",
+                        location: "South Africa",
+                        link: link.startsWith('http') ? link : `https://www.pnet.co.za${link}`,
+                        source: 'PNet'
+                    });
+                }
+            });
+        }
 
-        const html = await response.text();
+        return jobs.slice(0, 15);
+    } catch (e) { return []; }
+}
+
+async function scrapeCareers24(query: string) {
+    try {
+        // Optimized URL Pattern from reference
+        const q = query.trim().replace(/\s+/g, '-').toLowerCase();
+        const url = `https://www.careers24.com/jobs/kw-${q}/m-true/`;
+
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.1 Safari/537.36',
+                'Referer': 'https://www.careers24.com/',
+            },
+            signal: AbortSignal.timeout(12000)
+        });
+        if (!res.ok) return [];
+
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const jobs: any[] = [];
+
+        // Generic Bootstrap-like selectors from reference
+        const jobRows = $('.job-card, .c24-job-card, .job_search_results .row');
+
+        jobRows.each((i, el) => {
+            const titleEl = $(el).find('h2, h3, .job-title, .c24-job-title').first();
+
+            // DEEP LINK LOGIC: Prioritize the link attached to the title
+            const titleLink = titleEl.find('a').first().length > 0 ? titleEl.find('a').first() : (titleEl.is('a') ? titleEl : $(el).find('a').first());
+
+            const companyEl = $(el).find('.company-name, .job-card-company, .c24-company-name').first();
+            const locationEl = $(el).find('.location, .job-card-location, .c24-location').first();
+
+            const title = titleEl.text().trim();
+            const link = titleLink.attr('href');
+
+            if (title && link && isRelevant(title, query)) {
+                // Ensure link is a direct vacancy page
+                const fullLink = link.startsWith('http') ? link : `https://www.careers24.com${link}`;
+
+                jobs.push({
+                    id: `c24-${Date.now()}-${i}`,
+                    title,
+                    company: companyEl.text().trim() || "Careers24",
+                    location: locationEl.text().trim() || "South Africa",
+                    link: fullLink,
+                    source: 'Careers24'
+                });
+            }
+        });
+
+        return jobs.slice(0, 15);
+    } catch (e) { return []; }
+}
+
+async function scrapeLinkedIn(query: string) {
+    try {
+        const url = `https://www.linkedin.com/jobs/search?keywords=${encodeURIComponent(query)}&location=South%20Africa&f_TPR=r604800`;
+        const res = await fetch(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36' },
+            cache: 'no-store',
+            signal: AbortSignal.timeout(10000)
+        });
+        if (!res.ok) return [];
+
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const jobs: any[] = [];
+
+        $('.base-card, .job-search-card, .base-search-card').each((i, el) => {
+            const title = $(el).find('.base-search-card__title, h3').first().text().trim();
+
+            // DEEP LINK LOGIC: Target the hidden full-link that contains the ad ID
+            const linkEl = $(el).find('a.base-card__full-link, a.base-search-card__full-link, a').first();
+            const link = linkEl.attr('href');
+
+            if (title && link && isRelevant(title, query)) {
+                // Remove tracking parameters for cleaner scraping
+                const cleanLink = link.split('?')[0];
+
+                jobs.push({
+                    id: `li-${Date.now()}-${i}`,
+                    title,
+                    company: $(el).find('.base-search-card__subtitle').text().trim() || "LinkedIn Employer",
+                    location: $(el).find('.job-search-card__location').text().trim() || "South Africa",
+                    link: cleanLink,
+                    source: 'LinkedIn'
+                });
+            }
+        });
+        return jobs.slice(0, 3);
+    } catch (e) { return []; }
+}
+
+async function scrapeAdzuna(query: string) {
+    try {
+        const url = `https://www.adzuna.co.za/search?q=${encodeURIComponent(query)}`;
+        const res = await fetch(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36' },
+            signal: AbortSignal.timeout(12000)
+        });
+        if (!res.ok) return [];
+
+        const html = await res.text();
         const $ = cheerio.load(html);
         const jobs: any[] = [];
 
@@ -58,174 +238,20 @@ async function scrapeAdzuna(query: string) {
             const titleEl = $(el).find('h2 a').first();
             const title = titleEl.text().trim();
             const link = titleEl.attr('href');
-            const fullLink = link ? (link.startsWith('http') ? link : `https://www.adzuna.co.za${link}`) : '';
 
-            const company = $(el).find('.ui-job-card-company, .company').first().text().trim() || "Adzuna Employer";
-            const location = $(el).find('.ui-job-card-location, .location').first().text().trim() || "South Africa";
+            if (title && link && isRelevant(title, query)) {
+                const fullLink = link.startsWith('http') ? link : `https://www.adzuna.co.za${link}`;
 
-            if (title && fullLink) {
                 jobs.push({
-                    id: `adzuna-${Date.now()}-${i}`,
+                    id: `ind-${Date.now()}-${i}`,
                     title,
-                    company,
-                    location,
+                    company: $(el).find('.ui-job-card-company, .company').first().text().trim() || "Indeed Professional",
+                    location: $(el).find('.ui-job-card-location, .location').first().text().trim() || "South Africa",
                     link: fullLink,
-                    source: 'Adzuna (Indeed Alternative)',
-                    date: 'Recently'
+                    source: 'Indeed'
                 });
             }
         });
-
-        return jobs.slice(0, 15);
-    } catch (e) {
-        return [];
-    }
-}
-
-// Scrape PNET
-async function scrapePNet(query: string) {
-    try {
-        console.log(`[Scraper] Starting PNet for: ${query}`);
-        const url = `https://www.pnet.co.za/jobs?q=${encodeURIComponent(query)}&radius=30&sort=2`;
-
-        const response = await fetch(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8',
-                'Referer': 'https://www.pnet.co.za/',
-                'DNT': '1',
-            },
-            cache: 'no-store'
-        });
-
-        if (!response.ok) return [];
-
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        const jobs: any[] = [];
-
-        $('[data-at="job-item"]').each((i, el) => {
-            const title = $(el).find('[data-at="job-item-title"]').first().text().trim() || $(el).find('h2').first().text().trim();
-            const link = $(el).find('a').first().attr('href');
-            const fullLink = link ? (link.startsWith('http') ? link : `https://www.pnet.co.za${link}`) : '';
-            const company = $(el).find('[data-at="job-item-company-name"]').first().text().trim() || "PNet Employer";
-            const location = $(el).find('[data-at="job-item-location"]').first().text().trim() || "South Africa";
-
-            if (title && fullLink && title.length < 150) {
-                jobs.push({
-                    id: `pnet-${Date.now()}-${i}`,
-                    title,
-                    company,
-                    location,
-                    link: fullLink,
-                    source: 'PNet',
-                    date: 'Recently'
-                });
-            }
-        });
-
-        return jobs;
-    } catch (e) {
-        return [];
-    }
-}
-
-// Scrape LinkedIn
-async function scrapeLinkedIn(query: string) {
-    try {
-        console.log(`[Scraper] Starting LinkedIn for: ${query}`);
-        const url = `https://www.linkedin.com/jobs/search?keywords=${encodeURIComponent(query)}&location=South%20Africa&f_TPR=r604800&position=1&pageNum=0`;
-
-        const response = await fetch(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-GB,en;q=0.9,en-US;q=0.8,en;q=0.7',
-                'Cache-Control': 'max-age=0',
-            },
-            cache: 'no-store'
-        });
-
-        if (!response.ok) return [];
-
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        const jobs: any[] = [];
-
-        $('.base-card, .job-search-card, .base-search-card').each((i, el) => {
-            const title = $(el).find('.base-search-card__title').first().text().trim() || $(el).find('h3').first().text().trim();
-            const company = $(el).find('.base-search-card__subtitle').first().text().trim() || $(el).find('h4').first().text().trim();
-            const location = $(el).find('.job-search-card__location').first().text().trim() || $(el).find('.base-search-card__metadata').first().text().trim();
-            const link = $(el).find('a.base-card__full-link').attr('href') || $(el).find('a').attr('href');
-
-            if (title && link && title.length < 150) {
-                jobs.push({
-                    id: `li-${Date.now()}-${i}`,
-                    title,
-                    company,
-                    location,
-                    link,
-                    source: 'LinkedIn',
-                    date: 'Recently'
-                });
-            }
-        });
-
-        return jobs.slice(0, 3); // STRICT LIMIT TO 3 AS REQUESTED
-    } catch (e) {
-        return [];
-    }
-}
-
-// Scrape Careers24
-async function scrapeCareers24(query: string) {
-    try {
-        console.log(`[Scraper] Starting Careers24 for: ${query}`);
-        const url = `https://www.careers24.com/jobs/search/?q=${encodeURIComponent(query)}&searchtype=keyword`;
-
-        const response = await fetch(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.1 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-                'Referer': 'https://www.careers24.com/',
-            },
-            cache: 'no-store'
-        });
-
-        if (!response.ok) return [];
-
-        const html = await response.text();
-        const $ = cheerio.load(html);
-        const jobs: any[] = [];
-
-        $('.job-card, div.c24-full-job-card, div.job-search-listing, article.job-card').each((i, el) => {
-            const titleEl = $(el).find('h2, .job-title, a[data-job-id], .c24-job-title').first();
-            const title = titleEl.text().trim();
-            const link = titleEl.attr('href') || $(el).find('a').first().attr('href');
-            const fullLink = link ? (link.startsWith('http') ? link : `https://www.careers24.com${link}`) : '';
-
-            const company = $(el).find('.company-name, .job-card__company, .c24-company-name').first().text().trim() || "Careers24 Employer";
-            const location = $(el).find('.location, .job-card__location, .c24-location').first().text().trim() || "South Africa";
-
-            if (title && fullLink && title.length < 150) {
-                // Heuristic check to ensure it's not a generic sidebar
-                if (title.length > 5) {
-                    jobs.push({
-                        id: `c24-${Date.now()}-${i}`,
-                        title,
-                        company,
-                        location,
-                        link: fullLink,
-                        source: 'Careers24',
-                        date: 'Recently'
-                    });
-                }
-            }
-        });
-
-        return jobs.slice(0, 15);
-    } catch (e) {
-        return [];
-    }
+        return jobs.slice(0, 10);
+    } catch (e) { return []; }
 }
