@@ -5,6 +5,8 @@ import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle
 
 export default function GeneratePage() {
     const [jobLink, setJobLink] = useState("");
+    const [manualJD, setManualJD] = useState("");
+    const [activeTab, setActiveTab] = useState<"link" | "manual">("link");
     const [isScraped, setIsScraped] = useState(false);
 
     const scrapedRequirements = [
@@ -21,6 +23,15 @@ export default function GeneratePage() {
         setIsScraped(true);
     };
 
+    const handleManualProcess = () => {
+        if (!manualJD.trim()) {
+            alert("Please paste the job description first.");
+            return;
+        }
+        // Logic to extract requirements from manual text would go here
+        setIsScraped(true);
+    };
+
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
             <div className="max-w-7xl mx-auto px-6 py-12">
@@ -30,30 +41,62 @@ export default function GeneratePage() {
                         <div className="space-y-2">
                             <h1 className="text-3xl font-bold text-primary">Generate Tailored CV</h1>
                             <p className="text-slate-600">
-                                Paste a job link. We'll extract requirements, match them against your profile, and generate an optimized CV.
+                                Provide the job details. We'll extract requirements, match them against your profile, and generate an optimized CV.
                             </p>
                         </div>
 
-                        {/* Job Link Input */}
-                        <div className="space-y-3">
-                            <label className="text-sm font-semibold flex items-center gap-2 text-primary">
-                                <Link2 className="w-4 h-4" />
-                                Job Posting URL
-                            </label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="url"
-                                    value={jobLink}
-                                    onChange={(e) => setJobLink(e.target.value)}
-                                    placeholder="https://example.com/jobs/software-engineer"
-                                    className="flex-1 bg-white border-2 border-slate-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400"
-                                />
+                        {/* Input Tabs */}
+                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                            <div className="flex border-b border-slate-100">
                                 <button
-                                    onClick={handleScrape}
-                                    className="px-6 py-3 rounded-lg bg-accent hover:bg-blue-600 text-white font-semibold transition-all shadow-md"
+                                    onClick={() => setActiveTab("link")}
+                                    className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all ${activeTab === 'link' ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
                                 >
-                                    Scrape
+                                    <Link2 className="w-4 h-4" />
+                                    Job Link
                                 </button>
+                                <button
+                                    onClick={() => setActiveTab("manual")}
+                                    className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all ${activeTab === 'manual' ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:bg-slate-50'}`}
+                                >
+                                    <FileText className="w-4 h-4" />
+                                    Manual Paste
+                                </button>
+                            </div>
+
+                            <div className="p-4">
+                                {activeTab === "link" ? (
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="url"
+                                            value={jobLink}
+                                            onChange={(e) => setJobLink(e.target.value)}
+                                            placeholder="https://example.com/jobs/software-engineer"
+                                            className="flex-1 bg-white border-2 border-slate-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400"
+                                        />
+                                        <button
+                                            onClick={handleScrape}
+                                            className="px-6 py-3 rounded-lg bg-accent hover:bg-blue-600 text-white font-semibold transition-all shadow-md"
+                                        >
+                                            Scrape
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <textarea
+                                            value={manualJD}
+                                            onChange={(e) => setManualJD(e.target.value)}
+                                            placeholder="Paste the Job Description (Responsibilities & Requirements) here..."
+                                            className="w-full h-40 bg-white border-2 border-slate-200 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 font-sans"
+                                        />
+                                        <button
+                                            onClick={handleManualProcess}
+                                            className="w-full py-3 rounded-lg bg-accent hover:bg-blue-600 text-white font-bold transition-all shadow-md"
+                                        >
+                                            Analyze Text
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MapPin, Briefcase, ExternalLink, Loader2, AlertCircle, Copy, Info } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, MapPin, Briefcase, ExternalLink, Loader2, AlertCircle, Copy, Check } from "lucide-react";
 
 export default function SearchPage() {
+    const router = useRouter();
     const [query, setQuery] = useState("");
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
-    const [manualJD, setManualJD] = useState("");
 
     const handleSearch = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -31,44 +32,35 @@ export default function SearchPage() {
         }
     };
 
-    const handleManualAnalysis = () => {
-        if (!manualJD.trim()) {
-            alert("Please paste a job description first.");
-            return;
-        }
-        localStorage.setItem("current_target_jd", manualJD);
-        alert("Job Description captured! We are now ready to optimize your Master CV for this specific role.");
-    };
-
     return (
-        <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 pb-20">
+        <main className="min-h-screen bg-slate-50 pb-20">
             <div className="max-w-6xl mx-auto px-6 py-12">
-                <div className="space-y-2 mb-8">
-                    <h1 className="text-3xl font-bold text-primary">Job Search & Analysis</h1>
-                    <p className="text-slate-600 max-w-2xl">
-                        Search boards for jobs OR paste a description manually to optimize your CV "no matter what".
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2">Job Search & AI Optimizer</h1>
+                    <p className="text-slate-600">
+                        Find jobs online across PNet and LinkedIn to optimize your CV.
                     </p>
                 </div>
 
                 {/* Search Bar */}
-                <form onSubmit={handleSearch} className="mb-10">
-                    <div className="relative flex gap-2">
-                        <div className="relative flex-1">
+                <form onSubmit={handleSearch} className="mb-8">
+                    <div className="flex bg-white rounded-xl shadow-sm border-2 border-slate-200 focus-within:border-blue-500 transition-all overflow-hidden">
+                        <div className="flex-1 relative">
                             <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                             <input
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="Search job title (e.g. Electrician, Accountant)..."
-                                className="w-full bg-white border-2 border-slate-200 rounded-lg pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 shadow-sm"
+                                placeholder="Search job title (e.g. Electrician, Software Engineer)..."
+                                className="w-full pl-12 pr-4 py-4 text-sm outline-none"
                             />
                         </div>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="bg-blue-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2 shadow-lg"
+                            className="bg-blue-600 text-white px-8 font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                         >
-                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Auto-Scrape Boards"}
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Find Jobs"}
                         </button>
                     </div>
                 </form>
@@ -77,69 +69,25 @@ export default function SearchPage() {
                 {loading && (
                     <div className="text-center py-20 bg-white/50 rounded-2xl border border-blue-100 mb-10">
                         <Loader2 className="w-10 h-10 text-blue-500 animate-spin mx-auto mb-4" />
-                        <p className="text-slate-600 font-medium">Scanning PNet & LinkedIn for you...</p>
-                        <p className="text-xs text-slate-400 mt-2">Bypassing anti-bot checks where possible.</p>
+                        <p className="text-slate-600 font-medium">Scanning PNet & LinkedIn...</p>
                     </div>
                 )}
 
-                {/* Scraping Results */}
+                {/* Results Container */}
                 <div className="space-y-4 mb-12">
                     {!loading && jobs.map((job) => (
-                        <JobCard key={job.id} job={job} />
+                        <JobCard key={job.id} job={job} router={router} />
                     ))}
                 </div>
 
-                {/* Status Messages */}
+                {/* No Results Message */}
                 {!loading && hasSearched && jobs.length === 0 && (
-                    <div className="mb-12">
-                        <div className="text-center py-10 bg-white rounded-xl border border-red-100">
-                            <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
-                            <h3 className="font-bold text-slate-800">Scraping Blocked or No Results</h3>
-                            <p className="text-sm text-slate-500">PNet/LinkedIn might be hiding data. Use the manual paste below.</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Manual Fallback (The "No Matter What" Method) */}
-                {!loading && (
-                    <div className="pt-8 border-t-2 border-slate-200">
-                        <div className="bg-white p-10 rounded-2xl border-2 border-dashed border-blue-200 hover:border-blue-400 transition-all shadow-xl group">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-blue-600 rounded-xl shadow-lg ring-4 ring-blue-50">
-                                        <Copy className="w-7 h-7 text-white" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-2xl font-black text-slate-900 leading-tight">THE "NO MATTER WHAT" METHOD</h2>
-                                        <p className="text-slate-500">Paste the job description or link below to bypass all blocks.</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2 text-xs font-bold text-blue-600 bg-blue-50 px-3 py-2 rounded-full border border-blue-100">
-                                    <Info className="w-3 h-3" />
-                                    100% RELIABLE FOR AI OPTIMIZATION
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <textarea
-                                    value={manualJD}
-                                    onChange={(e) => setManualJD(e.target.value)}
-                                    className="w-full h-56 bg-white border-2 border-slate-100 rounded-xl p-6 text-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all placeholder:text-slate-300 font-sans leading-relaxed text-slate-700 shadow-inner"
-                                    placeholder="Open the job in your browser, copy the text (Requirements, Responsibilities, etc.), and paste it here..."
-                                ></textarea>
-
-                                <button
-                                    onClick={handleManualAnalysis}
-                                    className="w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white py-5 rounded-xl font-black text-lg tracking-wide hover:shadow-2xl hover:scale-[1.01] transition-all active:scale-95 flex items-center justify-center gap-3 border-b-4 border-slate-700"
-                                >
-                                    <Briefcase className="w-6 h-6" />
-                                    GENERATE MY OPTIMIZED MASTER CV
-                                </button>
-                                <p className="text-center text-xs text-slate-400">
-                                    This will compare the JD with your **Master CV** to highlight the right skills.
-                                </p>
-                            </div>
-                        </div>
+                    <div className="text-center py-12 bg-white rounded-xl border border-red-100">
+                        <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
+                        <h3 className="font-bold text-slate-900">Scraping Restricted</h3>
+                        <p className="text-sm text-slate-500 max-w-xs mx-auto">
+                            The site might be blocking my robot. Try a different keyword or use the manual optimizer in the Generate page.
+                        </p>
                     </div>
                 )}
             </div>
@@ -147,65 +95,72 @@ export default function SearchPage() {
     );
 }
 
-function JobCard({ job }: { job: any }) {
+function JobCard({ job, router }: { job: any; router: any }) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(job.link);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
     const handleUseForCV = () => {
-        alert(`Connecting to: ${job.title}\nSince this is from a board, we recommend viewing the job first to copy the full text into the "Manual Paste" box if you see asterisks!`);
+        // Redirect to generate and pass the link
+        router.push(`/generate?link=${encodeURIComponent(job.link)}`);
     };
 
     return (
-        <div className="p-6 bg-white border-2 border-blue-50 rounded-xl hover:border-blue-400 hover:shadow-2xl transition-all group relative overflow-hidden">
+        <div className="p-5 bg-white border-2 border-slate-100 rounded-2xl hover:border-blue-300 hover:shadow-xl transition-all group relative overflow-hidden">
             <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
                 <div className="flex-1">
-                    <h3 className="text-xl font-extrabold text-primary group-hover:text-blue-600 transition-colors mb-1 leading-tight">
+                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-1">
                         {job.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-slate-900 font-bold">
-                        <span className="text-blue-600 uppercase tracking-tighter text-[10px] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Company</span>
-                        {job.company}
+                    <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border ${job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
+                            {job.source}
+                        </span>
+                        <span>{job.company}</span>
+                        <span>•</span>
+                        <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3" />
+                            {job.location}
+                        </div>
                     </div>
-                </div>
-                <div className="flex gap-2">
-                    <span className={`text-[10px] px-3 py-1.5 rounded-full font-black uppercase tracking-widest border ${job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-600 text-white border-blue-700 shadow-sm'}`}>
-                        {job.source}
-                    </span>
-                </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-500 mb-6">
-                <div className="flex items-center gap-1.5 font-medium">
-                    <MapPin className="w-4 h-4 text-slate-400" />
-                    {job.location}
-                </div>
-                <div className="flex items-center gap-1.5 font-medium">
-                    <Briefcase className="w-4 h-4 text-slate-400" />
-                    {job.date}
                 </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                    onClick={handleCopyLink}
+                    className="flex-1 px-4 py-2.5 rounded-lg border-2 border-slate-100 text-slate-600 hover:bg-slate-50 text-xs font-bold transition-all flex items-center justify-center gap-2"
+                >
+                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                    {copied ? "Link Copied!" : "Copy Job Link"}
+                </button>
                 <a
                     href={job.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 px-6 py-3 rounded-lg bg-slate-50 text-slate-900 border border-slate-200 hover:bg-slate-100 text-sm font-bold transition-all flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2.5 rounded-lg bg-slate-100 text-slate-900 hover:bg-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-2"
                 >
                     <ExternalLink className="w-4 h-4" />
-                    View Original Listing
+                    Open Original
                 </a>
                 <button
                     onClick={handleUseForCV}
-                    className="flex-1 px-6 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm font-extrabold transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-200 active:translate-y-0.5"
+                    className="flex-[2] px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold transition-all flex items-center justify-center gap-2"
                 >
+                    <Briefcase className="w-4 h-4" />
                     Optimize CV For This Job
                 </button>
             </div>
 
-            {/* Visual indicator for "Blind Ads" / Asterisks */}
+            {/* Masked Indicator */}
             {job.title.includes('*') && (
-                <div className="absolute top-0 right-0 p-1">
-                    <div className="bg-amber-500 text-white text-[8px] font-black px-2 py-0.5 transform rotate-45 translate-x-3 -translate-y-1 shadow-sm">
-                        MASKED DATA
-                    </div>
+                <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 text-[9px] font-bold rounded-full border border-amber-100">
+                    <AlertCircle className="w-3 h-3" />
+                    MASKED DATA
                 </div>
             )}
         </div>
