@@ -167,22 +167,53 @@ function GenerateContent() {
                                         ) : (
                                             <>
                                                 {scrapedRequirements.length > 0 ? (
-                                                    scrapedRequirements.map((req, i) => (
-                                                        <div key={i} className="flex items-start gap-2 text-sm">
-                                                            <span className="text-blue-600 mt-0.5">•</span>
-                                                            <input
-                                                                type="text"
-                                                                defaultValue={req}
-                                                                className="flex-1 bg-transparent border-none outline-none text-slate-700 focus:text-blue-600 transition-colors"
-                                                            />
-                                                        </div>
-                                                    ))
+                                                    scrapedRequirements.map((req, i) => {
+                                                        const isSection = req.startsWith("SECTION: ");
+                                                        if (isSection) {
+                                                            const sectionText = req.replace("SECTION: ", "");
+                                                            const isRequired = sectionText.includes("[REQUIRED]");
+                                                            const isDuties = sectionText.includes("[DUTIES]");
+                                                            const isPreferred = sectionText.includes("[PREFERRED]");
+
+                                                            const cleanTitle = sectionText
+                                                                .replace("[REQUIRED] ", "")
+                                                                .replace("[DUTIES] ", "")
+                                                                .replace("[PREFERRED] ", "");
+
+                                                            return (
+                                                                <div key={i} className={`pt-6 pb-2 mb-2 border-b-2 border-slate-50 flex items-center justify-between ${i === 0 ? 'pt-0' : ''}`}>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className={`w-1.5 h-5 rounded-full ${isRequired ? 'bg-red-500' : isDuties ? 'bg-blue-500' : 'bg-emerald-500'}`} />
+                                                                        <span className={`text-[11px] font-black uppercase tracking-widest ${isRequired ? 'text-red-600' : isDuties ? 'text-blue-600' : 'text-emerald-600'}`}>
+                                                                            {cleanTitle}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded shadow-sm border ${isRequired ? 'bg-red-50 text-red-600 border-red-100' : isDuties ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}`}>
+                                                                        {isRequired ? "CRITICAL" : isDuties ? "ROLE" : "BONUS"}
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        }
+
+                                                        return (
+                                                            <div key={i} className="flex items-start gap-4 text-sm group/item pl-4 py-1.5 hover:bg-slate-50/50 rounded-md transition-all -ml-1">
+                                                                <span className="text-blue-500 mt-1 opacity-20 group-hover/item:opacity-100 transition-opacity font-bold">»</span>
+                                                                <input
+                                                                    type="text"
+                                                                    defaultValue={req}
+                                                                    className="flex-1 bg-transparent border-none outline-none text-slate-700 font-medium focus:text-blue-600 transition-colors"
+                                                                />
+                                                            </div>
+                                                        );
+                                                    })
                                                 ) : (
-                                                    <p className="text-sm text-slate-500 text-center py-4">No specific requirements found. Try manual paste.</p>
+                                                    <p className="text-sm text-slate-500 text-center py-4 italic">No requirements or duties found. Try manual paste.</p>
                                                 )}
-                                                <button className="text-xs text-slate-500 hover:text-blue-600 transition-colors mt-2 font-medium">
-                                                    + Add requirement
-                                                </button>
+                                                {!isScraping && scrapedRequirements.length > 0 && (
+                                                    <button className="w-full py-3 mt-4 border-2 border-dashed border-slate-100 rounded-lg text-xs font-bold text-slate-400 hover:text-blue-600 hover:border-blue-100 hover:bg-blue-50/30 transition-all flex items-center justify-center gap-2">
+                                                        <span>+ Add Requirement</span>
+                                                    </button>
+                                                )}
                                             </>
                                         )}
                                     </div>

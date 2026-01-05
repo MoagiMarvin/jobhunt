@@ -29,7 +29,14 @@ export async function GET(request: Request) {
         const $ = cheerio.load(html);
 
         let requirements: string[] = [];
-        const headingKeywords = ['requirement', 'duty', 'responsibility', 'qualification', 'education', 'key responsibility', 'what you will need', 'minimum requirement', 'skills', 'skilled'];
+        const headingKeywords = [
+            'requirement', 'requirements', 'duty', 'duties', 'responsibility', 'responsibilities',
+            'qualification', 'qualifications', 'education', 'key responsibility', 'key responsibilities',
+            'what you will need', 'minimum requirement', 'minimum requirements', 'skills', 'skilled',
+            'experience', 'desired', 'criteria', 'advantage', 'prefer', 'knowledge', 'competency', 'competencies',
+            'key outputs'
+        ];
+        const skipKeywords = ['introduction', 'about us', 'company overview', 'our mission', 'about the company', 'about the role'];
 
         // --- 1. MANDATORY KEYWORDS (Grade 10 / Matric) ---
         $('p, li, div, span').each((i, el) => {
@@ -40,37 +47,64 @@ export async function GET(request: Request) {
             }
         });
 
-        // --- 2. HEADING-BASED SECTION EXTRACTION ---
-        // We look for headings and grab siblings until the next heading
+        // --- 2. HEADING-BASED "SANDWICH" EXTRACTION ---
         $('h1, h2, h3, h4, h5, h6, strong, b, .at-section-text-description-title').each((i, el) => {
             const headingText = $(el).text().trim();
+            if (headingText.length < 3 || headingText.length > 80) return;
+
             const lowerHeading = headingText.toLowerCase();
 
-            if (headingKeywords.some(kw => lowerHeading.includes(kw))) {
-                // Add the heading itself for context
-                requirements.push(`SECTION: ${headingText}`);
+            // SKIP IF IT'S AN INTRODUCTION OR FLUFF
+            if (skipKeywords.some(kw => lowerHeading.includes(kw))) return;
 
-                // Grab siblings until next header or container end
+            // CHECK IF IT'S A VALID JOB SECTION
+            if (headingKeywords.some(kw => lowerHeading.includes(kw)) || headingText.endsWith(':')) {
+
+                // Determine Category for AI/UI context
+                let category = "REQUIRED"; // Default: Requirements, Qualifications, Education
+                if (lowerHeading.includes('duty') || lowerHeading.includes('responsibilit') || lowerHeading.includes('output') || lowerHeading.includes('role')) {
+                    category = "DUTIES";
+                } else if (lowerHeading.includes('desired') || lowerHeading.includes('advantage') || lowerHeading.includes('prefer')) {
+                    category = "PREFERRED";
+                }
+
+                // Temporary storage for this section's bullets
+                let sectionBullets: string[] = [];
+
+                // Grab siblings until next header
                 let next = $(el).next();
                 let limit = 0;
                 while (next.length > 0 && limit < 15) {
                     if (next.is('h1, h2, h3, h4, h5, h6, strong, b')) break;
 
-                    const siblingText = next.text().trim();
-                    if (siblingText.length > 15 && siblingText.length < 1000) {
-                        // If it has children (like a list), grab those specifically
-                        const listItems = next.find('li');
-                        if (listItems.length > 0) {
-                            listItems.each((j, li) => {
-                                const liText = $(li).text().trim();
-                                if (liText) requirements.push(liText);
-                            });
-                        } else {
-                            requirements.push(siblingText);
+                    const listItems = next.find('li');
+                    if (listItems.length > 0) {
+                        listItems.each((j, li) => {
+                            const liText = $(li).text().trim();
+                            if (liText && liText.length > 5) sectionBullets.push(liText);
+                        });
+                    } else if (next.is('li')) {
+                        const liText = next.text().trim();
+                        if (liText && liText.length > 5) sectionBullets.push(liText);
+                    } else {
+                        const siblingText = next.text().trim();
+                        // If it's a long paragraph, it might be a description, but we prefer bullets
+                        if (siblingText.length > 20 && siblingText.length < 500 && !siblingText.includes('Apply')) {
+                            // Split by standard bullet characters if present
+                            const lines = siblingText.split(/\n|•| \- /).filter(l => l.trim().length > 10);
+                            lines.forEach(line => sectionBullets.push(line.trim()));
                         }
                     }
                     next = next.next();
                     limit++;
+                }
+
+                // If we found bullets, add the section
+                if (sectionBullets.length > 0) {
+                    requirements.push(`SECTION: [${category}] ${headingText}`);
+                    sectionBullets.forEach(bullet => {
+                        if (!requirements.includes(bullet)) requirements.push(bullet);
+                    });
                 }
             }
         });
