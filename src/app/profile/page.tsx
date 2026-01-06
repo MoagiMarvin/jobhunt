@@ -17,6 +17,7 @@ export default function ProfilePage() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
+    const [isCleaning, setIsCleaning] = useState(false);
     const [editedUser, setEditedUser] = useState(user);
 
     // Load CV text on mount
@@ -31,6 +32,34 @@ export default function ProfilePage() {
         // Persist CV text to localStorage
         localStorage.setItem("master_cv_text", cvText);
         alert("Profile and Master CV saved successfully!");
+    };
+
+    const handleClean = async () => {
+        if (!cvText.trim()) return;
+
+        setIsCleaning(true);
+        try {
+            const res = await fetch('/api/clean-cv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cvText }),
+            });
+
+            const data = await res.json();
+            if (data.error) throw new Error(`${data.error} (${data.details || 'No details'})`);
+
+            setCvText(data.cleanedText);
+            if (data.version === 'basic' || data.version === 'fallback') {
+                alert(`CV Polished (Basic Mode): ${data.note || 'AI was unavailable, using basic patterns.'}`);
+            } else {
+                alert('CV cleaned and formatted for ATS success!');
+            }
+        } catch (error: any) {
+            console.error('Cleaning failed:', error);
+            alert('Failed to clean CV: ' + error.message);
+        } finally {
+            setIsCleaning(false);
+        }
     };
 
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,11 +299,21 @@ export default function ProfilePage() {
                                     <FileText className="w-4 h-4" />
                                     CV Content
                                 </label>
-                                {cvText && (
-                                    <span className="text-xs text-green-600 font-medium animate-pulse">
-                                        Content active
-                                    </span>
-                                )}
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={handleClean}
+                                        disabled={isCleaning || !cvText}
+                                        className={`text-[10px] font-bold px-2 py-1 rounded border transition-all flex items-center gap-1.5 ${isCleaning ? 'bg-blue-50 text-blue-400 border-blue-100' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300'} disabled:opacity-50`}
+                                    >
+                                        {isCleaning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                        {isCleaning ? "Polishing..." : "Clean & Format with AI"}
+                                    </button>
+                                    {cvText && (
+                                        <span className="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded border border-green-100 animate-pulse">
+                                            Extracted Content
+                                        </span>
+                                    )}
+                                </div>
                             </div>
 
                             <textarea
