@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function ProfilePage() {
@@ -16,12 +16,70 @@ export default function ProfilePage() {
     });
 
     const [isEditing, setIsEditing] = useState(false);
+    const [isExtracting, setIsExtracting] = useState(false);
     const [editedUser, setEditedUser] = useState(user);
+
+    // Load CV text on mount
+    useEffect(() => {
+        const saved = localStorage.getItem("master_cv_text");
+        if (saved) setCvText(saved);
+    }, []);
 
     const handleSave = () => {
         setUser(editedUser);
         setIsEditing(false);
-        // In a real app, this would make an API call
+        // Persist CV text to localStorage
+        localStorage.setItem("master_cv_text", cvText);
+        alert("Profile and Master CV saved successfully!");
+    };
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+            alert('Please upload a PDF file.');
+            return;
+        }
+
+        setIsExtracting(true);
+        try {
+            // Load PDF.js dynamically to avoid SSR issues
+            const pdfjs = await import('pdfjs-dist');
+
+            // Set up worker
+            pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+            const arrayBuffer = await file.arrayBuffer();
+            const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+            const pdf = await loadingTask.promise;
+
+            let fullText = "";
+
+            // Extract text from each page
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items
+                    .map((item: any) => item.str)
+                    .join(" ");
+                fullText += pageText + "\n\n";
+            }
+
+            if (!fullText.trim()) {
+                throw new Error("Could not extract any text from this PDF. It might be a scanned image.");
+            }
+
+            setCvText(fullText.trim());
+            alert('CV text extracted successfully! Please review it below.');
+        } catch (error: any) {
+            console.error('PDF Extraction failed:', error);
+            alert('Failed to extract PDF: ' + error.message);
+        } finally {
+            setIsExtracting(false);
+            // Reset input
+            event.target.value = '';
+        }
     };
 
     const handleCancel = () => {
@@ -161,15 +219,33 @@ export default function ProfilePage() {
 
                         {/* Options Grid */}
                         <div className="grid md:grid-cols-2 gap-4">
+                            {/* Hidden File Input */}
+                            <input
+                                type="file"
+                                id="pdf-upload"
+                                accept="application/pdf"
+                                className="hidden"
+                                onChange={handleFileUpload}
+                            />
+
                             {/* Upload Section */}
-                            <div className="border-2 border-dashed border-blue-200 bg-white rounded-xl p-6 text-center hover:border-blue-400 transition-all flex flex-col items-center justify-center group cursor-pointer">
-                                <Upload className="w-8 h-8 mb-3 text-blue-400 group-hover:text-blue-600 transition-colors" />
-                                <h3 className="text-md font-semibold text-primary mb-1">Upload File</h3>
+                            <div
+                                onClick={() => !isExtracting && document.getElementById('pdf-upload')?.click()}
+                                className={`border-2 border-dashed rounded-xl p-6 text-center transition-all flex flex-col items-center justify-center group cursor-pointer ${isExtracting ? 'border-blue-400 bg-blue-50/50' : 'border-blue-200 bg-white hover:border-blue-400'}`}
+                            >
+                                {isExtracting ? (
+                                    <Loader2 className="w-8 h-8 mb-3 text-blue-500 animate-spin" />
+                                ) : (
+                                    <Upload className="w-8 h-8 mb-3 text-blue-400 group-hover:text-blue-600 transition-colors" />
+                                )}
+                                <h3 className="text-md font-semibold text-primary mb-1">
+                                    {isExtracting ? 'Reading PDF...' : 'Upload File'}
+                                </h3>
                                 <p className="text-xs text-slate-500 mb-3">
-                                    PDF or DOCX
+                                    PDF only for best results
                                 </p>
                                 <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 text-blue-600 text-xs font-medium transition-all border border-blue-100 group-hover:border-blue-200">
-                                    Choose File
+                                    {isExtracting ? 'Please wait' : 'Choose File'}
                                 </button>
                             </div>
 
@@ -211,7 +287,10 @@ export default function ProfilePage() {
 
                         {/* Action Buttons */}
                         <div className="flex gap-3">
-                            <button className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                            <button
+                                onClick={handleSave}
+                                className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm"
+                            >
                                 <Save className="w-4 h-4" />
                                 Save Master Profile
                             </button>

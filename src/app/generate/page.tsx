@@ -22,16 +22,44 @@ function GenerateContent() {
     const [isScraped, setIsScraped] = useState(false);
     const [isScraping, setIsScraping] = useState(false);
     const [scrapedRequirements, setScrapedRequirements] = useState<string[]>([]);
+    const [cvText, setCvText] = useState("");
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysis, setAnalysis] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Auto-fill and scrape if link is present in URL
+    // Load Master CV text on mount
     useEffect(() => {
-        if (linkParam) {
-            setJobLink(linkParam);
-            setActiveTab("link");
-            handleScrape(linkParam);
+        const saved = localStorage.getItem("master_cv_text");
+        if (saved) setCvText(saved);
+    }, []);
+
+    const handleAnalyze = async (requirements: string[]) => {
+        if (!cvText) {
+            console.warn("No Master CV found for analysis.");
+            return;
         }
-    }, [linkParam]);
+
+        setIsAnalyzing(true);
+        try {
+            const res = await fetch('/api/analyze-ats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobRequirements: requirements,
+                    cvText
+                }),
+            });
+
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            setAnalysis(data);
+        } catch (err: any) {
+            console.error("Analysis failed:", err);
+            // Don't set global error, just log it for analysis
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
 
     const handleScrape = async (targetUrl?: string) => {
         const urlToScrape = targetUrl || jobLink;
@@ -43,6 +71,7 @@ function GenerateContent() {
         setIsScraping(true);
         setIsScraped(false);
         setError(null);
+        setAnalysis(null);
 
         try {
             const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(urlToScrape)}`);
@@ -52,6 +81,11 @@ function GenerateContent() {
 
             setScrapedRequirements(data.requirements || []);
             setIsScraped(true);
+
+            // Immediately trigger AI analysis
+            if (data.requirements?.length > 0) {
+                handleAnalyze(data.requirements);
+            }
         } catch (err: any) {
             console.error("Scraping failed:", err);
             setError(err.message || "Failed to extract requirements.");
@@ -65,9 +99,10 @@ function GenerateContent() {
             alert("Please paste the job description first.");
             return;
         }
-        // Simplified manual process
-        setScrapedRequirements(manualJD.split('\n').filter(l => l.trim().length > 20).slice(0, 10));
+        const lines = manualJD.split('\n').filter(l => l.trim().length > 10).slice(0, 15);
+        setScrapedRequirements(lines);
         setIsScraped(true);
+        handleAnalyze(lines);
     };
 
     return (
@@ -226,46 +261,76 @@ function GenerateContent() {
                                             <Sparkles className="w-5 h-5 text-accent" />
                                             ATS Match Analysis
                                         </h3>
-                                        <span className="text-2xl font-bold text-green-600">87%</span>
+                                        <div className="flex items-center gap-2">
+                                            {isAnalyzing && <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />}
+                                            <span className={`text-2xl font-bold ${analysis ? (analysis.score >= 70 ? 'text-green-600' : 'text-yellow-600') : 'text-slate-400'}`}>
+                                                {analysis ? `${analysis.score}%` : isAnalyzing ? "--%" : "0%"}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     <div className="h-3 bg-white rounded-full overflow-hidden border border-slate-200">
-                                        <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 w-[87%] transition-all duration-500"></div>
+                                        <div
+                                            className={`h-full transition-all duration-1000 ${analysis?.score >= 70 ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-yellow-500 to-orange-500'}`}
+                                            style={{ width: `${analysis?.score || 0}%` }}
+                                        ></div>
                                     </div>
 
-                                    {/* Breakdown */}
-                                    <div className="space-y-3 pt-2">
-                                        <div className="flex items-start gap-2 text-sm">
-                                            <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                            <div>
-                                                <p className="font-semibold text-green-700">12 Matching Skills</p>
-                                                <p className="text-xs text-slate-600">Python, JavaScript, React, Node.js, AWS, Problem-solving...</p>
+                                    {/* Real Analysis Breakdown */}
+                                    <div className="space-y-4 pt-2">
+                                        {isAnalyzing ? (
+                                            <div className="py-4 text-center">
+                                                <p className="text-sm text-slate-500 animate-pulse">Brain is calculating your match score...</p>
                                             </div>
-                                        </div>
+                                        ) : analysis ? (
+                                            <>
+                                                {analysis.summary && (
+                                                    <p className="text-sm text-slate-700 italic border-l-4 border-blue-200 pl-3 py-1 bg-white/50 rounded">
+                                                        "{analysis.summary}"
+                                                    </p>
+                                                )}
 
-                                        <div className="flex items-start gap-2 text-sm">
-                                            <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                                            <div>
-                                                <p className="font-semibold text-green-700">3 Relevant Experiences</p>
-                                                <p className="text-xs text-slate-600">Senior Developer, Full-stack Engineer, Jr Developer</p>
-                                            </div>
-                                        </div>
+                                                <div className="grid gap-3">
+                                                    {analysis.matches?.length > 0 && (
+                                                        <div className="flex items-start gap-2 text-sm">
+                                                            <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                                                            <div>
+                                                                <p className="font-bold text-green-700">Top Matches</p>
+                                                                <p className="text-xs text-slate-600">{analysis.matches.join(", ")}</p>
+                                                            </div>
+                                                        </div>
+                                                    )}
 
-                                        <div className="flex items-start gap-2 text-sm">
-                                            <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                                            <div>
-                                                <p className="font-semibold text-yellow-700">2 Missing Keywords</p>
-                                                <p className="text-xs text-slate-600">Docker, Kubernetes</p>
-                                            </div>
-                                        </div>
+                                                    {analysis.missing?.length > 0 && (
+                                                        <div className="flex items-start gap-2 text-sm">
+                                                            <AlertCircle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                                            <div>
+                                                                <p className="font-bold text-yellow-700">Missing Keywords</p>
+                                                                <p className="text-xs text-slate-600">{analysis.missing.join(", ")}</p>
+                                                            </div>
+                                                        </div>
+                                                    )}
 
-                                        <div className="flex items-start gap-2 text-sm">
-                                            <XCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
-                                            <div>
-                                                <p className="font-semibold text-red-700">1 Requirement Not Met</p>
-                                                <p className="text-xs text-slate-600">Bachelor's degree (you have Associate's)</p>
+                                                    {analysis.alerts?.length > 0 && (
+                                                        <div className="flex items-start gap-2 text-sm">
+                                                            <XCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                                                            <div>
+                                                                <p className="font-bold text-red-700">Critical Gaps</p>
+                                                                <p className="text-xs text-slate-600">{analysis.alerts.join(", ")}</p>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="py-4 text-center">
+                                                {!cvText ? (
+                                                    <p className="text-sm text-red-500 font-medium">Please save a Master CV in your Profile first!</p>
+                                                ) : (
+                                                    <p className="text-sm text-slate-500">Extract requirements to see your match score.</p>
+                                                )}
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
 
