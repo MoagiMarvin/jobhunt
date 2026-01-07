@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle, Loader2, Mail, Phone } from "lucide-react";
 
 export default function GeneratePage() {
     return (
@@ -16,22 +16,58 @@ function GenerateContent() {
     const searchParams = useSearchParams();
     const linkParam = searchParams.get('link');
 
-    const [jobLink, setJobLink] = useState("");
+    const [jobLink, setJobLink] = useState(linkParam || "");
     const [manualJD, setManualJD] = useState("");
     const [activeTab, setActiveTab] = useState<"link" | "manual">("link");
     const [isScraped, setIsScraped] = useState(false);
     const [isScraping, setIsScraping] = useState(false);
     const [scrapedRequirements, setScrapedRequirements] = useState<string[]>([]);
     const [cvText, setCvText] = useState("");
+    const [userDetails, setUserDetails] = useState<any>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysis, setAnalysis] = useState<any>(null);
+    const [isOptimizing, setIsOptimizing] = useState(false);
+    const [optimizedCv, setOptimizedCv] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Load Master CV text on mount
+    // Load Master CV and User details on mount
     useEffect(() => {
-        const saved = localStorage.getItem("master_cv_text");
-        if (saved) setCvText(saved);
+        const savedCv = localStorage.getItem("master_cv_text");
+        if (savedCv) setCvText(savedCv);
+
+        const savedUser = localStorage.getItem("user_details");
+        if (savedUser) setUserDetails(JSON.parse(savedUser));
     }, []);
+
+
+    const handleOptimize = async (requirements: string[]) => {
+        if (!cvText) {
+            alert("Please save a Master CV in your Profile first.");
+            return;
+        }
+
+        setIsOptimizing(true);
+        try {
+            const res = await fetch('/api/optimize-cv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jobRequirements: requirements,
+                    cvText,
+                    userDetails
+                }),
+            });
+
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            setOptimizedCv(data);
+        } catch (err: any) {
+            console.error("Optimization failed:", err);
+            setError("Failed to generate tailored CV: " + err.message);
+        } finally {
+            setIsOptimizing(false);
+        }
+    };
 
     const handleAnalyze = async (requirements: string[]) => {
         if (!cvText) {
@@ -53,9 +89,11 @@ function GenerateContent() {
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             setAnalysis(data);
+
+            // Wait a small bit then auto-optimize for smooth UX
+            setTimeout(() => handleOptimize(requirements), 500);
         } catch (err: any) {
             console.error("Analysis failed:", err);
-            // Don't set global error, just log it for analysis
         } finally {
             setIsAnalyzing(false);
         }
@@ -104,6 +142,13 @@ function GenerateContent() {
         setIsScraped(true);
         handleAnalyze(lines);
     };
+
+    // Handle incoming link automatically
+    useEffect(() => {
+        if (linkParam && !isScraped && !isScraping) {
+            handleScrape(linkParam);
+        }
+    }, [linkParam]);
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
@@ -335,9 +380,13 @@ function GenerateContent() {
                                 </div>
 
                                 {/* Generate Button */}
-                                <button className="w-full py-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2">
-                                    <Sparkles className="w-5 h-5" />
-                                    Generate Optimized CV
+                                <button
+                                    onClick={() => handleOptimize(scrapedRequirements)}
+                                    disabled={isOptimizing || scrapedRequirements.length === 0}
+                                    className="w-full py-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {isOptimizing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                                    {isOptimizing ? "Generation in progress..." : "Generate Optimized CV"}
                                 </button>
                             </>
                         )}
@@ -352,63 +401,100 @@ function GenerateContent() {
                     </div>
 
                     {/* Right: CV Preview */}
-                    <div className="bg-white rounded-xl p-8 flex items-center justify-center sticky top-24 h-fit border-2 border-blue-100 shadow-lg">
-                        <div className="w-full max-w-[210mm] aspect-[1/1.414] bg-white text-slate-900 shadow-xl rounded-sm overflow-hidden scale-75 origin-top border border-slate-200">
-                            {/* Mock CV Preview */}
-                            <div className="p-10 space-y-6">
+                    <div className="bg-white rounded-xl p-8 flex items-center justify-center sticky top-24 h-fit border-2 border-primary/10 shadow-xl overflow-hidden min-h-[600px]">
+                        {isOptimizing ? (
+                            <div className="text-center space-y-4">
+                                <div className="relative">
+                                    <div className="w-20 h-20 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
+                                    <Sparkles className="w-8 h-8 text-blue-500 absolute inset-0 m-auto animate-pulse" />
+                                </div>
+                                <p className="text-sm font-bold text-slate-600 tracking-tight">AI is crafting your tailored CV...</p>
+                                <p className="text-[10px] text-slate-400">Rewriting bullet points for maximum impact.</p>
+                            </div>
+                        ) : optimizedCv ? (
+                            <div className="w-full max-w-[210mm] bg-white text-slate-900 shadow-2xl rounded-sm overflow-hidden border border-slate-200 p-10 space-y-6">
+                                {/* Real CV Header */}
                                 <div className="border-b-2 border-slate-800 pb-6">
-                                    <h1 className="text-4xl font-bold text-slate-900">John Doe</h1>
-                                    <p className="text-slate-500 font-medium text-lg mt-1">Software Engineer</p>
-                                    <div className="flex gap-4 text-xs text-slate-400 mt-3">
-                                        <span>john@example.com</span>
-                                        <span>•</span>
-                                        <span>github.com/johndoe</span>
+                                    <h1 className="text-4xl font-bold text-slate-900">{optimizedCv.personalInfo?.name || userDetails?.name}</h1>
+                                    <p className="text-slate-500 font-medium text-lg mt-1">{optimizedCv.personalInfo?.title || "Candidate"}</p>
+                                    <div className="flex flex-wrap gap-4 text-xs text-slate-400 mt-3 font-medium">
+                                        <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{optimizedCv.personalInfo?.email || userDetails?.email}</span>
+                                        <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{optimizedCv.personalInfo?.phone || userDetails?.phone}</span>
+                                        {optimizedCv.personalInfo?.location && <span>• {optimizedCv.personalInfo.location}</span>}
                                     </div>
                                 </div>
 
+                                {/* Tailored Summary */}
                                 <div className="space-y-2">
-                                    <h2 className="uppercase tracking-wider text-xs font-bold text-slate-500">Summary</h2>
+                                    <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Professional Summary</h2>
                                     <p className="text-sm leading-relaxed text-slate-700">
-                                        Software Engineer with <strong className="bg-yellow-100 px-1">5+ years</strong> specializing in <strong className="bg-yellow-100 px-1">Python</strong> and <strong className="bg-yellow-100 px-1">JavaScript</strong>. Expert in <strong className="bg-yellow-100 px-1">React</strong> and <strong className="bg-yellow-100 px-1">Node.js</strong> with proven track record.
+                                        {optimizedCv.summary}
                                     </p>
                                 </div>
 
+                                {/* Experience Sections */}
                                 <div className="space-y-4">
-                                    <h2 className="uppercase tracking-wider text-xs font-bold text-slate-500">Experience</h2>
-                                    <div>
-                                        <div className="flex justify-between">
-                                            <h3 className="font-bold text-slate-900">Senior Developer</h3>
-                                            <span className="text-xs text-slate-500">2023 - Present</span>
+                                    <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Professional Experience</h2>
+                                    {optimizedCv.experience?.map((exp: any, i: number) => (
+                                        <div key={i} className="space-y-2">
+                                            <div className="flex justify-between items-baseline">
+                                                <h3 className="font-bold text-slate-900 text-sm">{exp.role}</h3>
+                                                <span className="text-[10px] font-bold text-slate-400">{exp.dates}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 italic font-medium">{exp.company}</p>
+                                            <ul className="list-disc pl-4 text-xs text-slate-700 space-y-1.5 mt-2 marker:text-blue-400">
+                                                {exp.bulletPoints?.map((bullet: string, j: number) => (
+                                                    <li key={j} className="leading-normal">{bullet}</li>
+                                                ))}
+                                            </ul>
                                         </div>
-                                        <p className="text-xs text-slate-500 italic">TechCorp Inc.</p>
-                                        <ul className="list-disc pl-4 text-xs text-slate-700 space-y-1 mt-2 marker:text-slate-400">
-                                            <li>Led development using <strong className="bg-blue-50 px-1">Node.js</strong> and <strong className="bg-blue-50 px-1">React</strong></li>
-                                            <li>Deployed on <strong className="bg-blue-50 px-1">AWS</strong> infrastructure</li>
-                                        </ul>
-                                    </div>
+                                    ))}
                                 </div>
 
-                                <div className="space-y-2">
-                                    <h2 className="uppercase tracking-wider text-xs font-bold text-slate-500">Skills</h2>
-                                    <div className="flex flex-wrap gap-1">
-                                        {["Python", "JavaScript", "React", "Node.js", "AWS"].map((skill) => (
-                                            <span key={skill} className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-700 rounded border border-slate-200">
+                                {/* Skills Grid */}
+                                <div className="space-y-2 pt-2">
+                                    <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Core Competencies</h2>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {optimizedCv.skills?.map((skill: string) => (
+                                            <span key={skill} className="text-[10px] font-bold px-2 py-1 bg-slate-50 text-slate-600 rounded border border-slate-200">
                                                 {skill}
                                             </span>
                                         ))}
                                     </div>
                                 </div>
+
+                                {/* Education */}
+                                {optimizedCv.education?.length > 0 && (
+                                    <div className="space-y-2 pt-2">
+                                        <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Education</h2>
+                                        {optimizedCv.education.map((edu: any, i: number) => (
+                                            <div key={i} className="flex justify-between text-xs">
+                                                <span className="font-bold">{edu.degree} @ {edu.school}</span>
+                                                <span className="text-slate-400">{edu.year}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        </div>
+                        ) : (
+                            <div className="text-center p-12 text-slate-400">
+                                <FileText className="w-16 h-16 mx-auto mb-4 opacity-10" />
+                                <p className="text-sm font-medium">Your optimized CV preview will appear here.</p>
+                                <p className="text-[10px] mt-1">AI needs to analyze job requirements first.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Download Section */}
-                {isScraped && (
-                    <div className="mt-8 flex justify-center">
-                        <button className="px-8 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all flex items-center gap-2 border border-slate-200 shadow-md">
-                            <Download className="w-4 h-4" />
-                            Download CV (PDF)
+                {optimizedCv && (
+                    <div className="mt-12 flex justify-center">
+                        <button
+                            onClick={() => window.print()}
+                            className="px-8 py-3 rounded-lg bg-slate-900 hover:bg-black text-white font-bold transition-all flex items-center gap-2 shadow-xl hover:-translate-y-1"
+                        >
+                            <Download className="w-5 h-5" />
+                            Download Tailored CV (PDF)
                         </button>
                     </div>
                 )}

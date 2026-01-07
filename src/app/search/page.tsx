@@ -206,7 +206,7 @@ function JobCard({ job, router }: { job: any; router: any }) {
                     className="flex-[2] px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold transition-all flex items-center justify-center gap-2"
                 >
                     <Briefcase className="w-4 h-4" />
-                    Optimize CV For This Job
+                    Scrape & Optimize CV
                 </button>
             </div>
 

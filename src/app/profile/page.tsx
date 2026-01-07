@@ -20,17 +20,25 @@ export default function ProfilePage() {
     const [isCleaning, setIsCleaning] = useState(false);
     const [editedUser, setEditedUser] = useState(user);
 
-    // Load CV text on mount
+    // Load user and CV text on mount
     useEffect(() => {
-        const saved = localStorage.getItem("master_cv_text");
-        if (saved) setCvText(saved);
+        const savedCv = localStorage.getItem("master_cv_text");
+        if (savedCv) setCvText(savedCv);
+
+        const savedUser = localStorage.getItem("user_details");
+        if (savedUser) {
+            const parsed = JSON.parse(savedUser);
+            setUser(parsed);
+            setEditedUser(parsed);
+        }
     }, []);
 
     const handleSave = () => {
         setUser(editedUser);
         setIsEditing(false);
-        // Persist CV text to localStorage
+        // Persist to localStorage
         localStorage.setItem("master_cv_text", cvText);
+        localStorage.setItem("user_details", JSON.stringify(editedUser));
         alert("Profile and Master CV saved successfully!");
     };
 
