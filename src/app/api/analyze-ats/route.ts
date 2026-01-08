@@ -106,7 +106,13 @@ function basicAnalyze(cvText: string, jobRequirements: string[]) {
 }
 
 export async function POST(req: Request) {
-    console.log("ATS Analysis: Dual-Mode Request received");
+    console.log("ATS Analysis: Request Received");
+
+    // DEBUG: Check Environment Variable
+    const apiKey = process.env.GEMINI_API_KEY;
+    console.log("DEBUG: Key Check ->", apiKey ? `Exists (${apiKey.length} chars)` : "MISSING");
+    if (apiKey) console.log("DEBUG: Key Start ->", apiKey.substring(0, 5) + "...");
+
     try {
         const { jobRequirements, cvText } = await req.json();
 
@@ -134,7 +140,7 @@ export async function POST(req: Request) {
         // 2. Perform AI Semantic Analysis
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
             const prompt = `
           You are an elite Applicant Tracking System (ATS) Expert.
@@ -171,10 +177,19 @@ export async function POST(req: Request) {
             const response = await result.response;
             let text = response.text().trim();
 
+            console.log("=== RAW AI RESPONSE ===");
+            console.log(text.substring(0, 500)); // First 500 chars
+            console.log("=== END RAW RESPONSE ===");
+
             if (text.startsWith("```json")) text = text.replace(/```json|```/g, "");
             if (text.startsWith("```")) text = text.replace(/```/g, "");
 
+            console.log("=== CLEANED TEXT ===");
+            console.log(text.substring(0, 300));
+            console.log("=== ATTEMPTING JSON.parse ===");
+
             const aiData = JSON.parse(text);
+            console.log("✅ JSON Parse Success! Score:", aiData.score);
 
             return NextResponse.json({
                 legacyScore: legacyAnalysis.score,
@@ -188,7 +203,13 @@ export async function POST(req: Request) {
             });
 
         } catch (aiError: any) {
-            console.error("ATS Analysis Semantic Mode Failed:", aiError.message);
+            console.error("ATS Analysis Semantic Mode Failed!");
+            console.error("Error Type:", aiError.constructor.name);
+            console.error("Error Message:", aiError.message);
+            console.error("Error Code:", aiError.code);
+            console.error("Error Status:", aiError.status);
+            console.error("Full Error:", JSON.stringify(aiError, null, 2));
+
             return NextResponse.json({
                 ...legacyAnalysis,
                 legacyScore: legacyAnalysis.score,
