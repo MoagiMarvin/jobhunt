@@ -1,8 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-
-
 // Heuristic analysis for when AI is unavailable
 function basicAnalyze(cvText: string, jobRequirements: string[]) {
     // 1. Pre-clean the CV text (fix S O F T W A R E type spacing)
@@ -12,41 +10,52 @@ function basicAnalyze(cvText: string, jobRequirements: string[]) {
     const matches: string[] = [];
     const missing: string[] = [];
     const internalAlerts: string[] = [];
+    const insights: string[] = [];
 
-    // Stop words to ignore when extracting keywords
+    // 2. GOLD STANDARD DICTIONARY
+    const actionVerbs = new Set(['spearheaded', 'orchestrated', 'negotiated', 'implemented', 'designed', 'developed', 'managed', 'led', 'transformed', 'optimized', 'achieved', 'increased', 'decreased', 'saved', 'architected', 'automated', 'streamlined']);
+    const buzzwords = new Set(['team player', 'hard worker', 'self-starter', 'motivated', 'passionate', 'dynamic', 'detail-oriented', 'results-driven']);
     const stopWords = new Set(['and', 'the', 'with', 'for', 'skills', 'experience', 'ability', 'knowledge', 'understanding', 'required', 'excellent', 'strong', 'good', 'must', 'have', 'years', 'level', 'will', 'responsibilities', 'duties']);
 
-    // 2. Extract significant keywords from requirements
+    // 3. Extract keywords from requirements
     const allKeywords = new Set<string>();
     let detectedJobTitle = "";
-
     jobRequirements.forEach((req, idx) => {
         if (req.startsWith("SECTION:")) return;
-
-        // Assume the first few requirements or the one with specific keywords contains the job title
-        if (idx < 3 && req.length > 5 && req.length < 50) {
-            detectedJobTitle = req;
-        }
-
-        // Split into words, remove punctuation, and filter
-        const words = req.toLowerCase()
-            .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
-            .split(/\s+/)
-            .filter(w => w.length > 3 && !stopWords.has(w));
-
+        if (idx < 3 && req.length > 5 && req.length < 50) detectedJobTitle = req;
+        const words = req.toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").split(/\s+/).filter(w => w.length > 3 && !stopWords.has(w));
         words.forEach(w => allKeywords.add(w));
     });
 
-    // 3. Match keywords against CV
+    // 4. Content Analysis: Verbs & Impact
+    const wordsInCv = cleanedCv.split(/\s+/);
+    const foundVerbs = wordsInCv.filter(w => actionVerbs.has(w.toLowerCase().replace(/[.,]/g, "")));
+    const foundBuzzwords = wordsInCv.filter(w => buzzwords.has(w.toLowerCase().replace(/[.,]/g, "")));
+
+    // Impact Detection: Look for numbers (quantifiables)
+    const impactCount = (cleanedCv.match(/\d+(?:\.\d+)?%|R\s?\d+|\$\s?\d+|\d+\s?years|\b\d{2,}\b/g) || []).length;
+
+    // Readability: Average Sentence Length (rough)
+    const sentences = cleanedCv.split(/[.!?]+/).filter(s => s.trim().length > 10);
+    const avgSentenceLength = sentences.length > 0 ? wordsInCv.length / sentences.length : 0;
+
+    // 5. RECRUITER INSIGHTS
+    if (foundVerbs.length >= 5) insights.push("✅ Strong use of action verbs detected");
+    else internalAlerts.push("Use more action verbs (e.g., Spearheaded, Balanced, Delivered) to show impact");
+
+    if (impactCount >= 3) insights.push("✅ Quantifiable impact detected (numbers/metrics)");
+    else internalAlerts.push("Try to add more numbers or percentages to prove your results");
+
+    if (foundBuzzwords.length > 4) internalAlerts.push("Remove generic buzzwords like 'team player' and show your skills instead");
+    if (avgSentenceLength > 25) internalAlerts.push("Some sentences are very long. Aim for shorter, punchy bullet points.");
+
+    // 6. Basic Matching & Logic
     const foundKeywords: string[] = [];
     allKeywords.forEach(kw => {
         const regex = new RegExp(`\\b${kw}\\b`, 'i');
-        if (regex.test(cleanedCv)) {
-            foundKeywords.push(kw);
-        }
+        if (regex.test(cleanedCv)) foundKeywords.push(kw);
     });
 
-    // 4. ADVANCED RECRUITER LOGIC: Sections & Formatting
     const sections = {
         experience: /experience|employment|work|history/i.test(cleanedCv),
         skills: /skills|competencies|technologies|stack/i.test(cleanedCv),
@@ -55,23 +64,8 @@ function basicAnalyze(cvText: string, jobRequirements: string[]) {
 
     const hasContactEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(cleanedCv);
     const hasPhone = /(\+?\d{1,4}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(cleanedCv);
-    const hasBullets = /[•\-*]/.test(cleanedCv);
 
-    if (!sections.experience) internalAlerts.push("Work Experience section not clearly labeled");
-    if (!sections.skills) internalAlerts.push("Skills section missing or poorly labeled");
-    if (!hasContactEmail) internalAlerts.push("No email address detected");
-    if (!hasPhone) internalAlerts.push("No phone number detected");
-    if (!hasBullets) internalAlerts.push("Poor formatting: Use bullet points for readability");
-
-    // 5. Title Relevance
-    let titleMatchBonus = 0;
-    if (detectedJobTitle) {
-        const titleWords = detectedJobTitle.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-        const titleMatchCount = titleWords.filter(w => lowercaseCv.includes(w)).length;
-        if (titleMatchCount > 0) titleMatchBonus = (titleMatchCount / titleWords.length) * 15;
-    }
-
-    // 6. Calculate Match Score
+    // 7. Calculate Match Score
     jobRequirements.forEach(req => {
         if (req.startsWith("SECTION:")) return;
         const cleanReq = req.toLowerCase().trim();
@@ -88,25 +82,26 @@ function basicAnalyze(cvText: string, jobRequirements: string[]) {
     const totalPossibleKeywords = allKeywords.size || 1;
     const keywordRatio = foundKeywords.length / totalPossibleKeywords;
 
-    // Legacy Score Breakdown:
-    // Keyword Depth: 50%
-    // Title Relevance: 15%
+    // Gold Score Breakdown:
+    // Keyword Depth: 40%
+    // Impact & Verbs: 20%
     // Sections & Basic Info: 20%
-    // Formatting & Contact: 15%
-    const keywordScore = keywordRatio * 50;
+    // Contact & Title: 20%
+    const keywordScore = keywordRatio * 40;
+    const impactScore = Math.min(20, (impactCount * 4) + (foundVerbs.length * 2));
     const basicInfoScore = (Object.values(sections).filter(Boolean).length / 3) * 20;
-    const contactScore = (hasContactEmail ? 5 : 0) + (hasPhone ? 5 : 0) + (hasBullets ? 5 : 0);
+    const contactScore = (hasContactEmail ? 10 : 0) + (hasPhone ? 10 : 0);
 
-    const finalScore = Math.min(100, Math.round(keywordScore + titleMatchBonus + basicInfoScore + contactScore + 10));
+    const finalScore = Math.min(100, Math.round(keywordScore + impactScore + basicInfoScore + contactScore));
 
     return {
         legacyScore: finalScore,
         score: finalScore,
-        summary: `Legacy Check: ${foundKeywords.length} key terms found. ${internalAlerts.length > 0 ? "Some vital CV sections or contact details are missing." : "Strong section mapping and professional formatting detected."}`,
+        summary: insights.length > 0 ? insights.join(". ") : "Heuristic check complete. Add more impact-driven bullet points for a better score.",
         matches: matches.slice(0, 5),
         missing: missing.slice(0, 5),
         alerts: [...internalAlerts, lowercaseCv.includes("matric") || lowercaseCv.includes("grade 12") ? null : "Matric/Grade 12 not clearly mentioned"].filter(Boolean),
-        version: "basic-turbo"
+        version: "gold-standard"
     };
 }
 

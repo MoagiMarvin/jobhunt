@@ -355,9 +355,16 @@ function GenerateContent() {
                                         ) : analysis ? (
                                             <>
                                                 {analysis.summary && (
-                                                    <p className="text-sm text-slate-700 italic border-l-4 border-blue-200 pl-3 py-1 bg-white/50 rounded">
-                                                        "{analysis.summary}"
-                                                    </p>
+                                                    <div className="text-sm text-slate-700 border-l-4 border-blue-200 pl-3 py-2 bg-white/50 rounded space-y-1">
+                                                        {analysis.summary.split('. ').map((item: string, i: number) => (
+                                                            <div key={i} className="flex items-start gap-1.5">
+                                                                <span className="mt-0.5">{item.includes('✅') ? null : "💡"}</span>
+                                                                <p className={item.includes('✅') ? "text-blue-700 font-medium" : ""}>
+                                                                    {item.trim()}{item.endsWith('.') ? '' : '.'}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 )}
 
                                                 <div className="grid gap-3">
