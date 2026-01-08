@@ -76,6 +76,7 @@ function GenerateContent() {
         }
 
         setIsAnalyzing(true);
+        setError(null);
         try {
             const res = await fetch('/api/analyze-ats', {
                 method: 'POST',
@@ -94,6 +95,7 @@ function GenerateContent() {
             setTimeout(() => handleOptimize(requirements), 500);
         } catch (err: any) {
             console.error("Analysis failed:", err);
+            setError("Analysis snagged: " + (err.message || "Unknown error"));
         } finally {
             setIsAnalyzing(false);
         }
@@ -119,11 +121,6 @@ function GenerateContent() {
 
             setScrapedRequirements(data.requirements || []);
             setIsScraped(true);
-
-            // Immediately trigger AI analysis
-            if (data.requirements?.length > 0) {
-                handleAnalyze(data.requirements);
-            }
         } catch (err: any) {
             console.error("Scraping failed:", err);
             setError(err.message || "Failed to extract requirements.");
@@ -140,8 +137,14 @@ function GenerateContent() {
         const lines = manualJD.split('\n').filter(l => l.trim().length > 10).slice(0, 15);
         setScrapedRequirements(lines);
         setIsScraped(true);
-        handleAnalyze(lines);
     };
+
+    // Trigger analysis automatically when both requirements and CV are ready
+    useEffect(() => {
+        if (scrapedRequirements.length > 0 && cvText && !analysis && !isAnalyzing) {
+            handleAnalyze(scrapedRequirements);
+        }
+    }, [scrapedRequirements, cvText, analysis, isAnalyzing]);
 
     // Handle incoming link automatically
     useEffect(() => {
@@ -300,25 +303,47 @@ function GenerateContent() {
                                 </div>
 
                                 {/* ATS Match Analysis */}
-                                <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 space-y-4">
+                                <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 space-y-6">
                                     <div className="flex items-center justify-between">
                                         <h3 className="font-bold flex items-center gap-2 text-primary">
                                             <Sparkles className="w-5 h-5 text-accent" />
-                                            ATS Match Analysis
+                                            Dual-ATS Scorecard
                                         </h3>
-                                        <div className="flex items-center gap-2">
-                                            {isAnalyzing && <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />}
-                                            <span className={`text-2xl font-bold ${analysis ? (analysis.score >= 70 ? 'text-green-600' : 'text-yellow-600') : 'text-slate-400'}`}>
-                                                {analysis ? `${analysis.score}%` : isAnalyzing ? "--%" : "0%"}
-                                            </span>
-                                        </div>
+                                        {isAnalyzing && <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />}
                                     </div>
 
-                                    <div className="h-3 bg-white rounded-full overflow-hidden border border-slate-200">
-                                        <div
-                                            className={`h-full transition-all duration-1000 ${analysis?.score >= 70 ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-yellow-500 to-orange-500'}`}
-                                            style={{ width: `${analysis?.score || 0}%` }}
-                                        ></div>
+                                    {/* Two Gauges Side-by-Side */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {/* Legacy Score */}
+                                        <div className="bg-white/60 p-4 rounded-xl border border-blue-100 flex flex-col items-center text-center relative group">
+                                            <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter mb-2">Legacy (Keywords)</span>
+                                            <span className={`text-3xl font-black ${analysis?.legacyScore >= 70 ? 'text-green-600' : 'text-slate-600'}`}>
+                                                {analysis ? `${analysis.legacyScore}%` : "--%"}
+                                            </span>
+                                            <div className="w-full h-1.5 bg-slate-100 rounded-full mt-3 overflow-hidden">
+                                                <div
+                                                    className="h-full bg-slate-400 transition-all duration-1000"
+                                                    style={{ width: `${analysis?.legacyScore || 0}%` }}
+                                                ></div>
+                                            </div>
+                                            <p className="text-[8px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Base Match</p>
+                                        </div>
+
+                                        {/* AI Score */}
+                                        <div className="bg-white p-4 rounded-xl border-2 border-blue-200 flex flex-col items-center text-center shadow-md relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 p-1 bg-blue-600 text-[8px] font-black text-white uppercase tracking-widest rounded-bl-lg">Turbo</div>
+                                            <span className="text-[10px] font-black uppercase text-blue-600 tracking-tighter mb-2">AI (Context) Match</span>
+                                            <span className={`text-3xl font-black transition-all ${analysis?.semanticScore >= 70 ? 'text-blue-600' : 'text-purple-600'}`}>
+                                                {analysis?.semanticScore !== null && analysis?.semanticScore !== undefined ? `${analysis.semanticScore}%` : (isAnalyzing ? "--%" : "OFF")}
+                                            </span>
+                                            <div className="w-full h-1.5 bg-blue-50 rounded-full mt-3 overflow-hidden">
+                                                <div
+                                                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-1000"
+                                                    style={{ width: `${analysis?.semanticScore || 0}%` }}
+                                                ></div>
+                                            </div>
+                                            <p className="text-[8px] text-blue-500 mt-2 font-black uppercase tracking-widest">Semantic Match</p>
+                                        </div>
                                     </div>
 
                                     {/* Real Analysis Breakdown */}
@@ -368,9 +393,19 @@ function GenerateContent() {
                                                 </div>
                                             </>
                                         ) : (
-                                            <div className="py-4 text-center">
+                                            <div className="py-4 text-center space-y-3">
                                                 {!cvText ? (
                                                     <p className="text-sm text-red-500 font-medium">Please save a Master CV in your Profile first!</p>
+                                                ) : error ? (
+                                                    <div className="space-y-2">
+                                                        <p className="text-sm text-amber-600 font-medium">{error}</p>
+                                                        <button
+                                                            onClick={() => handleAnalyze(scrapedRequirements)}
+                                                            className="text-xs font-bold text-blue-600 hover:underline"
+                                                        >
+                                                            Try Analyzing Again
+                                                        </button>
+                                                    </div>
                                                 ) : (
                                                     <p className="text-sm text-slate-500">Extract requirements to see your match score.</p>
                                                 )}
