@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban, Plus } from "lucide-react";
 import Link from "next/link";
 import ProfileHeader from "@/components/talent/ProfileHeader";
 import ProjectCard from "@/components/talent/ProjectCard";
 import CredentialCard from "@/components/talent/CredentialCard";
+import EditProfileModal from "@/components/talent/EditProfileModal";
+import AddSkillModal from "@/components/talent/AddSkillModal";
+import AddCredentialModal from "@/components/talent/AddCredentialModal";
+import AddProjectModal from "@/components/talent/AddProjectModal";
 
 export default function ProfilePage() {
     const [cvText, setCvText] = useState("");
     const [activeTab, setActiveTab] = useState<"cv" | "talent">("talent");
 
-    // Mock user state
     const [user, setUser] = useState({
         name: "Moagi Marvin",
         email: "moagi@example.com",
@@ -22,21 +25,35 @@ export default function ProfilePage() {
         availabilityStatus: "Actively Looking" as "Actively Looking" | "Open to Offers" | "Not Looking"
     });
 
+    const [skills, setSkills] = useState(["React", "TypeScript", "Python", "Google Cloud", "AWS", "Node.js", "TailwindCSS"]);
+
     // Mock Talent Profile Data
     const [projects] = useState([
         {
-            title: "JobHunt AI CV Optimizer",
-            description: "An AI-powered platform that helps students optimize their CVs for specific job applications using Gemini AI. Features include ATS scoring, tailored CV generation, and job scraping.",
-            technologies: ["Next.js", "TypeScript", "Gemini AI", "TailwindCSS"],
-            github_url: "https://github.com/moagi/jobhunt",
-            link_url: "https://jobhunt.vercel.app",
-            image_url: "/api/placeholder/400/300"
+            title: "AI CV Optimizer",
+            description: "Built with Next.js and Gemini AI to help students optimize their career paths.",
+            technologies: ["Next.js", "Gemini AI", "Tailwind"],
+            github_url: "https://github.com",
+            image_url: "/mock/cv-project.jpg"
         },
         {
-            title: "E-Commerce Dashboard",
-            description: "A comprehensive admin dashboard for managing products, orders, and customers. Built with real-time analytics and inventory tracking.",
-            technologies: ["React", "Node.js", "MongoDB", "Chart.js"],
-            github_url: "https://github.com/moagi/ecommerce-dashboard"
+            title: "Talent Marketplace",
+            description: "A platform for connecting verified graduates with recruiters in South Africa.",
+            technologies: ["React", "Supabase", "TypeScript"],
+            link_url: "https://talent.example.com",
+            image_url: "/mock/talent-project.jpg"
+        },
+        {
+            title: "Portfolio Website",
+            description: "Personal portfolio showcasing modern design and clean animations.",
+            technologies: ["Framer Motion", "React", "PostCSS"],
+            github_url: "https://github.com"
+        },
+        {
+            title: "E-commerce App",
+            description: "Mobile-first electronics store for local businesses.",
+            technologies: ["ReactNative", "Stripe", "Firebase"],
+            image_url: "/mock/shop.jpg"
         }
     ]);
 
@@ -71,9 +88,21 @@ export default function ProfilePage() {
     ]);
 
     const [isEditing, setIsEditing] = useState(false);
+    const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
+    const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
+    const [isAddCredentialOpen, setIsAddCredentialOpen] = useState<{ open: boolean, type: "education" | "certification" }>({ open: false, type: "education" });
+
     const [isExtracting, setIsExtracting] = useState(false);
     const [isCleaning, setIsCleaning] = useState(false);
     const [editedUser, setEditedUser] = useState(user);
+
+    // Education State
+    const [educationList, setEducationList] = useState(education);
+    // Certs State
+    const [certificationsList, setCertificationsList] = useState(certifications);
+    // Projects State
+    const [projectsList, setProjectsList] = useState(projects);
+    const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
 
     // Load user and CV text on mount
     useEffect(() => {
@@ -199,6 +228,7 @@ export default function ProfilePage() {
                         avatar={user.avatar}
                         availabilityStatus={user.availabilityStatus}
                         onEdit={() => setIsEditing(true)}
+                        onDownloadResume={() => alert("Downloading formatted resume... (This will be PDF generation)")}
                         isOwner={true}
                     />
                 </div>
@@ -241,25 +271,101 @@ export default function ProfilePage() {
                     <div className="space-y-8">
                         {/* Projects Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <FolderKanban className="w-6 h-6 text-blue-600" />
-                                <h2 className="text-2xl font-bold text-primary">Projects</h2>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <FolderKanban className="w-6 h-6 text-blue-600" />
+                                    <h2 className="text-2xl font-bold text-primary">Projects</h2>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        if (projectsList.length >= 4) {
+                                            alert("Maximum of 4 projects allowed for a focused profile.");
+                                        } else {
+                                            setIsAddProjectOpen(true);
+                                        }
+                                    }}
+                                    disabled={projectsList.length >= 4}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${projectsList.length >= 4
+                                        ? "bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed"
+                                        : "bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
+                                        }`}
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Project {projectsList.length >= 4 && "(Limit Reached)"}
+                                </button>
                             </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                {projects.map((project, idx) => (
-                                    <ProjectCard key={idx} {...project} />
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project, idx) => (
+                                    <ProjectCard
+                                        key={idx}
+                                        {...project}
+                                        onDelete={() => setProjectsList(projectsList.filter((_, i) => i !== idx))}
+                                        isOwner={true}
+                                    />
                                 ))}
+                            </div>
+                            {projectsList.length > 2 && (
+                                <button
+                                    onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
+                                    className="w-full py-2 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                >
+                                    {isProjectsExpanded ? "Show Less" : `Show More (${projectsList.length - 2} more)`}
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Skills Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="w-6 h-6 text-purple-600" />
+                                    <h2 className="text-2xl font-bold text-primary">Skills</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsAddSkillOpen(true)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-50 text-purple-600 text-xs font-bold hover:bg-purple-100 transition-all border border-purple-200"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Skill
+                                </button>
+                            </div>
+                            <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
+                                <div className="flex flex-wrap gap-3">
+                                    {skills.map((skill, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 text-primary text-sm font-semibold rounded-xl border border-blue-100 flex items-center gap-2 group cursor-default"
+                                        >
+                                            {skill}
+                                            <button
+                                                onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
+                                                className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                            >
+                                                <X className="w-3.5 h-3.5" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
                         {/* Education Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <GraduationCap className="w-6 h-6 text-blue-600" />
-                                <h2 className="text-2xl font-bold text-primary">Education</h2>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <GraduationCap className="w-6 h-6 text-blue-600" />
+                                    <h2 className="text-2xl font-bold text-primary">Education</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all border border-blue-200"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Education
+                                </button>
                             </div>
                             <div className="space-y-4">
-                                {education.map((edu, idx) => (
+                                {educationList.map((edu, idx) => (
                                     <CredentialCard
                                         key={idx}
                                         type="education"
@@ -270,6 +376,8 @@ export default function ProfilePage() {
                                         document_url={edu.document_url}
                                         isVerified={edu.isVerified}
                                         viewerRole="owner"
+                                        onDelete={() => setEducationList(educationList.filter((_, i) => i !== idx))}
+                                        isOwner={true}
                                     />
                                 ))}
                             </div>
@@ -277,12 +385,21 @@ export default function ProfilePage() {
 
                         {/* Certifications Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2">
-                                <Briefcase className="w-6 h-6 text-blue-600" />
-                                <h2 className="text-2xl font-bold text-primary">Certifications</h2>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Briefcase className="w-6 h-6 text-blue-600" />
+                                    <h2 className="text-2xl font-bold text-primary">Certifications</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all border border-blue-200"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Certification
+                                </button>
                             </div>
                             <div className="space-y-4">
-                                {certifications.map((cert, idx) => (
+                                {certificationsList.map((cert, idx) => (
                                     <CredentialCard
                                         key={idx}
                                         type="certification"
@@ -293,6 +410,8 @@ export default function ProfilePage() {
                                         document_url={cert.document_url}
                                         isVerified={cert.isVerified}
                                         viewerRole="owner"
+                                        onDelete={() => setCertificationsList(certificationsList.filter((_, i) => i !== idx))}
+                                        isOwner={true}
                                     />
                                 ))}
                             </div>
@@ -415,6 +534,50 @@ export default function ProfilePage() {
                     </div>
                 )}
             </div>
+
+            <EditProfileModal
+                isOpen={isEditing}
+                onClose={() => setIsEditing(false)}
+                onSave={(newData) => {
+                    setUser(newData);
+                    setIsEditing(false);
+                    // Mock persist
+                    localStorage.setItem("user_details", JSON.stringify(newData));
+                    alert("Profile updated successfully!");
+                }}
+                initialData={user}
+            />
+            <AddSkillModal
+                isOpen={isAddSkillOpen}
+                onClose={() => setIsAddSkillOpen(false)}
+                onAdd={(skill) => {
+                    setSkills([...skills, skill]);
+                    setIsAddSkillOpen(false);
+                }}
+            />
+
+            <AddCredentialModal
+                isOpen={isAddCredentialOpen.open}
+                type={isAddCredentialOpen.type}
+                onClose={() => setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false })}
+                onAdd={(newCredential) => {
+                    if (isAddCredentialOpen.type === "education") {
+                        setEducationList([...educationList, newCredential]);
+                    } else {
+                        setCertificationsList([...certificationsList, newCredential]);
+                    }
+                    setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
+                }}
+            />
+
+            <AddProjectModal
+                isOpen={isAddProjectOpen}
+                onClose={() => setIsAddProjectOpen(false)}
+                onAdd={(newProject) => {
+                    setProjectsList([...projectsList, newProject]);
+                    setIsAddProjectOpen(false);
+                }}
+            />
         </main>
     );
 }

@@ -1,6 +1,4 @@
-"use client";
-
-import { Award, GraduationCap, FileCheck, ExternalLink } from "lucide-react";
+import { Award, GraduationCap, FileCheck, ExternalLink, Trash2 } from "lucide-react";
 
 interface CredentialCardProps {
     type: "education" | "certification";
@@ -12,6 +10,8 @@ interface CredentialCardProps {
     document_url?: string;
     isVerified?: boolean;
     viewerRole?: "public" | "recruiter" | "owner";
+    onDelete?: () => void;
+    isOwner?: boolean;
 }
 
 export default function CredentialCard({
@@ -23,38 +23,49 @@ export default function CredentialCard({
     credential_url,
     document_url,
     isVerified = false,
-    viewerRole = "owner"
+    viewerRole = "owner",
+    onDelete,
+    isOwner = true
 }: CredentialCardProps) {
     const Icon = type === "education" ? GraduationCap : Award;
     const canViewDocument = viewerRole === "recruiter" || viewerRole === "owner";
 
     return (
-        <div className="bg-white rounded-xl border-2 border-slate-100 hover:border-blue-200 transition-all shadow-sm p-6 group">
+        <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-5 group relative">
+            {isOwner && onDelete && (
+                <button
+                    onClick={onDelete}
+                    className="absolute top-4 right-4 p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                    title="Delete"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </button>
+            )}
             <div className="flex gap-4">
                 {/* Icon */}
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${type === "education"
-                        ? "bg-gradient-to-br from-blue-500 to-purple-600"
-                        : "bg-gradient-to-br from-amber-500 to-orange-600"
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${type === "education"
+                    ? "bg-gradient-to-br from-blue-500 to-indigo-600"
+                    : "bg-gradient-to-br from-amber-500 to-orange-600"
                     }`}>
-                    <Icon className="w-6 h-6 text-white" />
+                    <Icon className="w-5 h-5 text-white" />
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 space-y-2">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-4 pr-8">
                         <div>
-                            <h3 className="text-lg font-bold text-primary">{title}</h3>
+                            <h3 className="text-base font-bold text-primary">{title}</h3>
                             <p className="text-sm text-slate-600 font-medium">{issuer}</p>
                         </div>
                         {isVerified && document_url && (
-                            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full border border-green-200">
-                                <FileCheck className="w-3.5 h-3.5" />
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-50 text-green-700 text-[10px] font-bold rounded-full border border-green-200 shrink-0">
+                                <FileCheck className="w-3 h-3" />
                                 Verified
                             </div>
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <div className="flex items-center gap-4 text-[11px] text-slate-500">
                         <span>{date}</span>
                         {grade && <span className="font-semibold text-blue-600">{grade}</span>}
                     </div>

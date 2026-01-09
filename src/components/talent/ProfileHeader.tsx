@@ -7,10 +7,11 @@ interface ProfileHeaderProps {
     avatar: string;
     availabilityStatus: "Actively Looking" | "Open to Offers" | "Not Looking";
     onEdit?: () => void;
+    onDownloadResume?: () => void;
     isOwner?: boolean;
 }
 
-import { Briefcase, MapPin, Edit2, Mail, Phone } from "lucide-react";
+import { Briefcase, MapPin, Edit2, Mail, Phone, Download } from "lucide-react";
 
 export default function ProfileHeader({
     name,
@@ -21,6 +22,7 @@ export default function ProfileHeader({
     avatar,
     availabilityStatus,
     onEdit,
+    onDownloadResume,
     isOwner = true
 }: ProfileHeaderProps) {
     const statusConfig = {
@@ -66,15 +68,26 @@ export default function ProfileHeader({
                                 <h1 className="text-3xl font-bold text-primary mb-1">{name}</h1>
                                 <p className="text-lg text-slate-600 font-medium">{headline}</p>
                             </div>
-                            {isOwner && onEdit && (
-                                <button
-                                    onClick={onEdit}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-all font-semibold text-sm"
-                                >
-                                    <Edit2 className="w-4 h-4" />
-                                    Edit Profile
-                                </button>
-                            )}
+                            <div className="flex flex-col gap-2">
+                                {isOwner && onEdit && (
+                                    <button
+                                        onClick={onEdit}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-all font-semibold text-sm"
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                        Edit Profile
+                                    </button>
+                                )}
+                                {onDownloadResume && (
+                                    <button
+                                        onClick={onDownloadResume}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-sm shadow-sm"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        Download Resume
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4">
