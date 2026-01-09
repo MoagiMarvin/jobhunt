@@ -1,19 +1,74 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2 } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban } from "lucide-react";
 import Link from "next/link";
+import ProfileHeader from "@/components/talent/ProfileHeader";
+import ProjectCard from "@/components/talent/ProjectCard";
+import CredentialCard from "@/components/talent/CredentialCard";
 
 export default function ProfilePage() {
     const [cvText, setCvText] = useState("");
+    const [activeTab, setActiveTab] = useState<"cv" | "talent">("talent");
 
     // Mock user state
     const [user, setUser] = useState({
-        name: "Moagi Marvin", // Default mock name
-        email: "moagi@example.com", // Default mock email
-        phone: "+27 61 234 5678", // Default mock phone
-        avatar: "MM"
+        name: "Moagi Marvin",
+        email: "moagi@example.com",
+        phone: "+27 61 234 5678",
+        avatar: "MM",
+        headline: "Computer Science Graduate | Full-Stack Developer",
+        location: "Johannesburg, South Africa",
+        availabilityStatus: "Actively Looking" as "Actively Looking" | "Open to Offers" | "Not Looking"
     });
+
+    // Mock Talent Profile Data
+    const [projects] = useState([
+        {
+            title: "JobHunt AI CV Optimizer",
+            description: "An AI-powered platform that helps students optimize their CVs for specific job applications using Gemini AI. Features include ATS scoring, tailored CV generation, and job scraping.",
+            technologies: ["Next.js", "TypeScript", "Gemini AI", "TailwindCSS"],
+            github_url: "https://github.com/moagi/jobhunt",
+            link_url: "https://jobhunt.vercel.app",
+            image_url: "/api/placeholder/400/300"
+        },
+        {
+            title: "E-Commerce Dashboard",
+            description: "A comprehensive admin dashboard for managing products, orders, and customers. Built with real-time analytics and inventory tracking.",
+            technologies: ["React", "Node.js", "MongoDB", "Chart.js"],
+            github_url: "https://github.com/moagi/ecommerce-dashboard"
+        }
+    ]);
+
+    const [education] = useState([
+        {
+            title: "BSc Computer Science",
+            issuer: "University of Johannesburg",
+            date: "2021 - 2024",
+            grade: "Distinction (85%)",
+            document_url: "/mock/degree.pdf",
+            isVerified: true
+        }
+    ]);
+
+    const [certifications] = useState([
+        {
+            title: "Google Cloud Professional Developer",
+            issuer: "Google Cloud",
+            date: "January 2024",
+            credential_url: "https://cloud.google.com/certification",
+            document_url: "/mock/google-cert.pdf",
+            isVerified: true
+        },
+        {
+            title: "AWS Certified Solutions Architect",
+            issuer: "Amazon Web Services",
+            date: "November 2023",
+            credential_url: "https://aws.amazon.com/certification",
+            document_url: "/mock/aws-cert.pdf",
+            isVerified: true
+        }
+    ]);
 
     const [isEditing, setIsEditing] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
@@ -132,229 +187,233 @@ export default function ProfilePage() {
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            <div className="max-w-4xl mx-auto px-6 py-12">
-                <div className="space-y-2 mb-8">
-                    <h1 className="text-3xl font-bold text-primary">Your Profile</h1>
-                    <p className="text-slate-600">
-                        Manage your personal details and master CV.
-                    </p>
+            <div className="max-w-6xl mx-auto px-6 py-12">
+                {/* New Profile Header */}
+                <div className="mb-8">
+                    <ProfileHeader
+                        name={user.name}
+                        headline={user.headline}
+                        email={user.email}
+                        phone={user.phone}
+                        location={user.location}
+                        avatar={user.avatar}
+                        availabilityStatus={user.availabilityStatus}
+                        onEdit={() => setIsEditing(true)}
+                        isOwner={true}
+                    />
                 </div>
 
-                <div className="space-y-8">
-                    {/* User Details Card */}
-                    <div className="bg-white rounded-xl p-8 border-2 border-blue-100 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4">
-                            <button
-                                onClick={handleLogout}
-                                className="text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                Logout
-                            </button>
+                {/* Tab Navigation & Logout */}
+                <div className="flex flex-col md:flex-row gap-4 mb-6">
+                    <div className="flex-1 flex gap-2 bg-white rounded-xl p-2 border-2 border-blue-100 shadow-sm">
+                        <button
+                            onClick={() => setActiveTab("talent")}
+                            className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === "talent"
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
+                                : "text-slate-600 hover:bg-slate-50"
+                                }`}
+                        >
+                            <Briefcase className="w-4 h-4" />
+                            Talent Profile
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("cv")}
+                            className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === "cv"
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
+                                : "text-slate-600 hover:bg-slate-50"
+                                }`}
+                        >
+                            <FileText className="w-4 h-4" />
+                            Master CV
+                        </button>
+                    </div>
+                    <button
+                        onClick={handleLogout}
+                        className="px-6 py-3 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 border-2 border-slate-100 hover:border-red-100 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold shadow-sm"
+                    >
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                    </button>
+                </div>
+
+                {/* Talent Profile Tab */}
+                {activeTab === "talent" && (
+                    <div className="space-y-8">
+                        {/* Projects Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <FolderKanban className="w-6 h-6 text-blue-600" />
+                                <h2 className="text-2xl font-bold text-primary">Projects</h2>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {projects.map((project, idx) => (
+                                    <ProjectCard key={idx} {...project} />
+                                ))}
+                            </div>
                         </div>
 
-                        <div className="flex flex-col md:flex-row gap-8 items-start">
-                            {/* Avatar */}
-                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shrink-0">
-                                {user.avatar}
+                        {/* Education Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <GraduationCap className="w-6 h-6 text-blue-600" />
+                                <h2 className="text-2xl font-bold text-primary">Education</h2>
+                            </div>
+                            <div className="space-y-4">
+                                {education.map((edu, idx) => (
+                                    <CredentialCard
+                                        key={idx}
+                                        type="education"
+                                        title={edu.title}
+                                        issuer={edu.issuer}
+                                        date={edu.date}
+                                        grade={edu.grade}
+                                        document_url={edu.document_url}
+                                        isVerified={edu.isVerified}
+                                        viewerRole="owner"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Certifications Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Briefcase className="w-6 h-6 text-blue-600" />
+                                <h2 className="text-2xl font-bold text-primary">Certifications</h2>
+                            </div>
+                            <div className="space-y-4">
+                                {certifications.map((cert, idx) => (
+                                    <CredentialCard
+                                        key={idx}
+                                        type="certification"
+                                        title={cert.title}
+                                        issuer={cert.issuer}
+                                        date={cert.date}
+                                        credential_url={cert.credential_url}
+                                        document_url={cert.document_url}
+                                        isVerified={cert.isVerified}
+                                        viewerRole="owner"
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Master CV Tab */}
+                {activeTab === "cv" && (
+                    <div className="space-y-8">
+                        {/* Master CV Section */}
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <h2 className="text-2xl font-bold text-primary">Master CV Profile</h2>
+                                <p className="text-slate-600 text-sm">
+                                    Upload an existing CV, create one from scratch, or paste your details.
+                                </p>
                             </div>
 
-                            {/* Details Form */}
-                            <div className="flex-1 space-y-4 w-full">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-bold text-primary">Personal Information</h2>
-                                    {!isEditing ? (
-                                        <button
-                                            onClick={() => setIsEditing(true)}
-                                            className="text-accent hover:text-blue-700 text-sm font-semibold flex items-center gap-1"
-                                        >
-                                            <Edit2 className="w-3 h-3" />
-                                            Edit Details
-                                        </button>
+                            {/* Options Grid */}
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {/* Hidden File Input */}
+                                <input
+                                    type="file"
+                                    id="pdf-upload"
+                                    accept="application/pdf"
+                                    className="hidden"
+                                    onChange={handleFileUpload}
+                                />
+
+                                {/* Upload Section */}
+                                <div
+                                    onClick={() => !isExtracting && document.getElementById('pdf-upload')?.click()}
+                                    className={`border-2 border-dashed rounded-xl p-6 text-center transition-all flex flex-col items-center justify-center group cursor-pointer ${isExtracting ? 'border-blue-400 bg-blue-50/50' : 'border-blue-200 bg-white hover:border-blue-400'}`}
+                                >
+                                    {isExtracting ? (
+                                        <Loader2 className="w-8 h-8 mb-3 text-blue-500 animate-spin" />
                                     ) : (
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={handleCancel}
-                                                className="text-slate-500 hover:text-slate-700 text-sm font-semibold flex items-center gap-1 p-1 px-2 rounded hover:bg-slate-100"
-                                            >
-                                                <X className="w-3 h-3" />
-                                                Cancel
-                                            </button>
-                                            <button
-                                                onClick={handleSave}
-                                                className="text-green-600 hover:text-green-700 text-sm font-semibold flex items-center gap-1 p-1 px-2 rounded hover:bg-green-50"
-                                            >
-                                                <Save className="w-3 h-3" />
-                                                Save
-                                            </button>
-                                        </div>
+                                        <Upload className="w-8 h-8 mb-3 text-blue-400 group-hover:text-blue-600 transition-colors" />
                                     )}
-                                </div>
-
-                                <div className="grid gap-4">
-                                    {/* Name */}
-                                    <div className="space-y-1">
-                                        <label className="text-sm font-medium text-slate-500 flex items-center gap-2">
-                                            <User className="w-4 h-4" />
-                                            Full Name
-                                        </label>
-                                        {isEditing ? (
-                                            <input
-                                                type="text"
-                                                value={editedUser.name}
-                                                onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
-                                                className="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-primary"
-                                            />
-                                        ) : (
-                                            <p className="text-lg font-semibold text-primary">{user.name}</p>
-                                        )}
-                                    </div>
-
-                                    {/* Email */}
-                                    <div className="space-y-1">
-                                        <label className="text-sm font-medium text-slate-500 flex items-center gap-2">
-                                            <Mail className="w-4 h-4" />
-                                            Email Address
-                                        </label>
-                                        <p className="text-lg font-semibold text-slate-700 opacity-80 cursor-not-allowed" title="Email cannot be changed">
-                                            {user.email}
-                                        </p>
-                                    </div>
-
-                                    {/* Phone */}
-                                    <div className="space-y-1">
-                                        <label className="text-sm font-medium text-slate-500 flex items-center gap-2">
-                                            <Phone className="w-4 h-4" />
-                                            WhatsApp Number
-                                        </label>
-                                        {isEditing ? (
-                                            <input
-                                                type="tel"
-                                                value={editedUser.phone}
-                                                onChange={(e) => setEditedUser({ ...editedUser, phone: e.target.value })}
-                                                placeholder="+27..."
-                                                className="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none text-primary"
-                                            />
-                                        ) : (
-                                            <p className="text-lg font-semibold text-primary">{user.phone}</p>
-                                        )}
-                                        <p className="text-xs text-slate-400">Used for WhatsApp notifications</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Master CV Section */}
-                    <div className="space-y-6 pt-6 border-t border-slate-200">
-                        <div className="space-y-2">
-                            <h2 className="text-2xl font-bold text-primary">Master CV Profile</h2>
-                            <p className="text-slate-600 text-sm">
-                                Upload an existing CV, create one from scratch, or paste your details.
-                            </p>
-                        </div>
-
-                        {/* Options Grid */}
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {/* Hidden File Input */}
-                            <input
-                                type="file"
-                                id="pdf-upload"
-                                accept="application/pdf"
-                                className="hidden"
-                                onChange={handleFileUpload}
-                            />
-
-                            {/* Upload Section */}
-                            <div
-                                onClick={() => !isExtracting && document.getElementById('pdf-upload')?.click()}
-                                className={`border-2 border-dashed rounded-xl p-6 text-center transition-all flex flex-col items-center justify-center group cursor-pointer ${isExtracting ? 'border-blue-400 bg-blue-50/50' : 'border-blue-200 bg-white hover:border-blue-400'}`}
-                            >
-                                {isExtracting ? (
-                                    <Loader2 className="w-8 h-8 mb-3 text-blue-500 animate-spin" />
-                                ) : (
-                                    <Upload className="w-8 h-8 mb-3 text-blue-400 group-hover:text-blue-600 transition-colors" />
-                                )}
-                                <h3 className="text-md font-semibold text-primary mb-1">
-                                    {isExtracting ? 'Reading PDF...' : 'Upload File'}
-                                </h3>
-                                <p className="text-xs text-slate-500 mb-3">
-                                    PDF only for best results
-                                </p>
-                                <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 text-blue-600 text-xs font-medium transition-all border border-blue-100 group-hover:border-blue-200">
-                                    {isExtracting ? 'Please wait' : 'Choose File'}
-                                </button>
-                            </div>
-
-                            {/* Create from Scratch Section */}
-                            {/* Create from Scratch Section */}
-                            <Link href="/profile/create" className="border-2 border-dashed border-purple-200 bg-white rounded-xl p-6 text-center hover:border-purple-400 transition-all flex flex-col items-center justify-center group cursor-pointer">
-                                <Sparkles className="w-8 h-8 mb-3 text-purple-400 group-hover:text-purple-600 transition-colors" />
-                                <h3 className="text-md font-semibold text-primary mb-1">Create from Scratch</h3>
-                                <p className="text-xs text-slate-500 mb-3">
-                                    Don't have a CV?
-                                </p>
-                                <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-purple-50 text-purple-600 text-xs font-medium transition-all border border-purple-100 group-hover:border-purple-200">
-                                    Open Builder
-                                </button>
-                            </Link>
-                        </div>
-
-                        {/* Text Area Section */}
-                        <div className="space-y-3 relative">
-                            <div className="flex items-center justify-between">
-                                <label className="text-sm font-semibold flex items-center gap-2 text-primary">
-                                    <FileText className="w-4 h-4" />
-                                    CV Content
-                                </label>
-                                <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={handleClean}
-                                        disabled={isCleaning || !cvText}
-                                        className={`text-[10px] font-bold px-2 py-1 rounded border transition-all flex items-center gap-1.5 ${isCleaning ? 'bg-blue-50 text-blue-400 border-blue-100' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300'} disabled:opacity-50`}
-                                    >
-                                        {isCleaning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                        {isCleaning ? "Polishing..." : "Clean & Format with AI"}
+                                    <h3 className="text-md font-semibold text-primary mb-1">
+                                        {isExtracting ? 'Reading PDF...' : 'Upload File'}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 mb-3">
+                                        PDF only for best results
+                                    </p>
+                                    <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 text-blue-600 text-xs font-medium transition-all border border-blue-100 group-hover:border-blue-200">
+                                        {isExtracting ? 'Please wait' : 'Choose File'}
                                     </button>
-                                    {cvText && (
-                                        <span className="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded border border-green-100 animate-pulse">
-                                            Extracted Content
-                                        </span>
-                                    )}
                                 </div>
+
+                                {/* Create from Scratch Section */}
+                                {/* Create from Scratch Section */}
+                                <Link href="/profile/create" className="border-2 border-dashed border-purple-200 bg-white rounded-xl p-6 text-center hover:border-purple-400 transition-all flex flex-col items-center justify-center group cursor-pointer">
+                                    <Sparkles className="w-8 h-8 mb-3 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                                    <h3 className="text-md font-semibold text-primary mb-1">Create from Scratch</h3>
+                                    <p className="text-xs text-slate-500 mb-3">
+                                        Don't have a CV?
+                                    </p>
+                                    <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-purple-50 text-purple-600 text-xs font-medium transition-all border border-purple-100 group-hover:border-purple-200">
+                                        Open Builder
+                                    </button>
+                                </Link>
                             </div>
 
-                            <textarea
-                                value={cvText}
-                                onChange={(e) => setCvText(e.target.value)}
-                                placeholder="Paste your CV text here or use the options above..."
-                                className="w-full h-80 bg-white border-2 border-slate-200 rounded-lg p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 font-mono leading-relaxed"
-                            />
-                        </div>
+                            {/* Text Area Section */}
+                            <div className="space-y-3 relative">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-sm font-semibold flex items-center gap-2 text-primary">
+                                        <FileText className="w-4 h-4" />
+                                        CV Content
+                                    </label>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={handleClean}
+                                            disabled={isCleaning || !cvText}
+                                            className={`text-[10px] font-bold px-2 py-1 rounded border transition-all flex items-center gap-1.5 ${isCleaning ? 'bg-blue-50 text-blue-400 border-blue-100' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300'} disabled:opacity-50`}
+                                        >
+                                            {isCleaning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                            {isCleaning ? "Polishing..." : "Clean & Format with AI"}
+                                        </button>
+                                        {cvText && (
+                                            <span className="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded border border-green-100 animate-pulse">
+                                                Extracted Content
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex gap-3">
-                            <button
-                                onClick={handleSave}
-                                className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm"
-                            >
-                                <Save className="w-4 h-4" />
-                                Save Master Profile
-                            </button>
-                            <button
-                                onClick={() => setCvText("")}
-                                className="px-6 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all border border-slate-200 text-sm"
-                            >
-                                Clear
-                            </button>
-                        </div>
+                                <textarea
+                                    value={cvText}
+                                    onChange={(e) => setCvText(e.target.value)}
+                                    placeholder="Paste your CV text here or use the options above..."
+                                    className="w-full h-80 bg-white border-2 border-slate-200 rounded-lg p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 font-mono leading-relaxed"
+                                />
+                            </div>
 
-                        {/* Info Box */}
-                        <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 text-sm text-slate-700">
-                            <strong className="text-primary">💡 Tip:</strong> Include all your skills, experiences, projects, and achievements. The AI will select the most relevant ones for each job application.
+                            {/* Action Buttons */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleSave}
+                                    className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm"
+                                >
+                                    <Save className="w-4 h-4" />
+                                    Save Master Profile
+                                </button>
+                                <button
+                                    onClick={() => setCvText("")}
+                                    className="px-6 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all border border-slate-200 text-sm"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+
+                            {/* Info Box */}
+                            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 text-sm text-slate-700">
+                                <strong className="text-primary">💡 Tip:</strong> Include all your skills, experiences, projects, and achievements. The AI will select the most relevant ones for each job application.
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </main>
     );
