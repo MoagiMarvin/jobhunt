@@ -23,7 +23,7 @@ export default function ProfilePage() {
         avatar: "MM",
         headline: "Computer Science Graduate | Full-Stack Developer",
         location: "Johannesburg, South Africa",
-        availabilityStatus: "Actively Looking" as "Actively Looking" | "Open to Offers" | "Not Looking",
+        availabilityStatus: "Looking for Work" as "Looking for Work" | "Not Looking",
         targetRoles: ["Full Stack Developer", "AI Engineer", "Software Intern"],
         github: "https://github.com/moagi",
         linkedin: "https://linkedin.com/in/moagi",

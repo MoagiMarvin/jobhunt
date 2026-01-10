@@ -5,7 +5,7 @@ interface ProfileHeaderProps {
     phone?: string;
     location?: string;
     avatar: string;
-    availabilityStatus: "Actively Looking" | "Open to Offers" | "Not Looking";
+    availabilityStatus: "Looking for Work" | "Not Looking";
     github?: string;
     linkedin?: string;
     portfolio?: string;
@@ -36,17 +36,11 @@ export default function ProfileHeader({
     isOwner = true
 }: ProfileHeaderProps) {
     const statusConfig = {
-        "Actively Looking": {
+        "Looking for Work": {
             bg: "bg-green-50",
             text: "text-green-700",
             border: "border-green-200",
             dot: "bg-green-500"
-        },
-        "Open to Offers": {
-            bg: "bg-blue-50",
-            text: "text-blue-700",
-            border: "border-blue-200",
-            dot: "bg-blue-500"
         },
         "Not Looking": {
             bg: "bg-slate-50",
