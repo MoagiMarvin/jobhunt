@@ -13,6 +13,7 @@ interface ProfileHeaderProps {
     haveCar?: boolean;
     onEdit?: () => void;
     onDownloadResume?: () => void;
+    downloadAction?: React.ReactNode;
     isOwner?: boolean;
 }
 
@@ -33,6 +34,7 @@ export default function ProfileHeader({
     haveCar,
     onEdit,
     onDownloadResume,
+    downloadAction,
     isOwner = true
 }: ProfileHeaderProps) {
     const statusConfig = {
@@ -82,7 +84,7 @@ export default function ProfileHeader({
                                         Edit Profile
                                     </button>
                                 )}
-                                {onDownloadResume && (
+                                {downloadAction ? downloadAction : (onDownloadResume && (
                                     <button
                                         onClick={onDownloadResume}
                                         className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-sm shadow-sm"
@@ -90,7 +92,7 @@ export default function ProfileHeader({
                                         <Download className="w-4 h-4" />
                                         Download Resume
                                     </button>
-                                )}
+                                ))}
                             </div>
                         </div>
 

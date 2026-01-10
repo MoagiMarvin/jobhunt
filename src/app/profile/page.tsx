@@ -11,6 +11,7 @@ import EditProfileModal from "@/components/talent/EditProfileModal";
 import AddSkillModal from "@/components/talent/AddSkillModal";
 import AddCredentialModal from "@/components/talent/AddCredentialModal";
 import AddProjectModal from "@/components/talent/AddProjectModal";
+import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
 
 export default function ProfilePage() {
     const [cvText, setCvText] = useState("");
@@ -250,7 +251,7 @@ export default function ProfilePage() {
                         haveLicense={user.haveLicense}
                         haveCar={user.haveCar}
                         onEdit={() => setIsEditing(true)}
-                        onDownloadResume={() => alert("Downloading formatted resume... (This will be PDF generation)")}
+                        downloadAction={<DownloadResumeButton data={{ user, experiences, educationList, skills, projectsList, certificationsList }} />}
                         isOwner={true}
                     />
                 </div>
