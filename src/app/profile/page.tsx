@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban, Plus } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban, Plus, Building2 } from "lucide-react";
 import Link from "next/link";
 import ProfileHeader from "@/components/talent/ProfileHeader";
 import ProjectCard from "@/components/talent/ProjectCard";
 import CredentialCard from "@/components/talent/CredentialCard";
+import ExperienceCard from "@/components/talent/ExperienceCard";
 import EditProfileModal from "@/components/talent/EditProfileModal";
 import AddSkillModal from "@/components/talent/AddSkillModal";
 import AddCredentialModal from "@/components/talent/AddCredentialModal";
@@ -28,7 +29,7 @@ export default function ProfilePage() {
     const [skills, setSkills] = useState(["React", "TypeScript", "Python", "Google Cloud", "AWS", "Node.js", "TailwindCSS"]);
 
     // Mock Talent Profile Data
-    const [projects] = useState([
+    const [projectsList, setProjectsList] = useState([
         {
             title: "AI CV Optimizer",
             description: "Built with Next.js and Gemini AI to help students optimize their career paths.",
@@ -57,7 +58,23 @@ export default function ProfilePage() {
         }
     ]);
 
-    const [education] = useState([
+    // Mock Experience Data
+    const [experiences, setExperiences] = useState([
+        {
+            role: "Full Stack Intern",
+            company: "Tech StartUp SA",
+            duration: "Jun 2024 - Present",
+            description: "Developed and maintained several React-based dashboards and integrated Supabase for real-time data sync."
+        },
+        {
+            role: "Open Source Contributor",
+            company: "GitHub / Community",
+            duration: "2023 - 2024",
+            description: "Mentored 3 junior developers and improved documentation for a popular UI library used by 2k+ developers."
+        }
+    ]);
+
+    const [educationList, setEducationList] = useState([
         {
             title: "BSc Computer Science",
             issuer: "University of Johannesburg",
@@ -68,7 +85,7 @@ export default function ProfilePage() {
         }
     ]);
 
-    const [certifications] = useState([
+    const [certificationsList, setCertificationsList] = useState([
         {
             title: "Google Cloud Professional Developer",
             issuer: "Google Cloud",
@@ -96,12 +113,6 @@ export default function ProfilePage() {
     const [isCleaning, setIsCleaning] = useState(false);
     const [editedUser, setEditedUser] = useState(user);
 
-    // Education State
-    const [educationList, setEducationList] = useState(education);
-    // Certs State
-    const [certificationsList, setCertificationsList] = useState(certifications);
-    // Projects State
-    const [projectsList, setProjectsList] = useState(projects);
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
 
     // Load user and CV text on mount
@@ -295,11 +306,11 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
-                                {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project, idx) => (
+                                {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project: any, idx: number) => (
                                     <ProjectCard
                                         key={idx}
                                         {...project}
-                                        onDelete={() => setProjectsList(projectsList.filter((_, i) => i !== idx))}
+                                        onDelete={() => setProjectsList(projectsList.filter((_: any, i: number) => i !== idx))}
                                         isOwner={true}
                                     />
                                 ))}
@@ -312,6 +323,33 @@ export default function ProfilePage() {
                                     {isProjectsExpanded ? "Show Less" : `Show More (${projectsList.length - 2} more)`}
                                 </button>
                             )}
+                        </div>
+
+                        {/* Experience Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Building2 className="w-6 h-6 text-blue-600" />
+                                    <h2 className="text-2xl font-bold text-primary">Experience</h2>
+                                </div>
+                                <button
+                                    onClick={() => alert("Add Experience feature coming soon with database integration.")}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all border border-blue-200"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Experience
+                                </button>
+                            </div>
+                            <div className="space-y-4">
+                                {experiences.map((exp: any, idx: number) => (
+                                    <ExperienceCard
+                                        key={idx}
+                                        {...exp}
+                                        onDelete={() => setExperiences(experiences.filter((_: any, i: number) => i !== idx))}
+                                        isOwner={true}
+                                    />
+                                ))}
+                            </div>
                         </div>
 
                         {/* Skills Section */}
@@ -331,14 +369,14 @@ export default function ProfilePage() {
                             </div>
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
                                 <div className="flex flex-wrap gap-3">
-                                    {skills.map((skill, idx) => (
+                                    {skills.map((skill: any, idx: number) => (
                                         <div
                                             key={idx}
                                             className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 text-primary text-sm font-semibold rounded-xl border border-blue-100 flex items-center gap-2 group cursor-default"
                                         >
                                             {skill}
                                             <button
-                                                onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
+                                                onClick={() => setSkills(skills.filter((_: any, i: number) => i !== idx))}
                                                 className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                                             >
                                                 <X className="w-3.5 h-3.5" />
@@ -365,7 +403,7 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="space-y-4">
-                                {educationList.map((edu, idx) => (
+                                {educationList.map((edu: any, idx: number) => (
                                     <CredentialCard
                                         key={idx}
                                         type="education"
@@ -376,7 +414,7 @@ export default function ProfilePage() {
                                         document_url={edu.document_url}
                                         isVerified={edu.isVerified}
                                         viewerRole="owner"
-                                        onDelete={() => setEducationList(educationList.filter((_, i) => i !== idx))}
+                                        onDelete={() => setEducationList(educationList.filter((_: any, i: number) => i !== idx))}
                                         isOwner={true}
                                     />
                                 ))}
@@ -399,7 +437,7 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="space-y-4">
-                                {certificationsList.map((cert, idx) => (
+                                {certificationsList.map((cert: any, idx: number) => (
                                     <CredentialCard
                                         key={idx}
                                         type="certification"
@@ -410,7 +448,7 @@ export default function ProfilePage() {
                                         document_url={cert.document_url}
                                         isVerified={cert.isVerified}
                                         viewerRole="owner"
-                                        onDelete={() => setCertificationsList(certificationsList.filter((_, i) => i !== idx))}
+                                        onDelete={() => setCertificationsList(certificationsList.filter((_: any, i: number) => i !== idx))}
                                         isOwner={true}
                                     />
                                 ))}
@@ -550,7 +588,7 @@ export default function ProfilePage() {
             <AddSkillModal
                 isOpen={isAddSkillOpen}
                 onClose={() => setIsAddSkillOpen(false)}
-                onAdd={(skill) => {
+                onAdd={(skill: string) => {
                     setSkills([...skills, skill]);
                     setIsAddSkillOpen(false);
                 }}
@@ -560,7 +598,7 @@ export default function ProfilePage() {
                 isOpen={isAddCredentialOpen.open}
                 type={isAddCredentialOpen.type}
                 onClose={() => setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false })}
-                onAdd={(newCredential) => {
+                onAdd={(newCredential: any) => {
                     if (isAddCredentialOpen.type === "education") {
                         setEducationList([...educationList, newCredential]);
                     } else {
@@ -573,7 +611,7 @@ export default function ProfilePage() {
             <AddProjectModal
                 isOpen={isAddProjectOpen}
                 onClose={() => setIsAddProjectOpen(false)}
-                onAdd={(newProject) => {
+                onAdd={(newProject: any) => {
                     setProjectsList([...projectsList, newProject]);
                     setIsAddProjectOpen(false);
                 }}
