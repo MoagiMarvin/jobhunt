@@ -6,12 +6,17 @@ interface ProfileHeaderProps {
     location?: string;
     avatar: string;
     availabilityStatus: "Actively Looking" | "Open to Offers" | "Not Looking";
+    github?: string;
+    linkedin?: string;
+    portfolio?: string;
+    haveLicense?: boolean;
+    haveCar?: boolean;
     onEdit?: () => void;
     onDownloadResume?: () => void;
     isOwner?: boolean;
 }
 
-import { Briefcase, MapPin, Edit2, Mail, Phone, Download } from "lucide-react";
+import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard } from "lucide-react";
 
 export default function ProfileHeader({
     name,
@@ -21,6 +26,11 @@ export default function ProfileHeader({
     location,
     avatar,
     availabilityStatus,
+    github,
+    linkedin,
+    portfolio,
+    haveLicense,
+    haveCar,
     onEdit,
     onDownloadResume,
     isOwner = true
@@ -117,6 +127,39 @@ export default function ProfileHeader({
                                 <div className={`w-1.5 h-1.5 rounded-full ${status.dot} animate-pulse`}></div>
                                 <Briefcase className="w-3.5 h-3.5" />
                                 <span className="text-[11px] font-bold uppercase tracking-wider">{availabilityStatus}</span>
+                            </div>
+
+                            {haveLicense && (
+                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-700 shadow-sm">
+                                    <CreditCard className="w-3.5 h-3.5" />
+                                    <span className="text-[11px] font-bold uppercase tracking-wider">Driver's License</span>
+                                </div>
+                            )}
+
+                            {haveCar && (
+                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 shadow-sm">
+                                    <Car className="w-3.5 h-3.5" />
+                                    <span className="text-[11px] font-bold uppercase tracking-wider">Own Transport</span>
+                                </div>
+                            )}
+
+                            {/* Social Links */}
+                            <div className="flex items-center gap-3 ml-auto">
+                                {github && (
+                                    <a href={github} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                        <Github className="w-4 h-4" />
+                                    </a>
+                                )}
+                                {linkedin && (
+                                    <a href={linkedin} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full border border-slate-200 text-slate-400 hover:text-blue-700 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                        <Linkedin className="w-4 h-4" />
+                                    </a>
+                                )}
+                                {portfolio && (
+                                    <a href={portfolio} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full border border-slate-200 text-slate-400 hover:text-pink-600 hover:border-pink-200 hover:bg-pink-50 transition-all">
+                                        <Globe className="w-4 h-4" />
+                                    </a>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -23,7 +23,13 @@ export default function ProfilePage() {
         avatar: "MM",
         headline: "Computer Science Graduate | Full-Stack Developer",
         location: "Johannesburg, South Africa",
-        availabilityStatus: "Actively Looking" as "Actively Looking" | "Open to Offers" | "Not Looking"
+        availabilityStatus: "Actively Looking" as "Actively Looking" | "Open to Offers" | "Not Looking",
+        targetRoles: ["Full Stack Developer", "AI Engineer", "Software Intern"],
+        github: "https://github.com/moagi",
+        linkedin: "https://linkedin.com/in/moagi",
+        portfolio: "https://moagi.dev",
+        haveLicense: true,
+        haveCar: true
     });
 
     const [skills, setSkills] = useState(["React", "TypeScript", "Python", "Google Cloud", "AWS", "Node.js", "TailwindCSS"]);
@@ -123,8 +129,8 @@ export default function ProfilePage() {
         const savedUser = localStorage.getItem("user_details");
         if (savedUser) {
             const parsed = JSON.parse(savedUser);
-            setUser(parsed);
-            setEditedUser(parsed);
+            setUser(prev => ({ ...prev, ...parsed }));
+            setEditedUser(prev => ({ ...prev, ...parsed }));
         }
     }, []);
 
@@ -238,10 +244,39 @@ export default function ProfilePage() {
                         location={user.location}
                         avatar={user.avatar}
                         availabilityStatus={user.availabilityStatus}
+                        github={user.github}
+                        linkedin={user.linkedin}
+                        portfolio={user.portfolio}
+                        haveLicense={user.haveLicense}
+                        haveCar={user.haveCar}
                         onEdit={() => setIsEditing(true)}
                         onDownloadResume={() => alert("Downloading formatted resume... (This will be PDF generation)")}
                         isOwner={true}
                     />
+                </div>
+
+                {/* Target Roles Section */}
+                <div className="mb-8 bg-blue-50/50 rounded-2xl border border-blue-100 p-6 flex flex-col md:flex-row items-center gap-6">
+                    <div className="flex items-center gap-3 shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                            <Sparkles className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-bold text-primary">Targeting Roles</h2>
+                            <p className="text-xs text-slate-500 font-medium">What I'm looking for next</p>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        {(user.targetRoles || []).map((role: string, idx: number) => (
+                            <div
+                                key={idx}
+                                className="px-4 py-2 bg-white rounded-xl border border-blue-100 text-blue-600 text-sm font-bold shadow-sm hover:shadow-md transition-all cursor-default text-center min-w-[120px]"
+                            >
+                                {role}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Tab Navigation & Logout */}
