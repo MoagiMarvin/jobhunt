@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban, Plus, Building2, Languages, Tags } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase } from "lucide-react";
 import Link from "next/link";
 import ProfileHeader from "@/components/talent/ProfileHeader";
 import ProjectCard from "@/components/talent/ProjectCard";
@@ -542,7 +542,7 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Briefcase className="w-5 h-5 text-blue-600" />
+                                    <Award className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-bold text-primary">Certifications</h2>
                                 </div>
                                 <button

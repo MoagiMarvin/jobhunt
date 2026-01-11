@@ -54,12 +54,7 @@ export default function CredentialCard({
                             <h3 className="text-sm font-bold text-primary leading-tight">{title}</h3>
                             <p className="text-[11px] text-slate-600 font-medium">{issuer}</p>
                         </div>
-                        {isVerified && document_url && (
-                            <div className="flex items-center gap-1 px-1.5 py-0.5 bg-green-50 text-green-700 text-[9px] font-bold rounded-full border border-green-200 shrink-0">
-                                <FileCheck className="w-2.5 h-2.5" />
-                                Verified
-                            </div>
-                        )}
+                        {/* Removed Verified Badge */}
                     </div>
 
                     <div className="flex items-center gap-3 text-[10px] text-slate-500">
@@ -69,17 +64,7 @@ export default function CredentialCard({
 
                     {/* Action Links */}
                     <div className="flex gap-3 pt-1">
-                        {credential_url && (
-                            <a
-                                href={credential_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1 text-[10px] font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                            >
-                                <ExternalLink className="w-3 h-3" />
-                                Verify Online
-                            </a>
-                        )}
+                        {/* Removed Verify Online Link */}
                         {document_url && canViewDocument && (
                             <button
                                 onClick={() => window.open(document_url, '_blank')}
