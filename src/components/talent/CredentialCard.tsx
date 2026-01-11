@@ -43,10 +43,7 @@ export default function CredentialCard({
             )}
             <div className="flex gap-3">
                 {/* Icon */}
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${type === "education"
-                    ? "bg-gradient-to-br from-blue-500 to-indigo-600"
-                    : "bg-gradient-to-br from-amber-500 to-orange-600"
-                    }`}>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-gradient-to-br from-blue-500 to-blue-700`}>
                     <Icon className="w-4 h-4 text-white" />
                 </div>
 
@@ -86,7 +83,7 @@ export default function CredentialCard({
                         {document_url && canViewDocument && (
                             <button
                                 onClick={() => window.open(document_url, '_blank')}
-                                className="flex items-center gap-1 text-[10px] font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+                                className="flex items-center gap-1 text-[10px] font-semibold text-blue-600 hover:text-blue-700 transition-colors"
                             >
                                 <FileCheck className="w-3 h-3" />
                                 View Document

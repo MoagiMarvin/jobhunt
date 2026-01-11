@@ -45,7 +45,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                         {/* Full Name */}
                         <div className="space-y-2 col-span-2">
                             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <User className="w-4 h-4 text-primary" />
+                                <User className="w-4 h-4 text-blue-600" />
                                 Full Name
                             </label>
                             <input
@@ -59,7 +59,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                         {/* Headline */}
                         <div className="space-y-2 col-span-2">
                             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <Briefcase className="w-4 h-4 text-primary" />
+                                <Briefcase className="w-4 h-4 text-blue-600" />
                                 Professional Headline
                             </label>
                             <input
@@ -74,7 +74,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                         {/* Professional Summary */}
                         <div className="space-y-2 col-span-2">
                             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-primary" />
+                                <FileText className="w-4 h-4 text-blue-600" />
                                 Professional Summary
                             </label>
                             <textarea
@@ -88,7 +88,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                         {/* Contact Info */}
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <Mail className="w-4 h-4 text-primary" />
+                                <Mail className="w-4 h-4 text-blue-600" />
                                 Email Address
                             </label>
                             <input
@@ -101,7 +101,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
 
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <Phone className="w-4 h-4 text-primary" />
+                                <Phone className="w-4 h-4 text-blue-600" />
                                 WhatsApp Number
                             </label>
                             <input
@@ -115,7 +115,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                         {/* Location */}
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <MapPin className="w-4 h-4 text-primary" />
+                                <MapPin className="w-4 h-4 text-blue-600" />
                                 Location
                             </label>
                             <input
@@ -192,18 +192,18 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                         <div className="col-span-2 space-y-4 pt-4 border-t border-slate-100">
                             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Logistics & Transport</h3>
                             <div className="grid grid-cols-2 gap-4">
-                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.haveLicense ? 'border-primary bg-primary/5' : 'border-slate-100 bg-white'}`}>
+                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.haveLicense ? 'border-blue-600 bg-blue-50' : 'border-slate-100 bg-white'}`}>
                                     <input
                                         type="checkbox"
                                         checked={formData.haveLicense}
                                         onChange={(e) => setFormData({ ...formData, haveLicense: e.target.checked })}
                                         className="hidden"
                                     />
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${formData.haveLicense ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${formData.haveLicense ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
                                         <CreditCard className="w-5 h-5" />
                                     </div>
                                     <div className="flex-1">
-                                        <p className={`text-sm font-bold ${formData.haveLicense ? 'text-primary' : 'text-slate-600'}`}>Driver's License</p>
+                                        <p className={`text-sm font-bold ${formData.haveLicense ? 'text-blue-700' : 'text-slate-600'}`}>Driver's License</p>
                                         <p className="text-[10px] text-slate-400">Valid license</p>
                                     </div>
                                 </label>

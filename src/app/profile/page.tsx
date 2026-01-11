@@ -290,7 +290,7 @@ export default function ProfilePage() {
                 {user.summary && (
                     <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
                                 <FileText className="w-4 h-4" />
                             </div>
                             <h2 className="text-lg font-bold text-slate-800">Professional Summary</h2>
@@ -437,7 +437,7 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5 text-purple-600" />
+                                    <Sparkles className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-bold text-primary">Skills</h2>
                                 </div>
                                 <button
@@ -473,7 +473,7 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Languages className="w-5 h-5 text-emerald-600" />
+                                    <Languages className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-bold text-primary">Languages</h2>
                                 </div>
                                 <button
@@ -715,7 +715,7 @@ export default function ProfilePage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl animate-in fade-in zoom-in">
                         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <Languages className="w-5 h-5 text-emerald-600" /> Add Language
+                            <Languages className="w-5 h-5 text-blue-600" /> Add Language
                         </h3>
                         <div className="space-y-3">
                             <input

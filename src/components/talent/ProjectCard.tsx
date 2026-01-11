@@ -89,7 +89,7 @@ export default function ProjectCard({
                                     href={github_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1 text-[9px] font-bold text-slate-500 hover:underline"
+                                    className="flex items-center gap-1 text-[9px] font-bold text-blue-600 hover:underline"
                                 >
                                     <Github className="w-2.5 h-2.5" />
                                     CODE

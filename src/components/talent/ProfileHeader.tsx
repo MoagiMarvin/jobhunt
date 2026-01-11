@@ -99,21 +99,21 @@ export default function ProfileHeader({
                         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
                             {location && (
                                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                    <MapPin className="w-3.5 h-3.5 text-blue-500" />
+                                    <MapPin className="w-3.5 h-3.5 text-blue-600" />
                                     {location}
                                 </div>
                             )}
 
                             {email && (
                                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                    <Mail className="w-3.5 h-3.5 text-blue-500" />
+                                    <Mail className="w-3.5 h-3.5 text-blue-600" />
                                     {email}
                                 </div>
                             )}
 
                             {phone && (
                                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                    <Phone className="w-3.5 h-3.5 text-blue-500" />
+                                    <Phone className="w-3.5 h-3.5 text-blue-600" />
                                     {phone}
                                 </div>
                             )}
@@ -142,17 +142,17 @@ export default function ProfileHeader({
                             {/* Social Links */}
                             <div className="flex items-center gap-2.5 ml-auto">
                                 {github && (
-                                    <a href={github} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                    <a href={github} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all">
                                         <Github className="w-3.5 h-3.5" />
                                     </a>
                                 )}
                                 {linkedin && (
-                                    <a href={linkedin} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-700 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                    <a href={linkedin} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all">
                                         <Linkedin className="w-3.5 h-3.5" />
                                     </a>
                                 )}
                                 {portfolio && (
-                                    <a href={portfolio} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-pink-600 hover:border-pink-200 hover:bg-pink-50 transition-all">
+                                    <a href={portfolio} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all">
                                         <Globe className="w-3.5 h-3.5" />
                                     </a>
                                 )}

@@ -19,7 +19,7 @@ export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalP
             <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-purple-600" />
+                        <Sparkles className="w-5 h-5 text-blue-600" />
                         Add New Skill
                     </h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">

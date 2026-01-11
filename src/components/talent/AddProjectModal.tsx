@@ -46,7 +46,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                 {/* Header */}
                 <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 rounded-xl text-primary">
+                        <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                             <FolderKanban className="w-6 h-6" />
                         </div>
                         <div>
@@ -64,7 +64,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                     <div className="space-y-3">
                         <label className="text-sm font-bold text-slate-700 flex items-center justify-between">
                             Project Cover (Screenshot or GIF)
-                            <span className="text-[10px] bg-primary/5 text-primary px-2 py-0.5 rounded-full border border-primary/20">Recommended</span>
+                            <span className="text-[10px] bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full border border-blue-200">Recommended</span>
                         </label>
 
                         <div className="relative group">
@@ -87,7 +87,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                                 </div>
                             ) : (
                                 <div className="h-48 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-25 flex flex-col items-center justify-center gap-3 group-hover:bg-slate-50 group-hover:border-primary/40 transition-all">
-                                    <div className="p-4 bg-white rounded-full shadow-sm text-slate-400 group-hover:text-primary transition-colors">
+                                    <div className="p-4 bg-white rounded-full shadow-sm text-slate-400 group-hover:text-blue-600 transition-colors">
                                         <ImageIcon className="w-8 h-8" />
                                     </div>
                                     <div className="text-center">
@@ -100,9 +100,9 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
 
                         {/* Pro Tip */}
                         <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
-                            <Sparkles className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+                            <Sparkles className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                             <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                                <span className="font-bold text-primary">Pro Tip:</span> Upload a <span className="underline italic">GIF</span> of your app in action to show "Proof of Life". It catches recruiter eyes 3x faster!
+                                <span className="font-bold text-blue-600">Pro Tip:</span> Upload a <span className="underline italic">GIF</span> of your app in action to show "Proof of Life". It catches recruiter eyes 3x faster!
                             </p>
                         </div>
                     </div>
@@ -151,7 +151,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                         {/* Live Link */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                <LinkIcon className="w-4 h-4 text-primary" />
+                                <LinkIcon className="w-4 h-4 text-blue-600" />
                                 Live Demo Hub
                             </label>
                             <input
