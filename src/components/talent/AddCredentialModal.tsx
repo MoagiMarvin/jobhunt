@@ -17,8 +17,10 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
         date: "",
         grade: "",
         credential_url: "",
+        document_url: "",
         isVerified: false
     });
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     if (!isOpen) return null;
 
@@ -89,6 +91,53 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                         </div>
                     </div>
 
+                    {/* Document Upload */}
+                    <div className="space-y-3 pt-2">
+                        <label className="text-sm font-semibold text-slate-700 block">Supporting Document (PDF, Image)</label>
+                        <div className="relative group">
+                            <input
+                                type="file"
+                                id="credential-upload"
+                                className="hidden"
+                                accept=".pdf,image/*"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setSelectedFile(file);
+                                        setFormData({ ...formData, document_url: URL.createObjectURL(file) });
+                                    }
+                                }}
+                            />
+                            <label
+                                htmlFor="credential-upload"
+                                className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-6 transition-all cursor-pointer ${selectedFile ? 'border-blue-400 bg-blue-50/50' : 'border-slate-200 hover:border-blue-300 bg-slate-50/30'}`}
+                            >
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${selectedFile ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-blue-500 shadow-sm border border-blue-50'}`}>
+                                    <FileUp className="w-5 h-5" />
+                                </div>
+                                <p className={`text-sm font-bold ${selectedFile ? 'text-blue-700' : 'text-slate-600'}`}>
+                                    {selectedFile ? selectedFile.name : 'Click to upload proof'}
+                                </p>
+                                <p className="text-[10px] text-slate-400 mt-1">
+                                    Upload certificate, degree, or official transcript
+                                </p>
+                                {selectedFile && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            setSelectedFile(null);
+                                            setFormData({ ...formData, document_url: "" });
+                                        }}
+                                        className="mt-3 text-[10px] font-bold text-red-500 hover:text-red-600 underline"
+                                    >
+                                        Remove file
+                                    </button>
+                                )}
+                            </label>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
@@ -101,7 +150,11 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                     <button
                         onClick={() => {
                             if (formData.title && formData.issuer) {
-                                onAdd({ ...formData, isVerified: true, document_url: "/mock/new-doc.pdf" });
+                                onAdd({
+                                    ...formData,
+                                    isVerified: !!selectedFile,
+                                    document_url: selectedFile ? formData.document_url || "/mock/new-doc.pdf" : ""
+                                });
                             }
                         }}
                         disabled={!formData.title || !formData.issuer}
