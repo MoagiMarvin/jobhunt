@@ -19,7 +19,6 @@ interface EditProfileModalProps {
         github?: string;
         linkedin?: string;
         portfolio?: string;
-        summary?: string;
     };
 }
 
@@ -71,19 +70,6 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                             />
                         </div>
 
-                        {/* Professional Summary */}
-                        <div className="space-y-2 col-span-2">
-                            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-blue-600" />
-                                Professional Summary
-                            </label>
-                            <textarea
-                                value={formData.summary || ""}
-                                onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                                placeholder="Briefly describe your professional background and goals..."
-                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all h-32 resize-none font-medium"
-                            />
-                        </div>
 
                         {/* Contact Info */}
                         <div className="space-y-2">

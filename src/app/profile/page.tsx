@@ -11,6 +11,7 @@ import EditProfileModal from "@/components/talent/EditProfileModal";
 import AddSkillModal from "@/components/talent/AddSkillModal";
 import AddCredentialModal from "@/components/talent/AddCredentialModal";
 import AddProjectModal from "@/components/talent/AddProjectModal";
+import EditSummaryModal from "@/components/talent/EditSummaryModal";
 import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
 
 export default function ProfilePage() {
@@ -121,6 +122,7 @@ export default function ProfilePage() {
     ]);
 
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditSummaryOpen, setIsEditSummaryOpen] = useState(false);
     const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
     const [isAddLanguageOpen, setIsAddLanguageOpen] = useState(false); // New Language Modal State
     const [newLanguage, setNewLanguage] = useState({ language: "", proficiency: "Fluent" });
@@ -287,19 +289,42 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Professional Summary Section (New) */}
-                {user.summary && (
-                    <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
-                        <div className="flex items-center gap-3 mb-4">
+                {/* Professional Summary Section (New) */}
+                <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm relative group">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
                                 <FileText className="w-4 h-4" />
                             </div>
                             <h2 className="text-lg font-bold text-slate-800">Professional Summary</h2>
                         </div>
-                        <p className="text-slate-600 leading-relaxed">
+                        <button
+                            onClick={() => setIsEditSummaryOpen(true)}
+                            className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors opacity-100 md:opacity-0 group-hover:opacity-100 flex items-center gap-2"
+                            title={user.summary ? "Edit Summary" : "Add Summary"}
+                        >
+                            <Edit2 className="w-4 h-4" />
+                            <span className="text-xs font-bold md:hidden">Edit</span>
+                        </button>
+                    </div>
+
+                    {user.summary ? (
+                        <p className="text-slate-600 leading-relaxed whitespace-pre-line">
                             {user.summary}
                         </p>
-                    </div>
-                )}
+                    ) : (
+                        <div className="text-center py-8">
+                            <p className="text-slate-400 text-sm mb-4">No professional summary added yet.</p>
+                            <button
+                                onClick={() => setIsEditSummaryOpen(true)}
+                                className="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 font-bold text-sm hover:bg-blue-100 transition-colors border border-blue-100"
+                            >
+                                <Plus className="inline-block w-4 h-4 mr-2" />
+                                Add Professional Summary
+                            </button>
+                        </div>
+                    )}
+                </div>
 
                 {/* Target Roles Section */}
                 <div className="mb-8 bg-blue-50/50 rounded-2xl border border-blue-100 p-6 flex flex-col md:flex-row items-center gap-6">
@@ -708,6 +733,16 @@ export default function ProfilePage() {
                 onAdd={(newSkillName) => {
                     setSkills([...skills, newSkillName]);
                     setIsAddSkillOpen(false);
+                }}
+            />
+            <EditSummaryModal
+                isOpen={isEditSummaryOpen}
+                initialSummary={user.summary}
+                onClose={() => setIsEditSummaryOpen(false)}
+                onSave={(newSummary) => {
+                    const updatedUser = { ...user, summary: newSummary };
+                    setUser(updatedUser);
+                    localStorage.setItem("user_basic_info", JSON.stringify(updatedUser)); // Persist immediately
                 }}
             />
             {/* Simple Inline Language Modal (For speed) */}
