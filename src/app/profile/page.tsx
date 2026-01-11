@@ -298,14 +298,27 @@ export default function ProfilePage() {
                             </div>
                             <h2 className="text-lg font-bold text-slate-800">Professional Summary</h2>
                         </div>
-                        <button
-                            onClick={() => setIsEditSummaryOpen(true)}
-                            className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors opacity-100 md:opacity-0 group-hover:opacity-100 flex items-center gap-2"
-                            title={user.summary ? "Edit Summary" : "Add Summary"}
-                        >
-                            <Edit2 className="w-4 h-4" />
-                            <span className="text-xs font-bold md:hidden">Edit</span>
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {!user.summary && (
+                                <button
+                                    onClick={() => setIsEditSummaryOpen(true)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Summary
+                                </button>
+                            )}
+                            {user.summary && (
+                                <button
+                                    onClick={() => setIsEditSummaryOpen(true)}
+                                    className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors opacity-100 md:opacity-0 group-hover:opacity-100 flex items-center gap-2"
+                                    title="Edit Summary"
+                                >
+                                    <Edit2 className="w-4 h-4" />
+                                    <span className="text-xs font-bold md:hidden">Edit</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {user.summary ? (
@@ -313,15 +326,8 @@ export default function ProfilePage() {
                             {user.summary}
                         </p>
                     ) : (
-                        <div className="text-center py-8">
-                            <p className="text-slate-400 text-sm mb-4">No professional summary added yet.</p>
-                            <button
-                                onClick={() => setIsEditSummaryOpen(true)}
-                                className="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 font-bold text-sm hover:bg-blue-100 transition-colors border border-blue-100"
-                            >
-                                <Plus className="inline-block w-4 h-4 mr-2" />
-                                Add Professional Summary
-                            </button>
+                        <div className="text-center py-8 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                            <p className="text-slate-400 text-sm italic">No professional summary added yet. Click 'Add Summary' above to get started.</p>
                         </div>
                     )}
                 </div>
@@ -356,7 +362,7 @@ export default function ProfilePage() {
                         <button
                             onClick={() => setActiveTab("talent")}
                             className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === "talent"
-                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
+                                ? "bg-blue-600 text-white shadow-md"
                                 : "text-slate-600 hover:bg-slate-50"
                                 }`}
                         >
@@ -366,7 +372,7 @@ export default function ProfilePage() {
                         <button
                             onClick={() => setActiveTab("cv")}
                             className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === "cv"
-                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-md"
+                                ? "bg-blue-600 text-white shadow-md"
                                 : "text-slate-600 hover:bg-slate-50"
                                 }`}
                         >
