@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe } from "lucide-react";
+import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText } from "lucide-react";
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -19,6 +19,7 @@ interface EditProfileModalProps {
         github?: string;
         linkedin?: string;
         portfolio?: string;
+        summary?: string;
     };
 }
 
@@ -67,6 +68,20 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                                 onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
                                 placeholder="e.g. Computer Science Student | UI/UX Enthusiast"
                                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            />
+                        </div>
+
+                        {/* Professional Summary */}
+                        <div className="space-y-2 col-span-2">
+                            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-blue-500" />
+                                Professional Summary
+                            </label>
+                            <textarea
+                                value={formData.summary || ""}
+                                onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+                                placeholder="Briefly describe your professional background and goals..."
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all h-32 resize-none"
                             />
                         </div>
 

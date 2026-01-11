@@ -10,9 +10,10 @@ interface DownloadResumeButtonProps {
         user: any;
         experiences: any[];
         educationList: any[];
-        skills: string[];
+        skills: { name: string; category: "Technical" | "Professional" | "Soft" }[];
         projectsList: any[];
         certificationsList: any[];
+        languages?: { language: string; proficiency: string }[];
     };
 }
 
@@ -21,7 +22,8 @@ export default function DownloadResumeButton({ data }: DownloadResumeButtonProps
 
     useEffect(() => {
         setIsClient(true);
-    }, []);
+        console.log("DownloadResumeButton Data:", data);
+    }, [data]);
 
     if (!isClient) {
         return (
@@ -35,14 +37,7 @@ export default function DownloadResumeButton({ data }: DownloadResumeButtonProps
     return (
         <PDFDownloadLink
             document={
-                <ResumeDocument
-                    user={data.user}
-                    experiences={data.experiences}
-                    educationList={data.educationList}
-                    skills={data.skills}
-                    projectsList={data.projectsList}
-                    certificationsList={data.certificationsList}
-                />
+                <ResumeDocument />
             }
             fileName={`${data.user.name.replace(/\s+/g, '_')}_Resume.pdf`}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-sm shadow-sm"

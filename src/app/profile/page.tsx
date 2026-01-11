@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban, Plus, Building2 } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, Briefcase, GraduationCap, FolderKanban, Plus, Building2, Languages, Tags } from "lucide-react";
 import Link from "next/link";
 import ProfileHeader from "@/components/talent/ProfileHeader";
 import ProjectCard from "@/components/talent/ProjectCard";
@@ -30,10 +30,23 @@ export default function ProfilePage() {
         linkedin: "https://linkedin.com/in/moagi",
         portfolio: "https://moagi.dev",
         haveLicense: true,
-        haveCar: true
+        haveCar: true,
+        summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
     });
 
-    const [skills, setSkills] = useState(["React", "TypeScript", "Python", "Google Cloud", "AWS", "Node.js", "TailwindCSS"]);
+    const [skills, setSkills] = useState<{ name: string, category: "Technical" | "Professional" | "Soft" }[]>([
+        { name: "React", category: "Technical" },
+        { name: "TypeScript", category: "Technical" },
+        { name: "Python", category: "Technical" },
+        { name: "Public Speaking", category: "Soft" },
+        { name: "Agile Methodology", category: "Professional" }
+    ]);
+
+    const [languages, setLanguages] = useState([
+        { language: "English", proficiency: "Native" },
+        { language: "Zulu", proficiency: "Fluent" },
+        { language: "Afrikaans", proficiency: "Basic" }
+    ]);
 
     // Mock Talent Profile Data
     const [projectsList, setProjectsList] = useState([
@@ -113,6 +126,8 @@ export default function ProfilePage() {
 
     const [isEditing, setIsEditing] = useState(false);
     const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
+    const [isAddLanguageOpen, setIsAddLanguageOpen] = useState(false); // New Language Modal State
+    const [newLanguage, setNewLanguage] = useState({ language: "", proficiency: "Fluent" });
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
     const [isAddCredentialOpen, setIsAddCredentialOpen] = useState<{ open: boolean, type: "education" | "certification" }>({ open: false, type: "education" });
 
@@ -251,10 +266,25 @@ export default function ProfilePage() {
                         haveLicense={user.haveLicense}
                         haveCar={user.haveCar}
                         onEdit={() => setIsEditing(true)}
-                        downloadAction={<DownloadResumeButton data={{ user, experiences, educationList, skills, projectsList, certificationsList }} />}
+                        downloadAction={<DownloadResumeButton data={{ user, experiences, educationList, skills, projectsList, certificationsList, languages }} />}
                         isOwner={true}
                     />
                 </div>
+
+                {/* Professional Summary Section (New) */}
+                {user.summary && (
+                    <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <FileText className="w-5 h-5" />
+                            </div>
+                            <h2 className="text-xl font-bold text-slate-800">Professional Summary</h2>
+                        </div>
+                        <p className="text-slate-600 leading-relaxed">
+                            {user.summary}
+                        </p>
+                    </div>
+                )}
 
                 {/* Target Roles Section */}
                 <div className="mb-8 bg-blue-50/50 rounded-2xl border border-blue-100 p-6 flex flex-col md:flex-row items-center gap-6">
@@ -388,7 +418,7 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* Skills Section */}
+                        {/* Skills Section (Updated) */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -403,19 +433,64 @@ export default function ProfilePage() {
                                     Add Skill
                                 </button>
                             </div>
+                            <div className="grid md:grid-cols-3 gap-6">
+                                {(["Technical", "Professional", "Soft"] as const).map(cat => (
+                                    <div key={cat} className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+                                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                            <Tags className="w-4 h-4" /> {cat} Skills
+                                        </h3>
+                                        <div className="flex flex-wrap gap-2">
+                                            {skills.filter(s => s.category === cat).map((skill, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="px-3 py-1.5 bg-slate-50 text-slate-700 text-sm font-semibold rounded-lg border border-slate-200 flex items-center gap-2 group cursor-default"
+                                                >
+                                                    {skill.name}
+                                                    <button
+                                                        onClick={() => setSkills(skills.filter(s => s !== skill))}
+                                                        className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                                    >
+                                                        <X className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            {skills.filter(s => s.category === cat).length === 0 && (
+                                                <p className="text-xs text-slate-400 italic">No skills added.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Languages Section (New) */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Languages className="w-6 h-6 text-emerald-600" />
+                                    <h2 className="text-2xl font-bold text-primary">Languages</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsAddLanguageOpen(true)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-bold hover:bg-emerald-100 transition-all border border-emerald-200"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Language
+                                </button>
+                            </div>
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
-                                <div className="flex flex-wrap gap-3">
-                                    {skills.map((skill: any, idx: number) => (
-                                        <div
-                                            key={idx}
-                                            className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 text-primary text-sm font-semibold rounded-xl border border-blue-100 flex items-center gap-2 group cursor-default"
-                                        >
-                                            {skill}
+                                <div className="grid md:grid-cols-3 gap-4">
+                                    {languages.map((lang, idx) => (
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                            <div>
+                                                <p className="font-bold text-slate-800">{lang.language}</p>
+                                                <p className="text-xs text-slate-500">{lang.proficiency}</p>
+                                            </div>
                                             <button
-                                                onClick={() => setSkills(skills.filter((_: any, i: number) => i !== idx))}
-                                                className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                                onClick={() => setLanguages(languages.filter((_, i) => i !== idx))}
+                                                className="text-slate-400 hover:text-red-500"
                                             >
-                                                <X className="w-3.5 h-3.5" />
+                                                <X className="w-4 h-4" />
                                             </button>
                                         </div>
                                     ))}
@@ -624,11 +699,60 @@ export default function ProfilePage() {
             <AddSkillModal
                 isOpen={isAddSkillOpen}
                 onClose={() => setIsAddSkillOpen(false)}
-                onAdd={(skill: string) => {
+                onAdd={(skill: { name: string, category: "Technical" | "Professional" | "Soft" }) => {
                     setSkills([...skills, skill]);
                     setIsAddSkillOpen(false);
                 }}
             />
+            {/* Simple Inline Language Modal (For speed) */}
+            {isAddLanguageOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl animate-in fade-in zoom-in">
+                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                            <Languages className="w-5 h-5 text-emerald-600" /> Add Language
+                        </h3>
+                        <div className="space-y-3">
+                            <input
+                                type="text"
+                                placeholder="Language (e.g. French)"
+                                className="w-full px-4 py-2 border rounded-lg"
+                                value={newLanguage.language}
+                                onChange={e => setNewLanguage({ ...newLanguage, language: e.target.value })}
+                            />
+                            <select
+                                className="w-full px-4 py-2 border rounded-lg"
+                                value={newLanguage.proficiency}
+                                onChange={e => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
+                            >
+                                <option value="Native">Native</option>
+                                <option value="Fluent">Fluent</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Basic">Basic</option>
+                            </select>
+                            <div className="flex gap-2 mt-4">
+                                <button
+                                    onClick={() => setIsAddLanguageOpen(false)}
+                                    className="flex-1 py-2 rounded-lg bg-slate-100 font-semibold text-slate-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (newLanguage.language) {
+                                            setLanguages([...languages, newLanguage]);
+                                            setNewLanguage({ language: "", proficiency: "Fluent" });
+                                            setIsAddLanguageOpen(false);
+                                        }
+                                    }}
+                                    className="flex-1 py-2 rounded-lg bg-emerald-600 text-white font-bold"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <AddCredentialModal
                 isOpen={isAddCredentialOpen.open}

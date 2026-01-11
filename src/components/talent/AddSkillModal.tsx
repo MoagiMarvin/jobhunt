@@ -6,11 +6,12 @@ import { X, Save, Sparkles } from "lucide-react";
 interface AddSkillModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd: (skill: string) => void;
+    onAdd: (skill: { name: string; category: "Technical" | "Professional" | "Soft" }) => void;
 }
 
 export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalProps) {
     const [skill, setSkill] = useState("");
+    const [category, setCategory] = useState<"Technical" | "Professional" | "Soft">("Technical");
 
     if (!isOpen) return null;
 
@@ -28,6 +29,19 @@ export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalP
                 </div>
 
                 <div className="p-8 space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-semibold text-slate-700">Skill Category</label>
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value as any)}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none transition-all bg-white"
+                        >
+                            <option value="Technical">Technical (Hard Skills)</option>
+                            <option value="Professional">Professional (Industry Knowledge)</option>
+                            <option value="Soft">Soft Skills (Interpersonal)</option>
+                        </select>
+                    </div>
+
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700">Skill Name</label>
                         <input
@@ -54,7 +68,7 @@ export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalP
                     <button
                         onClick={() => {
                             if (skill.trim()) {
-                                onAdd(skill.trim());
+                                onAdd({ name: skill.trim(), category });
                                 setSkill("");
                             }
                         }}
