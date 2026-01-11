@@ -71,89 +71,89 @@ export default function ProfileHeader({
                     <div className="flex-1 pt-4">
                         <div className="flex items-start justify-between gap-4 mb-3">
                             <div>
-                                <h1 className="text-3xl font-bold text-primary mb-1">{name}</h1>
-                                <p className="text-lg text-slate-600 font-medium">{headline}</p>
+                                <h1 className="text-2xl font-bold text-primary mb-1">{name}</h1>
+                                <p className="text-base text-slate-600 font-medium">{headline}</p>
                             </div>
                             <div className="flex flex-col gap-2">
                                 {isOwner && onEdit && (
                                     <button
                                         onClick={onEdit}
-                                        className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-all font-semibold text-sm"
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-all font-semibold text-xs"
                                     >
-                                        <Edit2 className="w-4 h-4" />
+                                        <Edit2 className="w-3.5 h-3.5" />
                                         Edit Profile
                                     </button>
                                 )}
                                 {downloadAction ? downloadAction : (onDownloadResume && (
                                     <button
                                         onClick={onDownloadResume}
-                                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-sm shadow-sm"
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-xs shadow-sm"
                                     >
-                                        <Download className="w-4 h-4" />
+                                        <Download className="w-3.5 h-3.5" />
                                         Download Resume
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4">
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
                             {location && (
-                                <div className="flex items-center gap-1.5 text-sm text-slate-500">
-                                    <MapPin className="w-4 h-4 text-blue-500" />
+                                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                    <MapPin className="w-3.5 h-3.5 text-blue-500" />
                                     {location}
                                 </div>
                             )}
 
                             {email && (
-                                <div className="flex items-center gap-1.5 text-sm text-slate-500">
-                                    <Mail className="w-4 h-4 text-blue-500" />
+                                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                    <Mail className="w-3.5 h-3.5 text-blue-500" />
                                     {email}
                                 </div>
                             )}
 
                             {phone && (
-                                <div className="flex items-center gap-1.5 text-sm text-slate-500">
-                                    <Phone className="w-4 h-4 text-blue-500" />
+                                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                    <Phone className="w-3.5 h-3.5 text-blue-500" />
                                     {phone}
                                 </div>
                             )}
 
                             {/* Availability Badge */}
-                            <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${status.bg} ${status.text} ${status.border}`}>
-                                <div className={`w-1.5 h-1.5 rounded-full ${status.dot} animate-pulse`}></div>
-                                <Briefcase className="w-3.5 h-3.5" />
-                                <span className="text-[11px] font-bold uppercase tracking-wider">{availabilityStatus}</span>
+                            <div className={`flex items-center gap-2 px-2.5 py-0.5 rounded-full border ${status.bg} ${status.text} ${status.border}`}>
+                                <div className={`w-1 h-1 rounded-full ${status.dot} animate-pulse`}></div>
+                                <Briefcase className="w-3 h-3" />
+                                <span className="text-[10px] font-bold uppercase tracking-wider">{availabilityStatus}</span>
                             </div>
 
                             {haveLicense && (
-                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-700 shadow-sm">
-                                    <CreditCard className="w-3.5 h-3.5" />
-                                    <span className="text-[11px] font-bold uppercase tracking-wider">Driver's License</span>
+                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-purple-200 bg-purple-50 text-purple-700 shadow-sm">
+                                    <CreditCard className="w-3 h-3" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">Driver's License</span>
                                 </div>
                             )}
 
                             {haveCar && (
-                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-blue-200 bg-blue-50 text-blue-700 shadow-sm">
-                                    <Car className="w-3.5 h-3.5" />
-                                    <span className="text-[11px] font-bold uppercase tracking-wider">Own Transport</span>
+                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 shadow-sm">
+                                    <Car className="w-3 h-3" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">Own Transport</span>
                                 </div>
                             )}
 
                             {/* Social Links */}
-                            <div className="flex items-center gap-3 ml-auto">
+                            <div className="flex items-center gap-2.5 ml-auto">
                                 {github && (
-                                    <a href={github} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all">
-                                        <Github className="w-4 h-4" />
+                                    <a href={github} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                        <Github className="w-3.5 h-3.5" />
                                     </a>
                                 )}
                                 {linkedin && (
-                                    <a href={linkedin} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full border border-slate-200 text-slate-400 hover:text-blue-700 hover:border-blue-200 hover:bg-blue-50 transition-all">
-                                        <Linkedin className="w-4 h-4" />
+                                    <a href={linkedin} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-700 hover:border-blue-200 hover:bg-blue-50 transition-all">
+                                        <Linkedin className="w-3.5 h-3.5" />
                                     </a>
                                 )}
                                 {portfolio && (
-                                    <a href={portfolio} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full border border-slate-200 text-slate-400 hover:text-pink-600 hover:border-pink-200 hover:bg-pink-50 transition-all">
-                                        <Globe className="w-4 h-4" />
+                                    <a href={portfolio} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-pink-600 hover:border-pink-200 hover:bg-pink-50 transition-all">
+                                        <Globe className="w-3.5 h-3.5" />
                                     </a>
                                 )}
                             </div>

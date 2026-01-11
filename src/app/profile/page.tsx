@@ -275,10 +275,10 @@ export default function ProfilePage() {
                 {user.summary && (
                     <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                <FileText className="w-5 h-5" />
+                            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <FileText className="w-4 h-4" />
                             </div>
-                            <h2 className="text-xl font-bold text-slate-800">Professional Summary</h2>
+                            <h2 className="text-lg font-bold text-slate-800">Professional Summary</h2>
                         </div>
                         <p className="text-slate-600 leading-relaxed">
                             {user.summary}
@@ -289,12 +289,12 @@ export default function ProfilePage() {
                 {/* Target Roles Section */}
                 <div className="mb-8 bg-blue-50/50 rounded-2xl border border-blue-100 p-6 flex flex-col md:flex-row items-center gap-6">
                     <div className="flex items-center gap-3 shrink-0">
-                        <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg">
-                            <Sparkles className="w-6 h-6" />
+                        <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                            <Sparkles className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-primary">Targeting Roles</h2>
-                            <p className="text-xs text-slate-500 font-medium">What I'm looking for next</p>
+                            <h2 className="text-base font-bold text-primary">Targeting Roles</h2>
+                            <p className="text-[10px] text-slate-500 font-medium">What I'm looking for next</p>
                         </div>
                     </div>
 
@@ -350,8 +350,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <FolderKanban className="w-6 h-6 text-blue-600" />
-                                    <h2 className="text-2xl font-bold text-primary">Projects</h2>
+                                    <FolderKanban className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-bold text-primary">Projects</h2>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -395,8 +395,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Building2 className="w-6 h-6 text-blue-600" />
-                                    <h2 className="text-2xl font-bold text-primary">Experience</h2>
+                                    <Building2 className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-bold text-primary">Experience</h2>
                                 </div>
                                 <button
                                     onClick={() => alert("Add Experience feature coming soon with database integration.")}
@@ -422,8 +422,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Sparkles className="w-6 h-6 text-purple-600" />
-                                    <h2 className="text-2xl font-bold text-primary">Skills</h2>
+                                    <Sparkles className="w-5 h-5 text-purple-600" />
+                                    <h2 className="text-xl font-bold text-primary">Skills</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddSkillOpen(true)}
@@ -467,8 +467,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Languages className="w-6 h-6 text-emerald-600" />
-                                    <h2 className="text-2xl font-bold text-primary">Languages</h2>
+                                    <Languages className="w-5 h-5 text-emerald-600" />
+                                    <h2 className="text-xl font-bold text-primary">Languages</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddLanguageOpen(true)}
@@ -481,10 +481,10 @@ export default function ProfilePage() {
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
                                 <div className="grid md:grid-cols-3 gap-4">
                                     {languages.map((lang, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                        <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200">
                                             <div>
-                                                <p className="font-bold text-slate-800">{lang.language}</p>
-                                                <p className="text-xs text-slate-500">{lang.proficiency}</p>
+                                                <p className="font-semibold text-slate-800 text-sm">{lang.language}</p>
+                                                <p className="text-[10px] text-slate-500">{lang.proficiency}</p>
                                             </div>
                                             <button
                                                 onClick={() => setLanguages(languages.filter((_, i) => i !== idx))}
@@ -502,8 +502,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <GraduationCap className="w-6 h-6 text-blue-600" />
-                                    <h2 className="text-2xl font-bold text-primary">Education</h2>
+                                    <GraduationCap className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-bold text-primary">Education</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
@@ -536,8 +536,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Briefcase className="w-6 h-6 text-blue-600" />
-                                    <h2 className="text-2xl font-bold text-primary">Certifications</h2>
+                                    <Briefcase className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-bold text-primary">Certifications</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}

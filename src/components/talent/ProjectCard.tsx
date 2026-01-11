@@ -38,49 +38,49 @@ export default function ProjectCard({
 
             {/* Content */}
             <div className={`p-4 sm:p-5 flex-1 flex flex-col justify-between ${!image_url ? "w-full" : ""}`}>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                     <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-base font-bold text-primary group-hover:text-blue-600 transition-colors line-clamp-1">{title}</h3>
+                        <h3 className="text-sm font-bold text-primary group-hover:text-blue-600 transition-colors line-clamp-1">{title}</h3>
                         {isOwner && onDelete && (
                             <button
                                 onClick={onDelete}
-                                className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                className="p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                                 title="Delete Project"
                             >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                             </button>
                         )}
                     </div>
-                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">{description}</p>
+                    <p className="text-[11px] text-slate-600 line-clamp-2 leading-tight">{description}</p>
                 </div>
 
-                <div className="mt-4 space-y-3">
+                <div className="mt-3 space-y-2.5">
                     {/* Tech Stack - More compact */}
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-1">
                         {technologies.slice(0, 4).map((tech, idx) => (
                             <span
                                 key={idx}
-                                className="px-2 py-0.5 bg-slate-50 text-slate-600 text-[10px] font-bold rounded-md border border-slate-100"
+                                className="px-1.5 py-0.5 bg-slate-50 text-slate-600 text-[9px] font-bold rounded border border-slate-100"
                             >
                                 {tech}
                             </span>
                         ))}
                         {technologies.length > 4 && (
-                            <span className="text-[10px] font-bold text-slate-400">+{technologies.length - 4}</span>
+                            <span className="text-[9px] font-bold text-slate-400">+{technologies.length - 4}</span>
                         )}
                     </div>
 
                     {/* Links - Compact footer */}
                     {(link_url || github_url) && (
-                        <div className="flex gap-4 items-center">
+                        <div className="flex gap-3 items-center">
                             {link_url && (
                                 <a
                                     href={link_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:underline"
+                                    className="flex items-center gap-1 text-[9px] font-bold text-blue-600 hover:underline"
                                 >
-                                    <ExternalLink className="w-3 h-3" />
+                                    <ExternalLink className="w-2.5 h-2.5" />
                                     LIVE
                                 </a>
                             )}
@@ -89,9 +89,9 @@ export default function ProjectCard({
                                     href={github_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1 text-[10px] font-bold text-slate-500 hover:underline"
+                                    className="flex items-center gap-1 text-[9px] font-bold text-slate-500 hover:underline"
                                 >
-                                    <Github className="w-3 h-3" />
+                                    <Github className="w-2.5 h-2.5" />
                                     CODE
                                 </a>
                             )}
