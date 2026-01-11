@@ -16,6 +16,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
         issuer: "",
         date: "",
         grade: "",
+        qualification_level: "",
         credential_url: "",
         document_url: "",
         isVerified: false
@@ -89,6 +90,27 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                                 className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
                             />
                         </div>
+
+                        {/* Qualification Level (Only for Education) */}
+                        {type === "education" && (
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-slate-700">Qualification Level</label>
+                                <select
+                                    value={formData.qualification_level}
+                                    onChange={(e) => setFormData({ ...formData, qualification_level: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium text-slate-700 bg-white"
+                                >
+                                    <option value="">Select Level</option>
+                                    <option value="Matric">Matric</option>
+                                    <option value="Higher Certificate">Higher Certificate</option>
+                                    <option value="Diploma">Diploma</option>
+                                    <option value="Bachelor's Degree">Bachelor's Degree</option>
+                                    <option value="Honours Degree">Honours Degree</option>
+                                    <option value="Master's Degree">Master's Degree</option>
+                                    <option value="PhD / Doctorate">PhD / Doctorate</option>
+                                </select>
+                            </div>
+                        )}
                     </div>
 
                     {/* Document Upload */}

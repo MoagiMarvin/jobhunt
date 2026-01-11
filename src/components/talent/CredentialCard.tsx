@@ -6,6 +6,7 @@ interface CredentialCardProps {
     issuer: string;
     date: string;
     grade?: string;
+    qualification_level?: string;
     credential_url?: string;
     document_url?: string;
     isVerified?: boolean;
@@ -20,6 +21,7 @@ export default function CredentialCard({
     issuer,
     date,
     grade,
+    qualification_level,
     credential_url,
     document_url,
     isVerified = false,
@@ -60,6 +62,11 @@ export default function CredentialCard({
                     <div className="flex items-center gap-3 text-[10px] text-slate-500">
                         <span>{date}</span>
                         {grade && <span className="font-semibold text-blue-600">{grade}</span>}
+                        {qualification_level && (
+                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md font-bold text-[9px]">
+                                {qualification_level}
+                            </span>
+                        )}
                     </div>
 
                     {/* Action Links */}

@@ -52,7 +52,11 @@ export default function ProfilePage() {
             description: "Built with Next.js and Gemini AI to help students optimize their career paths.",
             technologies: ["Next.js", "Gemini AI", "Tailwind"],
             github_url: "https://github.com",
-            image_url: "/mock/cv-project.jpg"
+            image_url: "/mock/cv-project.jpg",
+            topSkills: ["React", "Next.js", "Framer Motion", "TailwindCSS"],
+            experienceYears: 2,
+            education: "Bachelor's Degree",
+            isVerified: true,
         },
         {
             title: "Talent Marketplace",
@@ -65,13 +69,21 @@ export default function ProfilePage() {
             title: "Portfolio Website",
             description: "Personal portfolio showcasing modern design and clean animations.",
             technologies: ["Framer Motion", "React", "PostCSS"],
-            github_url: "https://github.com"
+            github_url: "https://github.com",
+            topSkills: ["Figma", "Design Systems", "User Research", "Prototyping"],
+            experienceYears: 3,
+            education: "Diploma",
+            isVerified: true,
         },
         {
             title: "E-commerce App",
             description: "Mobile-first electronics store for local businesses.",
             technologies: ["ReactNative", "Stripe", "Firebase"],
-            image_url: "/mock/shop.jpg"
+            image_url: "/mock/shop.jpg",
+            topSkills: ["React Native", "Flutter", "Firebase", "Redux"],
+            experienceYears: 2,
+            education: "Bachelor's Degree",
+            isVerified: false,
         }
     ]);
 
@@ -97,8 +109,24 @@ export default function ProfilePage() {
             issuer: "University of Johannesburg",
             date: "2021 - 2024",
             grade: "Distinction (85%)",
+            qualification_level: "Bachelor's Degree",
             document_url: "/mock/degree.pdf",
-            isVerified: true
+            isVerified: true,
+            topSkills: ["React", "TypeScript", "Python", "Node.js", "AWS"],
+            experienceYears: 1,
+            education: "Bachelor's Degree",
+        },
+        {
+            title: "MSc Software Engineering",
+            issuer: "University of Cape Town",
+            date: "2019 - 2020",
+            grade: "Cum Laude",
+            qualification_level: "Master's Degree",
+            document_url: "/mock/masters.pdf",
+            isVerified: false,
+            topSkills: ["Go", "Kubernetes", "PostgreSQL", "Docker", "Microservices"],
+            experienceYears: 4,
+            education: "Bachelor's Degree",
         }
     ]);
 
@@ -559,6 +587,7 @@ export default function ProfilePage() {
                                         issuer={edu.issuer}
                                         date={edu.date}
                                         grade={edu.grade}
+                                        qualification_level={edu.qualification_level}
                                         document_url={edu.document_url}
                                         isVerified={edu.isVerified}
                                         viewerRole="owner"
