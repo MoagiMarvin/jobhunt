@@ -136,30 +136,65 @@ export default function CreateCVPage() {
     ]);
 
     // Skills State
-    const [skills, setSkills] = useState<Skill[]>([]);
+    const [skills, setSkills] = useState<string[]>([]);
     const [currentSkill, setCurrentSkill] = useState("");
-    const [skillCategory, setSkillCategory] = useState<"Technical" | "Professional" | "Soft">("Technical");
 
     // --- Handlers (Generic) ---
     const handleSave = () => {
-        const masterProfile = {
-            industry,
-            mode: currentMode,
-            basics,
-            experiences,
-            educations,
-            projects,
-            certifications,
-            languages,
-            skills
+        // 1. Save Basic Info
+        const basicInfo = {
+            ...basics,
+            headline: basics.jobTitle, // Map job title to headline
+            availabilityStatus: "Looking for Work",
         };
+        localStorage.setItem("user_basic_info", JSON.stringify(basicInfo));
 
-        // Save to Local Storage (Master Record)
-        localStorage.setItem("jobhunt_master_cv", JSON.stringify(masterProfile));
+        // 2. Save Skills
+        localStorage.setItem("user_skills_list", JSON.stringify(skills));
+
+        // 3. Save Experience
+        const mappedExperience = experiences.map(exp => ({
+            role: exp.title,
+            company: exp.company,
+            duration: `${exp.startDate} - ${exp.current ? "Present" : exp.endDate}`,
+            description: exp.description
+        }));
+        localStorage.setItem("user_experience_list", JSON.stringify(mappedExperience));
+
+        // 4. Save Credentials (Education + Certifications)
+        const mappedCredentials = [
+            ...educations.map(edu => ({
+                type: "education",
+                title: edu.degree,
+                issuer: edu.school,
+                date: edu.year,
+                isVerified: false
+            })),
+            ...certifications.map(cert => ({
+                type: "certification",
+                title: cert.name,
+                issuer: cert.issuer,
+                date: cert.date,
+                isVerified: false
+            }))
+        ];
+        localStorage.setItem("user_credentials_list", JSON.stringify(mappedCredentials));
+
+        // 5. Save Projects
+        const mappedProjects = projects.map(proj => ({
+            title: proj.title,
+            description: proj.description,
+            technologies: [], // Can be extracted or left empty
+            date: proj.date
+        }));
+        localStorage.setItem("user_projects_list", JSON.stringify(mappedProjects));
+
+        // 6. Save Languages
+        localStorage.setItem("user_languages_list", JSON.stringify(languages));
 
         // Notify and Redirect
-        alert("Master CV Saved! Generatng PDF...");
-        router.push("/cv/preview");
+        alert("Master Profile Saved! Your Talent Profile has been updated.");
+        router.push("/profile");
     };
 
     // Experience
@@ -187,17 +222,6 @@ export default function CreateCVPage() {
     const removeLanguage = (id: number) => setLanguages(languages.filter(lang => lang.id !== id));
     const updateLanguage = (id: number, field: keyof Language, value: any) => setLanguages(languages.map(lang => lang.id === id ? { ...lang, [field]: value } : lang));
 
-    // Skills
-    const addSkill = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && currentSkill.trim()) {
-            // Check duplicates
-            if (!skills.some(s => s.name.toLowerCase() === currentSkill.trim().toLowerCase())) {
-                setSkills([...skills, { id: Date.now(), name: currentSkill.trim(), category: skillCategory }]);
-            }
-            setCurrentSkill("");
-        }
-    };
-    const removeSkill = (id: number) => setSkills(skills.filter(skill => skill.id !== id));
 
     return (
         <main className="min-h-screen bg-slate-50 pb-20">
@@ -353,24 +377,13 @@ export default function CreateCVPage() {
                         </div>
                     </div>
 
-                    {/* 2. Skills (Categorized) */}
+                    {/* 2. Skills (Simplified) */}
                     <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span className="flex items-center justify-center w-6 h-6 rounded bg-slate-100 text-slate-600 text-xs">2</span>
                                 Skills & Competencies
                             </h2>
-                            <div className="flex gap-2">
-                                {(["Technical", "Professional", "Soft"] as const).map(cat => (
-                                    <button
-                                        key={cat}
-                                        onClick={() => setSkillCategory(cat)}
-                                        className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${skillCategory === cat ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-                                    >
-                                        {cat}
-                                    </button>
-                                ))}
-                            </div>
                         </div>
 
                         <div className="flex gap-2 mb-4">
@@ -378,14 +391,21 @@ export default function CreateCVPage() {
                                 type="text"
                                 value={currentSkill}
                                 onChange={(e) => setCurrentSkill(e.target.value)}
-                                onKeyDown={addSkill}
-                                placeholder={`Add ${skillCategory} skill (e.g. ${skillCategory === 'Technical' ? 'Excel' : skillCategory === 'Soft' ? 'Leadership' : 'Compliance'})...`}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && currentSkill.trim()) {
+                                        if (!skills.includes(currentSkill.trim())) {
+                                            setSkills([...skills, currentSkill.trim()]);
+                                        }
+                                        setCurrentSkill("");
+                                    }
+                                }}
+                                placeholder="Add a skill (e.g. Excel, React, Leadership)..."
                                 className="input-field"
                             />
                             <button onClick={() => {
                                 if (currentSkill.trim()) {
-                                    if (!skills.some(s => s.name.toLowerCase() === currentSkill.trim().toLowerCase())) {
-                                        setSkills([...skills, { id: Date.now(), name: currentSkill.trim(), category: skillCategory }]);
+                                    if (!skills.includes(currentSkill.trim())) {
+                                        setSkills([...skills, currentSkill.trim()]);
                                     }
                                     setCurrentSkill("");
                                 }
@@ -393,22 +413,20 @@ export default function CreateCVPage() {
                         </div>
 
                         <div className="space-y-4">
-                            {(["Technical", "Professional", "Soft"] as const).filter(cat => skills.some(s => s.category === cat)).map(cat => (
-                                <div key={cat} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                    <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
-                                        <Tags className="w-3 h-3" /> {cat} Skills
-                                    </h4>
+                            {skills.length > 0 ? (
+                                <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                                     <div className="flex flex-wrap gap-2">
-                                        {skills.filter(s => s.category === cat).map((skill) => (
-                                            <span key={skill.id} className="px-3 py-1 bg-white text-slate-700 rounded-full text-sm font-medium border border-slate-200 flex items-center gap-2 shadow-sm">
-                                                {skill.name}
-                                                <button onClick={() => removeSkill(skill.id)} className="text-slate-400 hover:text-red-500"><X className="w-3 h-3" /></button>
+                                        {skills.map((skill, idx) => (
+                                            <span key={idx} className="px-3 py-1 bg-white text-slate-700 rounded-full text-sm font-medium border border-slate-200 flex items-center gap-2 shadow-sm">
+                                                {skill}
+                                                <button onClick={() => setSkills(skills.filter((_, i) => i !== idx))} className="text-slate-400 hover:text-red-500"><X className="w-3 h-3" /></button>
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                            ))}
-                            {skills.length === 0 && <div className="text-center py-4 text-slate-400 text-sm">No skills added yet. Select a category and type above.</div>}
+                            ) : (
+                                <div className="text-center py-4 text-slate-400 text-sm">No skills added yet. Type above and press Enter or click +.</div>
+                            )}
                         </div>
                     </div>
 

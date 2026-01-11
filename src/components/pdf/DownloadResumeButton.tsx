@@ -10,7 +10,7 @@ interface DownloadResumeButtonProps {
         user: any;
         experiences: any[];
         educationList: any[];
-        skills: { name: string; category: "Technical" | "Professional" | "Soft" }[];
+        skills: string[];
         projectsList: any[];
         certificationsList: any[];
         languages?: { language: string; proficiency: string }[];

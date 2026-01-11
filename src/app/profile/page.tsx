@@ -34,12 +34,8 @@ export default function ProfilePage() {
         summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
     });
 
-    const [skills, setSkills] = useState<{ name: string, category: "Technical" | "Professional" | "Soft" }[]>([
-        { name: "React", category: "Technical" },
-        { name: "TypeScript", category: "Technical" },
-        { name: "Python", category: "Technical" },
-        { name: "Public Speaking", category: "Soft" },
-        { name: "Agile Methodology", category: "Professional" }
+    const [skills, setSkills] = useState<string[]>([
+        "React", "TypeScript", "Python", "Public Speaking", "Agile Methodology"
     ]);
 
     const [languages, setLanguages] = useState([
@@ -137,25 +133,44 @@ export default function ProfilePage() {
 
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
 
-    // Load user and CV text on mount
+    // Load everything from unified keys
     useEffect(() => {
-        const savedCv = localStorage.getItem("master_cv_text");
-        if (savedCv) setCvText(savedCv);
-
-        const savedUser = localStorage.getItem("user_details");
-        if (savedUser) {
-            const parsed = JSON.parse(savedUser);
+        const savedBasic = localStorage.getItem("user_basic_info");
+        if (savedBasic) {
+            const parsed = JSON.parse(savedBasic);
             setUser(prev => ({ ...prev, ...parsed }));
             setEditedUser(prev => ({ ...prev, ...parsed }));
         }
+
+        const savedSkills = localStorage.getItem("user_skills_list");
+        if (savedSkills) setSkills(JSON.parse(savedSkills));
+
+        const savedProjects = localStorage.getItem("user_projects_list");
+        if (savedProjects) setProjectsList(JSON.parse(savedProjects));
+
+        const savedExperience = localStorage.getItem("user_experience_list");
+        if (savedExperience) setExperiences(JSON.parse(savedExperience));
+
+        const savedCredentials = localStorage.getItem("user_credentials_list");
+        if (savedCredentials) {
+            const parsed = JSON.parse(savedCredentials);
+            setEducationList(parsed.filter((c: any) => c.type === "education"));
+            setCertificationsList(parsed.filter((c: any) => c.type === "certification"));
+        }
+
+        const savedLanguages = localStorage.getItem("user_languages_list");
+        if (savedLanguages) setLanguages(JSON.parse(savedLanguages));
+
+        const savedCvText = localStorage.getItem("master_cv_text");
+        if (savedCvText) setCvText(savedCvText);
     }, []);
 
     const handleSave = () => {
         setUser(editedUser);
         setIsEditing(false);
-        // Persist to localStorage
+        // Persist to unified keys
+        localStorage.setItem("user_basic_info", JSON.stringify(editedUser));
         localStorage.setItem("master_cv_text", cvText);
-        localStorage.setItem("user_details", JSON.stringify(editedUser));
         alert("Profile and Master CV saved successfully!");
     };
 
@@ -418,7 +433,7 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* Skills Section (Updated) */}
+                        {/* Skills Section (Simplified) */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -433,33 +448,24 @@ export default function ProfilePage() {
                                     Add Skill
                                 </button>
                             </div>
-                            <div className="grid md:grid-cols-3 gap-6">
-                                {(["Technical", "Professional", "Soft"] as const).map(cat => (
-                                    <div key={cat} className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
-                                        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                            <Tags className="w-4 h-4" /> {cat} Skills
-                                        </h3>
-                                        <div className="flex flex-wrap gap-2">
-                                            {skills.filter(s => s.category === cat).map((skill, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="px-3 py-1.5 bg-slate-50 text-slate-700 text-sm font-semibold rounded-lg border border-slate-200 flex items-center gap-2 group cursor-default"
-                                                >
-                                                    {skill.name}
-                                                    <button
-                                                        onClick={() => setSkills(skills.filter(s => s !== skill))}
-                                                        className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                                                    >
-                                                        <X className="w-3 h-3" />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                            {skills.filter(s => s.category === cat).length === 0 && (
-                                                <p className="text-xs text-slate-400 italic">No skills added.</p>
-                                            )}
+
+                            <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
+                                <div className="flex flex-wrap gap-2">
+                                    {skills.map((skill: any, idx) => (
+                                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200 group/skill">
+                                            <span className="text-sm font-semibold text-slate-700">{typeof skill === 'string' ? skill : skill.name}</span>
+                                            <button
+                                                onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
+                                                className="text-slate-400 hover:text-red-500 transition-colors"
+                                            >
+                                                <X className="w-3.5 h-3.5" />
+                                            </button>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                    {skills.length === 0 && (
+                                        <p className="text-sm text-slate-400 italic">No skills added yet.</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -699,8 +705,8 @@ export default function ProfilePage() {
             <AddSkillModal
                 isOpen={isAddSkillOpen}
                 onClose={() => setIsAddSkillOpen(false)}
-                onAdd={(skill: { name: string, category: "Technical" | "Professional" | "Soft" }) => {
-                    setSkills([...skills, skill]);
+                onAdd={(newSkillName) => {
+                    setSkills([...skills, newSkillName]);
                     setIsAddSkillOpen(false);
                 }}
             />

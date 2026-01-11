@@ -29,12 +29,12 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className={`px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r ${type === "education" ? "from-blue-500 to-indigo-600" : "from-amber-500 to-orange-600"}`}>
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Icon className="w-5 h-5" />
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <Icon className={`w-5 h-5 ${type === "education" ? "text-blue-600" : "text-amber-600"}`} />
                         Add {type === "education" ? "Education" : "Certification"}
                     </h2>
-                    <button onClick={onClose} className="text-white/80 hover:text-white transition-colors">
+                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -48,7 +48,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             placeholder={type === "education" ? "e.g. BSc Computer Science" : "e.g. AWS Certified Developer"}
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
                         />
                     </div>
 
@@ -59,7 +59,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                             type="text"
                             value={formData.issuer}
                             onChange={(e) => setFormData({ ...formData, issuer: e.target.value })}
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
                         />
                     </div>
 
@@ -72,7 +72,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                                 value={formData.date}
                                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                 placeholder="e.g. 2021 - 2024"
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
                             />
                         </div>
 
@@ -84,7 +84,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                                 value={formData.grade}
                                 onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
                                 placeholder="e.g. Distinction"
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
                             />
                         </div>
                     </div>
@@ -92,7 +92,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                     {/* Links & Verification */}
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <LinkIcon className="w-4 h-4 text-blue-500" />
+                            <LinkIcon className="w-4 h-4 text-primary" />
                             Validation Link (Optional)
                         </label>
                         <input
@@ -100,18 +100,18 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                             value={formData.credential_url}
                             onChange={(e) => setFormData({ ...formData, credential_url: e.target.value })}
                             placeholder="https://..."
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium text-sm"
                         />
                     </div>
 
                     <div className="space-y-2 pt-2">
                         <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <FileUp className="w-4 h-4 text-blue-500" />
+                            <FileUp className="w-4 h-4 text-primary" />
                             Upload Certificate (PDF/Image)
                         </label>
-                        <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-blue-400 transition-all cursor-pointer group">
-                            <FileUp className="w-8 h-8 mx-auto mb-2 text-slate-300 group-hover:text-blue-500" />
-                            <p className="text-xs text-slate-500">Pick a file to verify this {type}</p>
+                        <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary transition-all cursor-pointer group bg-slate-50">
+                            <FileUp className="w-8 h-8 mx-auto mb-2 text-slate-300 group-hover:text-primary" />
+                            <p className="text-xs text-slate-500 font-medium">Pick a file to verify this {type}</p>
                         </div>
                         <p className="text-[10px] text-slate-400">Note: Uploading a document helps in getting the "Verified" badge which recruiters trust.</p>
                     </div>
@@ -131,7 +131,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                             }
                         }}
                         disabled={!formData.title || !formData.issuer}
-                        className={`flex-2 py-3 px-8 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 ${type === "education" ? "bg-indigo-600 hover:bg-indigo-700" : "bg-orange-600 hover:bg-orange-700"}`}
+                        className="flex-2 py-3 px-8 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 bg-slate-900 hover:bg-black"
                     >
                         <Save className="w-5 h-5" />
                         Save {type === "education" ? "Education" : "Certification"}
