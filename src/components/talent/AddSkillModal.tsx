@@ -59,7 +59,7 @@ export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalP
                             }
                         }}
                         disabled={!skill.trim()}
-                        className="flex-2 py-3 px-8 rounded-xl font-bold bg-slate-900 hover:bg-black text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                        className="flex-2 py-3 px-8 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                         <Save className="w-5 h-5" />
                         Add Skill

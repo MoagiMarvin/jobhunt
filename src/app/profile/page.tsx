@@ -379,7 +379,7 @@ export default function ProfilePage() {
                                     disabled={projectsList.length >= 4}
                                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${projectsList.length >= 4
                                         ? "bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed"
-                                        : "bg-blue-50 text-blue-600 hover:bg-blue-100 border-blue-200"
+                                        : "bg-blue-600 text-white hover:bg-blue-700 border-blue-700 shadow-sm"
                                         }`}
                                 >
                                     <Plus className="w-3.5 h-3.5" />
@@ -415,7 +415,7 @@ export default function ProfilePage() {
                                 </div>
                                 <button
                                     onClick={() => alert("Add Experience feature coming soon with database integration.")}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all border border-blue-200"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Experience
@@ -442,7 +442,7 @@ export default function ProfilePage() {
                                 </div>
                                 <button
                                     onClick={() => setIsAddSkillOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-50 text-purple-600 text-xs font-bold hover:bg-purple-100 transition-all border border-purple-200"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Skill
@@ -478,7 +478,7 @@ export default function ProfilePage() {
                                 </div>
                                 <button
                                     onClick={() => setIsAddLanguageOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-bold hover:bg-emerald-100 transition-all border border-emerald-200"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Language
@@ -513,7 +513,7 @@ export default function ProfilePage() {
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all border border-blue-200"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Education
@@ -547,7 +547,7 @@ export default function ProfilePage() {
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all border border-blue-200"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Certification
@@ -750,7 +750,7 @@ export default function ProfilePage() {
                                             setIsAddLanguageOpen(false);
                                         }
                                     }}
-                                    className="flex-1 py-2 rounded-lg bg-emerald-600 text-white font-bold"
+                                    className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
                                 >
                                     Add
                                 </button>

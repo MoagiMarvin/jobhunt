@@ -238,7 +238,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                     </button>
                     <button
                         onClick={() => onSave(formData)}
-                        className="flex-[2] py-3 px-12 rounded-xl font-bold bg-slate-900 hover:bg-black text-white shadow-lg transition-all flex items-center justify-center gap-2"
+                        className="flex-[2] py-3 px-12 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2"
                     >
                         <Save className="w-5 h-5" />
                         Save Changes

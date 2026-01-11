@@ -191,7 +191,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                     <button
                         type="submit"
                         onClick={handleSubmit}
-                        className="flex-2 py-3.5 px-10 rounded-xl font-bold bg-slate-900 hover:bg-black text-white shadow-lg transition-all flex items-center justify-center gap-2"
+                        className="flex-2 py-3.5 px-10 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2"
                     >
                         <Save className="w-5 h-5" />
                         Save Project

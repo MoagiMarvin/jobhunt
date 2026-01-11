@@ -89,32 +89,6 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                         </div>
                     </div>
 
-                    {/* Links & Verification */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <LinkIcon className="w-4 h-4 text-primary" />
-                            Validation Link (Optional)
-                        </label>
-                        <input
-                            type="url"
-                            value={formData.credential_url}
-                            onChange={(e) => setFormData({ ...formData, credential_url: e.target.value })}
-                            placeholder="https://..."
-                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium text-sm"
-                        />
-                    </div>
-
-                    <div className="space-y-2 pt-2">
-                        <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                            <FileUp className="w-4 h-4 text-primary" />
-                            Upload Certificate (PDF/Image)
-                        </label>
-                        <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary transition-all cursor-pointer group bg-slate-50">
-                            <FileUp className="w-8 h-8 mx-auto mb-2 text-slate-300 group-hover:text-primary" />
-                            <p className="text-xs text-slate-500 font-medium">Pick a file to verify this {type}</p>
-                        </div>
-                        <p className="text-[10px] text-slate-400">Note: Uploading a document helps in getting the "Verified" badge which recruiters trust.</p>
-                    </div>
                 </div>
 
                 <div className="p-6 border-t border-slate-100 bg-slate-50 flex gap-3">
@@ -131,7 +105,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                             }
                         }}
                         disabled={!formData.title || !formData.issuer}
-                        className="flex-2 py-3 px-8 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 bg-slate-900 hover:bg-black"
+                        className="flex-2 py-3 px-8 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 bg-blue-600 hover:bg-blue-700"
                     >
                         <Save className="w-5 h-5" />
                         Save {type === "education" ? "Education" : "Certification"}
