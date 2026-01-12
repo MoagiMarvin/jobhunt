@@ -78,3 +78,25 @@ create table public.generated_cvs (
   selected_bullet_ids uuid[], -- Which bullets were used
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- TALENT GROUPS (For Recruiters to organize candidates)
+create table public.talent_groups (
+  id uuid default uuid_generate_v4() primary key,
+  recruiter_id uuid references auth.users not null,
+  name text not null, -- e.g., "Doctor - Hospital XYZ" or "Senior Developer - TechCorp"
+  description text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- SAVED CANDIDATES (In Groups)
+create table public.saved_candidates (
+  id uuid default uuid_generate_v4() primary key,
+  group_id uuid references public.talent_groups(id) on delete cascade not null,
+  talent_id text not null, -- Referencing talent by ID (can be from mock data or profiles)
+  talent_name text not null,
+  talent_headline text,
+  talent_sector text,
+  notes text, -- Recruiter notes about why they saved this candidate
+  saved_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
