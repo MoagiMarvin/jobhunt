@@ -108,7 +108,6 @@ export default function ProfilePage() {
             title: "BSc Computer Science",
             issuer: "University of Johannesburg",
             date: "2021 - 2024",
-            grade: "Distinction (85%)",
             qualification_level: "Bachelor's Degree",
             document_url: "/mock/degree.pdf",
             isVerified: true,
@@ -120,7 +119,6 @@ export default function ProfilePage() {
             title: "MSc Software Engineering",
             issuer: "University of Cape Town",
             date: "2019 - 2020",
-            grade: "Cum Laude",
             qualification_level: "Master's Degree",
             document_url: "/mock/masters.pdf",
             isVerified: false,
@@ -586,7 +584,6 @@ export default function ProfilePage() {
                                         title={edu.title}
                                         issuer={edu.issuer}
                                         date={edu.date}
-                                        grade={edu.grade}
                                         qualification_level={edu.qualification_level}
                                         document_url={edu.document_url}
                                         isVerified={edu.isVerified}

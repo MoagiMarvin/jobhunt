@@ -1,168 +1,269 @@
 "use client";
 
-import { useState } from "react";
-import SearchFilters from "@/components/recruiter/SearchFilters";
+import { useState, useMemo } from "react";
+import SearchFilters, { RecruiterFilters } from "@/components/recruiter/SearchFilters";
 import TalentCard from "@/components/recruiter/TalentCard";
-import { Users, Filter, LayoutGrid, List } from "lucide-react";
-import Link from "next/link";
+import { Users, LayoutGrid, List, Search as SearchIcon, CheckCircle2 } from "lucide-react";
 
-// Mock Data for initial UI development
+// Diverse Mock Data based on the user's snippet
 const MOCK_TALENT = [
     {
         id: "1",
-        name: "Moagi Marvin",
-        headline: "Computer Science Graduate | Full-Stack Developer",
+        name: "Thabo Mkhize",
+        sector: "Technology & IT",
+        headline: "Senior Full Stack Developer",
         location: "Johannesburg",
-        avatar: "MM",
-        topSkills: ["React", "TypeScript", "Python", "Node.js", "AWS"],
-        experienceYears: 1,
+        avatar: "TM",
+        topSkills: ["React", "Node.js", "MongoDB", "TypeScript", "AWS"],
+        experienceYears: 5,
         education: "Bachelor's Degree",
         isVerified: true,
-        targetRoles: ["Full Stack Developer", "Software Intern"],
+        targetRoles: ["Full Stack Developer", "Software Lead"],
         haveLicense: true,
-        availabilityStatus: "Looking for Work"
+        haveCar: true,
+        availabilityStatus: "Immediate",
+        skillsDetailed: [
+            { name: "React", years: 5, proficiency: "Expert" },
+            { name: "Node.js", years: 4, proficiency: "Expert" },
+            { name: "MongoDB", years: 3, proficiency: "Intermediate" }
+        ]
     },
     {
         id: "2",
-        name: "Lindiwe Dlamini",
-        headline: "Chartered Accountant (SA) | Audit & Assurance",
-        location: "Cape Town",
-        avatar: "LD",
-        topSkills: ["IFRS", "Financial Modeling", "Corporate Tax", "Internal Audit"],
+        name: "Nomsa Dlamini",
+        sector: "Healthcare & Medical Services",
+        headline: "Registered Nurse | ICU Specialist",
+        location: "Durban",
+        avatar: "ND",
+        topSkills: ["Patient Care", "Emergency Response", "ICU", "Clinical Audit"],
         experienceYears: 3,
-        education: "Honours Degree",
+        education: "Diploma",
         isVerified: true,
-        targetRoles: ["Accountant", "External Auditor"],
+        targetRoles: ["Registered Nurse", "Clinical Nurse"],
         haveLicense: true,
-        availabilityStatus: "Looking for Work"
+        haveCar: false,
+        availabilityStatus: "2 weeks notice",
+        skillsDetailed: [
+            { name: "Patient Care", years: 3, proficiency: "Expert" },
+            { name: "Emergency Response", years: 2, proficiency: "Intermediate" },
+            { name: "ICU", years: 1, proficiency: "Beginner" }
+        ]
     },
     {
         id: "3",
-        name: "Sipho Zulu",
-        headline: "Marketing Graduate | Brand Strategy & Digital Content",
-        location: "Durban",
-        avatar: "SZ",
-        topSkills: ["SEO", "Content Marketing", "Adobe Creative Suite", "Meta Ads"],
-        experienceYears: 1,
-        education: "Bachelor's Degree",
+        name: "Sipho Ndlovu",
+        sector: "Transport & Logistics",
+        headline: "Professional Driver (Code 14)",
+        location: "Cape Town",
+        avatar: "SN",
+        topSkills: ["Code 14 License", "Route Planning", "Fleet Management", "Safety First"],
+        experienceYears: 8,
+        education: "Matric",
         isVerified: true,
-        targetRoles: ["Marketing Coordinator", "Social Media Manager"],
+        targetRoles: ["Truck Driver", "Fleet Supervisor"],
         haveLicense: true,
-        availabilityStatus: "Looking for Work"
+        haveCar: true,
+        availabilityStatus: "Immediate",
+        skillsDetailed: [
+            { name: "Code 14 License", years: 8, proficiency: "Expert" },
+            { name: "GPS Navigation", years: 8, proficiency: "Expert" },
+            { name: "Route Planning", years: 8, proficiency: "Expert" }
+        ]
     },
     {
         id: "4",
-        name: "Katlego Motaung",
-        headline: "Legal Researcher | LLB Graduate",
+        name: "Lerato Mokoena",
+        sector: "Finance & Accounting",
+        headline: "Financial Analyst | Master's Graduate",
         location: "Pretoria",
-        avatar: "KM",
-        topSkills: ["Legal Writing", "Case Research", "Litigation Support", "Contract Law"],
-        experienceYears: 1,
-        education: "Bachelor's Degree",
-        isVerified: false,
-        targetRoles: ["Candidate Attorney", "Legal Assistant"],
+        avatar: "LM",
+        topSkills: ["Financial Modeling", "Excel", "SAP", "Internal Audit"],
+        experienceYears: 4,
+        education: "Master's Degree",
+        isVerified: true,
+        targetRoles: ["Financial Analyst", "Accountant"],
         haveLicense: true,
-        availabilityStatus: "Looking for Work"
+        haveCar: true,
+        availabilityStatus: "1 month notice",
+        skillsDetailed: [
+            { name: "Financial Modeling", years: 4, proficiency: "Expert" },
+            { name: "Excel", years: 6, proficiency: "Expert" },
+            { name: "SAP", years: 3, proficiency: "Intermediate" }
+        ]
     },
     {
         id: "5",
-        name: "Sarah Jenkins",
-        headline: "Human Resources Coordinator | Employee Relations",
+        name: "Mandla Zulu",
+        sector: "Security Services",
+        headline: "Security Officer | PSIRA Grade A",
         location: "Johannesburg",
-        avatar: "SJ",
-        topSkills: ["Payroll Management", "Interviewing", "Onboarding", "Labor Law"],
-        experienceYears: 2,
-        education: "Bachelor's Degree",
-        isVerified: true,
-        targetRoles: ["HR Officer", "Recruitment Consultant"],
+        avatar: "MZ",
+        topSkills: ["Access Control", "CCTV Monitoring", "Risk Assessment", "Tactical Response"],
+        experienceYears: 4,
+        education: "Matric",
+        isVerified: false,
+        targetRoles: ["Security Officer", "Security Supervisor"],
         haveLicense: true,
-        availabilityStatus: "Looking for Work"
+        haveCar: false,
+        availabilityStatus: "Immediate",
+        skillsDetailed: [
+            { name: "PSIRA Registered", years: 4, proficiency: "Expert" },
+            { name: "Access Control", years: 4, proficiency: "Expert" },
+            { name: "CCTV Monitoring", years: 3, proficiency: "Intermediate" }
+        ]
     },
     {
         id: "6",
-        name: "Thabo Molefe",
-        headline: "Supply Chain Analyst | Logistics Specialist",
-        location: "Johannesburg",
-        avatar: "TM",
-        topSkills: ["Inventory Management", "ERP Systems", "Procurement", "Data Analysis"],
-        experienceYears: 2,
-        education: "Bachelor's Degree",
-        isVerified: false,
-        targetRoles: ["Logistics Coordinator", "Supply Chain Analyst"],
+        name: "Precious Mahlangu",
+        sector: "Hospitality & Tourism",
+        headline: "Head Chef | Culinary Arts Specialist",
+        location: "Cape Town",
+        avatar: "PM",
+        topSkills: ["Menu Planning", "Kitchen Management", "Food Safety", "Fine Dining"],
+        experienceYears: 7,
+        education: "Diploma",
+        isVerified: true,
+        targetRoles: ["Head Chef", "Sous Chef"],
         haveLicense: true,
-        availabilityStatus: "Looking for Work"
+        haveCar: true,
+        availabilityStatus: "2 weeks notice",
+        skillsDetailed: [
+            { name: "Menu Planning", years: 7, proficiency: "Expert" },
+            { name: "Kitchen Management", years: 5, proficiency: "Expert" },
+            { name: "Food Safety", years: 7, proficiency: "Expert" }
+        ]
     }
 ];
 
 export default function RecruiterSearchPage() {
     const [viewType, setViewType] = useState<"grid" | "list">("grid");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filters, setFilters] = useState<RecruiterFilters>({
+        sector: '',
+        jobRole: '',
+        education: '',
+        experienceLevel: '',
+        location: '',
+        availability: '',
+        isVerified: false,
+        haveLicense: false,
+        haveCar: false,
+        skills: []
+    });
+
+    const filteredTalents = useMemo(() => {
+        return MOCK_TALENT.filter(talent => {
+            // Text Search
+            const searchLower = searchTerm.toLowerCase();
+            const matchesSearch = !searchTerm ||
+                talent.name.toLowerCase().includes(searchLower) ||
+                talent.headline.toLowerCase().includes(searchLower) ||
+                talent.topSkills.some(s => s.toLowerCase().includes(searchLower));
+
+            if (!matchesSearch) return false;
+
+            // Categorical Filters
+            if (filters.isVerified && !talent.isVerified) return false;
+            if (filters.sector && filters.sector !== 'All' && talent.sector !== filters.sector) return false;
+            // Job Role check: if specific role is selected (and not 'All'), talent must have it in targetRoles
+            if (filters.jobRole && filters.jobRole !== 'All' && !talent.targetRoles.includes(filters.jobRole)) return false;
+            if (filters.haveLicense && !talent.haveLicense) return false;
+            if (filters.haveCar && !talent.haveCar) return false;
+            if (filters.location && !talent.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
+            if (filters.education && talent.education !== filters.education) return false;
+
+            // Advanced Skill Filtering
+            if (filters.skills && filters.skills.some(s => s.skill)) {
+                return filters.skills.every(f => {
+                    if (!f.skill) return true;
+                    const talentSkill = talent.skillsDetailed?.find(ts => ts.name.toLowerCase().includes(f.skill.toLowerCase()));
+                    if (!talentSkill) return false;
+
+                    if (f.minYears) {
+                        const min = parseInt(f.minYears);
+                        if (talentSkill.years < min) return false;
+                    }
+                    if (f.proficiency && talentSkill.proficiency !== f.proficiency) return false;
+
+                    return true;
+                });
+            }
+
+            return true;
+        });
+    }, [searchTerm, filters]);
 
     return (
-        <main className="min-h-screen bg-slate-50/50">
-
-            <div className="max-w-7xl mx-auto px-6 py-10 pt-24">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                    <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                                <Users className="w-6 h-6" />
-                            </div>
-                            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Talent Marketplace</h1>
-                        </div>
-                        <p className="text-slate-500 font-medium">Discover and connect with top-tier verified graduates across South Africa.</p>
-                    </div>
-
-                    <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm">
-                        <button
-                            onClick={() => setViewType("grid")}
-                            className={`p-2 rounded-xl transition-all ${viewType === "grid" ? "bg-blue-600 text-white shadow-md shadow-blue-100" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
-                        >
-                            <LayoutGrid className="w-5 h-5" />
-                        </button>
-                        <button
-                            onClick={() => setViewType("grid")} // List view would be similar
-                            className={`p-2 rounded-xl transition-all ${viewType === "list" ? "bg-blue-600 text-white shadow-md shadow-blue-100" : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"}`}
-                        >
-                            <List className="w-5 h-5" />
-                        </button>
-                    </div>
+        <main className="min-h-screen bg-slate-50">
+            <div className="max-w-7xl mx-auto px-6 py-12 pt-24">
+                {/* Simplified Header */}
+                <div className="mb-10">
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2">Talent Marketplace</h1>
+                    <p className="text-slate-600">Browse and filter for top-tier verified talent across South Africa.</p>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
                     {/* Filters Sidebar */}
-                    <SearchFilters />
+                    <SearchFilters
+                        onFilterChange={setFilters}
+                        searchTerm={searchTerm}
+                        onSearchChange={setSearchTerm}
+                    />
 
                     {/* Results Area */}
                     <div className="flex-1 space-y-6">
-                        {/* Results Count & Sort */}
-                        <div className="flex items-center justify-between mb-4 px-2">
-                            <p className="text-sm font-bold text-slate-700">
-                                Showing <span className="text-blue-600">{MOCK_TALENT.length}</span> candidates found
+                        {/* Results Count & View Toggle */}
+                        <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <p className="text-sm text-slate-500">
+                                Found <span className="font-bold text-slate-900">{filteredTalents.length}</span> matching candidates
                             </p>
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sort by:</span>
-                                <select className="bg-transparent border-none text-sm font-bold text-blue-600 focus:ring-0 cursor-pointer">
-                                    <option>Most Relevant</option>
-                                    <option>Newest Members</option>
-                                    <option>Experience (High-Low)</option>
-                                </select>
+                                <button
+                                    onClick={() => setViewType("grid")}
+                                    className={`p-1.5 rounded-lg transition-all ${viewType === "grid" ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-50"}`}
+                                >
+                                    <LayoutGrid className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => setViewType("list")}
+                                    className={`p-1.5 rounded-lg transition-all ${viewType === "list" ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-50"}`}
+                                >
+                                    <List className="w-5 h-5" />
+                                </button>
                             </div>
                         </div>
 
                         {/* Talent Grid */}
-                        <div className="grid md:grid-cols-2 xl:grid-cols-2 gap-6">
-                            {MOCK_TALENT.map((talent) => (
-                                <TalentCard key={talent.id} talent={talent} />
-                            ))}
-                        </div>
+                        {filteredTalents.length > 0 ? (
+                            <div className={viewType === "grid" ? "grid md:grid-cols-1 xl:grid-cols-2 gap-6" : "space-y-4"}>
+                                {filteredTalents.map((talent) => (
+                                    <TalentCard key={talent.id} talent={talent as any} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-white rounded-2xl border border-slate-200 p-20 text-center space-y-4">
+                                <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto border border-slate-100">
+                                    <SearchIcon className="w-8 h-8 text-slate-200" />
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900">No candidates found</h3>
+                                <p className="text-slate-500 max-w-xs mx-auto">Try adjusting your filters or searching for different keywords.</p>
+                                <button
+                                    onClick={() => { setSearchTerm(""); window.location.reload(); }}
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
+                                >
+                                    Clear all filters
+                                </button>
+                            </div>
+                        )}
 
                         {/* Pagination / Load More */}
-                        <div className="pt-10 flex justify-center">
-                            <button className="px-8 py-3 bg-white border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-600 hover:border-blue-200 hover:text-blue-600 transition-all shadow-sm">
-                                Load More Candidates
-                            </button>
-                        </div>
+                        {filteredTalents.length > 0 && (
+                            <div className="pt-8 flex justify-center">
+                                <button className="px-10 py-3 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
+                                    Load More Candidates
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

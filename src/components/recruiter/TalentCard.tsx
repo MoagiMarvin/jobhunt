@@ -1,11 +1,18 @@
 "use client";
 
-import { MapPin, Briefcase, GraduationCap, Award, CheckCircle2, Star, CreditCard, ExternalLink } from "lucide-react";
+import { MapPin, Briefcase, GraduationCap, CheckCircle2, Star, Download, Mail, Search } from "lucide-react";
+
+interface TalentSkill {
+    name: string;
+    years: number;
+    proficiency: string;
+}
 
 interface TalentCardProps {
     talent: {
         id: string;
         name: string;
+        sector: string;
         headline: string;
         location: string;
         avatar: string;
@@ -15,88 +22,111 @@ interface TalentCardProps {
         isVerified: boolean;
         targetRoles: string[];
         haveLicense: boolean;
+        haveCar: boolean;
         availabilityStatus: string;
+        skillsDetailed?: TalentSkill[];
     };
 }
 
 export default function TalentCard({ talent }: TalentCardProps) {
     return (
-        <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all group">
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-100 group-hover:scale-105 transition-transform">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:border-blue-300 transition-all group overflow-hidden flex flex-col md:flex-row gap-6">
+            {/* Left Column: Avatar & Basic Info */}
+            <div className="flex flex-col items-center gap-3">
+                <div className="relative">
+                    <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-2xl font-bold text-slate-400 border border-slate-200 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
                         {talent.avatar}
                     </div>
-                    <div>
-                        <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-bold text-slate-900">{talent.name}</h3>
-                            {talent.isVerified && (
-                                <div className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold">
-                                    <CheckCircle2 className="w-3 h-3" />
-                                    Verified
-                                </div>
-                            )}
-                        </div>
-                        <p className="text-sm text-slate-600 font-medium line-clamp-1">{talent.headline}</p>
-                        <div className="flex items-center gap-3 mt-2 text-[11px] text-slate-500">
-                            <span className="flex items-center gap-1">
-                                <MapPin className="w-3 h-3 text-blue-500" />
-                                {talent.location}
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <Star className="w-3 h-3 text-blue-500" />
-                                {talent.experienceYears} Years Exp
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${talent.availabilityStatus === "Looking for Work"
-                            ? "bg-green-50 text-green-600 border border-green-100"
-                            : "bg-slate-50 text-slate-400 border border-slate-100"
-                        }`}>
-                        {talent.availabilityStatus}
-                    </span>
-                    {talent.haveLicense && (
-                        <div className="text-blue-500" title="Valid License">
-                            <CreditCard className="w-4 h-4" />
+                    {talent.isVerified && (
+                        <div className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-md border border-slate-100">
+                            <CheckCircle2 className="w-4 h-4 text-blue-600" />
                         </div>
                     )}
+                </div>
+
+                <div className="space-y-1.5 w-full">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {talent.location}
+                    </div>
+                    <div className="flex items-center gap-2 text-xs font-bold text-amber-600">
+                        <Star className="w-3.5 h-3.5 fill-amber-500" />
+                        {talent.experienceYears} Years Exp
+                    </div>
                 </div>
             </div>
 
-            <div className="space-y-4">
-                {/* Information Grid */}
-                <div className="grid grid-cols-2 gap-3 py-3 border-y border-slate-50">
-                    <div className="flex items-center gap-2">
-                        <GraduationCap className="w-4 h-4 text-slate-400" />
-                        <span className="text-[11px] font-semibold text-slate-700 truncate">{talent.education}</span>
+            {/* Right Column: Info & Actions */}
+            <div className="flex-1 space-y-4">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                    <div>
+                        <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                            {talent.name}
+                        </h3>
+                        <p className="text-sm font-medium text-slate-500">{talent.headline}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <Briefcase className="w-4 h-4 text-slate-400" />
-                        <span className="text-[11px] font-semibold text-slate-700 truncate">{talent.targetRoles[0]}</span>
+
+                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+                        {talent.sector}
                     </div>
                 </div>
 
-                {/* Skills Tags */}
-                <div className="flex flex-wrap gap-1.5">
-                    {talent.topSkills.slice(0, 4).map((skill, idx) => (
-                        <span key={idx} className="px-2 py-1 bg-slate-50 text-slate-600 rounded-md text-[10px] font-bold border border-slate-100 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
-                            {skill}
-                        </span>
-                    ))}
-                    {talent.topSkills.length > 4 && (
-                        <span className="px-2 py-1 text-slate-400 text-[10px] font-bold">
-                            +{talent.topSkills.length - 4} more
-                        </span>
+                {/* Education & Role Chips */}
+                <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                        <GraduationCap className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="text-[11px] font-bold text-slate-600">{talent.education}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                        <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="text-[11px] font-bold text-slate-600">{talent.targetRoles[0]}</span>
+                    </div>
+                    {talent.haveCar && (
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 rounded-lg border border-green-100 text-green-700">
+                            <Search className="w-3.5 h-3.5" />
+                            <span className="text-[11px] font-bold">Own Vehicle</span>
+                        </div>
                     )}
                 </div>
 
-                {/* Footer Action */}
-                <button className="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-blue-600 hover:text-white text-slate-600 text-[11px] font-bold transition-all flex items-center justify-center gap-2 border border-slate-100 hover:border-blue-700">
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    View Full Profile
-                </button>
+                {/* Skills Section */}
+                <div className="space-y-2">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Key Competencies</p>
+                    <div className="flex flex-wrap gap-2">
+                        {(talent.skillsDetailed || talent.topSkills).slice(0, 4).map((skill, idx) => {
+                            const isDetailed = typeof skill === 'object';
+                            const name = isDetailed ? (skill as TalentSkill).name : skill as string;
+                            const level = isDetailed ? (skill as TalentSkill).proficiency : null;
+
+                            return (
+                                <div key={idx} className="flex items-center gap-2 px-2 py-1 bg-white border border-slate-200 rounded-lg text-[11px] font-bold text-slate-600">
+                                    {name}
+                                    {level && (
+                                        <span className={`px-1.5 py-0.5 rounded text-[8px] uppercase tracking-wider ${level === 'Expert' ? 'bg-blue-600 text-white' :
+                                            level === 'Intermediate' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'
+                                            }`}>
+                                            {level}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                    <button className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all">
+                        Profile
+                    </button>
+                    <button className="flex-[2] py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 group/btn">
+                        <Mail className="w-3.5 h-3.5 transition-transform group-hover/btn:scale-110" />
+                        Contact
+                    </button>
+                    <button className="p-2 bg-slate-50 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-xl border border-slate-200 transition-all">
+                        <Download className="w-4 h-4" />
+                    </button>
+                </div>
             </div>
         </div>
     );

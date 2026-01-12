@@ -15,7 +15,6 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
         title: "",
         issuer: "",
         date: "",
-        grade: "",
         qualification_level: "",
         credential_url: "",
         document_url: "",
@@ -66,9 +65,9 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Date */}
-                        <div className="space-y-2">
+                        <div className="space-y-2 col-span-1 md:col-span-2">
                             <label className="text-sm font-semibold text-slate-700">Date / Period</label>
                             <input
                                 type="text"
@@ -79,21 +78,9 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                             />
                         </div>
 
-                        {/* Grade */}
-                        <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">Grade / Result (Optional)</label>
-                            <input
-                                type="text"
-                                value={formData.grade}
-                                onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                                placeholder="e.g. Distinction"
-                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
-                            />
-                        </div>
-
                         {/* Qualification Level (Only for Education) */}
                         {type === "education" && (
-                            <div className="space-y-2">
+                            <div className="space-y-2 col-span-1 md:col-span-2">
                                 <label className="text-sm font-semibold text-slate-700">Qualification Level</label>
                                 <select
                                     value={formData.qualification_level}
