@@ -226,23 +226,37 @@ export default function RecruiterSearchPage() {
 
                     {/* Results Area */}
                     <div className="flex-1 space-y-6">
+                        {/* Top Search Bar (Smart Move) */}
+                        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <div className="relative">
+                                <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Search by role, name, or key skills..."
+                                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-lg text-base focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 font-medium text-slate-700"
+                                />
+                            </div>
+                        </div>
+
                         {/* Results Count & View Toggle */}
-                        <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                            <p className="text-sm text-slate-500">
-                                Found <span className="font-bold text-slate-900">{filteredTalents.length}</span> matching candidates
+                        <div className="flex items-center justify-between bg-white p-3 px-4 rounded-xl border border-slate-200 shadow-sm">
+                            <p className="text-sm font-medium text-slate-500">
+                                Found <span className="font-bold text-slate-900">{filteredTalents.length}</span> candidates
                             </p>
                             <div className="flex items-center gap-2">
                                 <button
                                     onClick={() => setViewType("grid")}
-                                    className={`p-1.5 rounded-lg transition-all ${viewType === "grid" ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-50"}`}
+                                    className={`p-1.5 rounded-lg transition-all ${viewType === "grid" ? "bg-blue-600 text-white shadow-md shadow-blue-100" : "text-slate-400 hover:bg-slate-50"}`}
                                 >
-                                    <LayoutGrid className="w-5 h-5" />
+                                    <LayoutGrid className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => setViewType("list")}
-                                    className={`p-1.5 rounded-lg transition-all ${viewType === "list" ? "bg-blue-600 text-white" : "text-slate-400 hover:bg-slate-50"}`}
+                                    className={`p-1.5 rounded-lg transition-all ${viewType === "list" ? "bg-blue-600 text-white shadow-md shadow-blue-100" : "text-slate-400 hover:bg-slate-50"}`}
                                 >
-                                    <List className="w-5 h-5" />
+                                    <List className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>

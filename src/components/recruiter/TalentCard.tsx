@@ -31,43 +31,43 @@ interface TalentCardProps {
 
 export default function TalentCard({ talent }: TalentCardProps) {
     return (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:border-blue-300 transition-all group overflow-hidden flex flex-col md:flex-row gap-6">
+        <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-blue-400 transition-all group overflow-hidden flex flex-col md:flex-row gap-5">
             {/* Left Column: Avatar & Basic Info */}
             <div className="flex flex-col items-center gap-3">
                 <div className="relative">
-                    <div className="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center text-2xl font-bold text-slate-400 border border-slate-200 group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
+                    <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center text-xl font-bold text-slate-400 border border-slate-100 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
                         {talent.avatar}
                     </div>
                     {talent.isVerified && (
-                        <div className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full shadow-md border border-slate-100">
-                            <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                        <div className="absolute -bottom-1 -right-1 bg-white p-0.5 rounded-full shadow-sm border border-slate-100">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
                         </div>
                     )}
                 </div>
 
-                <div className="space-y-1.5 w-full">
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                        <MapPin className="w-3.5 h-3.5" />
+                <div className="space-y-1 w-full">
+                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+                        <MapPin className="w-3 h-3" />
                         {talent.location}
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-bold text-amber-600">
-                        <Star className="w-3.5 h-3.5 fill-amber-500" />
-                        {talent.experienceYears} Years Exp
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-600">
+                        <Star className="w-3 h-3 fill-amber-500" />
+                        {talent.experienceYears}Y Exp
                     </div>
                 </div>
             </div>
 
             {/* Right Column: Info & Actions */}
-            <div className="flex-1 space-y-4">
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div className="flex-1 space-y-3">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
                     <div>
-                        <h3 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
+                        <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
                             {talent.name}
                         </h3>
-                        <p className="text-sm font-medium text-slate-500">{talent.headline}</p>
+                        <p className="text-xs font-semibold text-slate-400">{talent.headline}</p>
                     </div>
 
-                    <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+                    <div className="px-2 py-0.5 bg-blue-50/50 text-blue-700 rounded text-[9px] font-bold uppercase tracking-wider border border-blue-100">
                         {talent.sector}
                     </div>
                 </div>
@@ -127,15 +127,15 @@ export default function TalentCard({ talent }: TalentCardProps) {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-                    <button className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all">
-                        Profile
+                <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
+                    <button className="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg text-xs font-bold transition-all border border-slate-100">
+                        View Profile
                     </button>
-                    <button className="flex-[2] py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 group/btn">
+                    <button className="flex-[2] py-2 bg-blue-600 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 group/btn">
                         <Mail className="w-3.5 h-3.5 transition-transform group-hover/btn:scale-110" />
-                        Contact
+                        Get in Touch
                     </button>
-                    <button className="p-2 bg-slate-50 hover:bg-blue-50 text-slate-400 hover:text-blue-600 rounded-xl border border-slate-200 transition-all">
+                    <button className="p-2 text-slate-400 hover:text-blue-600 rounded-lg transition-all">
                         <Download className="w-4 h-4" />
                     </button>
                 </div>
