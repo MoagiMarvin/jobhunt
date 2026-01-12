@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Briefcase, GraduationCap, CheckCircle2, Star, Download, Mail, Search } from "lucide-react";
+import { MapPin, Briefcase, GraduationCap, CheckCircle2, Star, Download, Mail, Search, Award } from "lucide-react";
 
 interface TalentSkill {
     name: string;
@@ -24,6 +24,7 @@ interface TalentCardProps {
         haveLicense: boolean;
         haveCar: boolean;
         availabilityStatus: string;
+        certifications?: string[];
         skillsDetailed?: TalentSkill[];
     };
 }
@@ -85,6 +86,17 @@ export default function TalentCard({ talent }: TalentCardProps) {
                         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 rounded-lg border border-green-100 text-green-700">
                             <Search className="w-3.5 h-3.5" />
                             <span className="text-[11px] font-bold">Own Vehicle</span>
+                        </div>
+                    )}
+                    {/* Certifications Display */}
+                    {talent.certifications && talent.certifications.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {talent.certifications.map((cert, i) => (
+                                <div key={i} className="flex items-center gap-1.5 px-2 py-1 bg-amber-50 rounded-lg border border-amber-100 text-[10px] font-bold text-amber-700">
+                                    <Award className="w-3 h-3" />
+                                    {cert}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>

@@ -20,6 +20,7 @@ export interface RecruiterFilters {
     isVerified: boolean;
     haveLicense: boolean;
     haveCar: boolean;
+    certification: string;
     skills: SkillFilter[];
 }
 
@@ -39,7 +40,8 @@ export default function SearchFilters({ onFilterChange, searchTerm, onSearchChan
         availability: '',
         isVerified: false,
         haveLicense: false,
-        haveCar: false
+        haveCar: false,
+        certification: ''
     });
 
     const [skillFilters, setSkillFilters] = useState<SkillFilter[]>([
@@ -83,7 +85,8 @@ export default function SearchFilters({ onFilterChange, searchTerm, onSearchChan
             availability: '',
             isVerified: false,
             haveLicense: false,
-            haveCar: false
+            haveCar: false,
+            certification: ''
         };
         setFilters(reset);
         setSkillFilters([{ skill: '', minYears: '', proficiency: '' }]);
@@ -196,6 +199,21 @@ export default function SearchFilters({ onFilterChange, searchTerm, onSearchChan
                             <option value="Bachelor's Degree">Bachelor's Degree</option>
                             <option value="Master's Degree">Master's Degree</option>
                         </select>
+                    </div>
+
+                    {/* Certifications Filter */}
+                    <div className="space-y-3">
+                        <h3 className="text-[13px] font-bold text-slate-900 flex items-center gap-2">
+                            <Award className="w-4 h-4 text-slate-400" />
+                            Certifications
+                        </h3>
+                        <input
+                            type="text"
+                            value={filters.certification}
+                            onChange={(e) => handleFilterChange({ certification: e.target.value })}
+                            placeholder="e.g. AWS, Project Management"
+                            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-medium outline-none text-slate-600 focus:ring-2 focus:ring-blue-500 transition-all"
+                        />
                     </div>
 
                     {/* Logistics */}

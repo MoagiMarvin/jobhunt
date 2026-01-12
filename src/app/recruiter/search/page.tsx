@@ -22,6 +22,7 @@ const MOCK_TALENT = [
         haveLicense: true,
         haveCar: true,
         availabilityStatus: "Immediate",
+        certifications: ["AWS Certified Developer", "React Professional"],
         skillsDetailed: [
             { name: "React", years: 5, proficiency: "Expert" },
             { name: "Node.js", years: 4, proficiency: "Expert" },
@@ -43,6 +44,7 @@ const MOCK_TALENT = [
         haveLicense: true,
         haveCar: false,
         availabilityStatus: "2 weeks notice",
+        certifications: ["Advanced Nursing Diploma", "BLS Certification"],
         skillsDetailed: [
             { name: "Patient Care", years: 3, proficiency: "Expert" },
             { name: "Emergency Response", years: 2, proficiency: "Intermediate" },
@@ -64,6 +66,7 @@ const MOCK_TALENT = [
         haveLicense: true,
         haveCar: true,
         availabilityStatus: "Immediate",
+        certifications: ["PDP License", "First Aid L1"],
         skillsDetailed: [
             { name: "Code 14 License", years: 8, proficiency: "Expert" },
             { name: "GPS Navigation", years: 8, proficiency: "Expert" },
@@ -85,6 +88,7 @@ const MOCK_TALENT = [
         haveLicense: true,
         haveCar: true,
         availabilityStatus: "1 month notice",
+        certifications: ["CFA Level 1", "ACCA Foundation"],
         skillsDetailed: [
             { name: "Financial Modeling", years: 4, proficiency: "Expert" },
             { name: "Excel", years: 6, proficiency: "Expert" },
@@ -106,6 +110,7 @@ const MOCK_TALENT = [
         haveLicense: true,
         haveCar: false,
         availabilityStatus: "Immediate",
+        certifications: ["Grade A PSIRA", "Firearm Competency"],
         skillsDetailed: [
             { name: "PSIRA Registered", years: 4, proficiency: "Expert" },
             { name: "Access Control", years: 4, proficiency: "Expert" },
@@ -127,6 +132,7 @@ const MOCK_TALENT = [
         haveLicense: true,
         haveCar: true,
         availabilityStatus: "2 weeks notice",
+        certifications: ["Culinary Arts Certificate", "Food Safety L3"],
         skillsDetailed: [
             { name: "Menu Planning", years: 7, proficiency: "Expert" },
             { name: "Kitchen Management", years: 5, proficiency: "Expert" },
@@ -148,6 +154,7 @@ export default function RecruiterSearchPage() {
         isVerified: false,
         haveLicense: false,
         haveCar: false,
+        certification: '',
         skills: []
     });
 
@@ -171,6 +178,13 @@ export default function RecruiterSearchPage() {
             if (filters.haveCar && !talent.haveCar) return false;
             if (filters.location && !talent.location.toLowerCase().includes(filters.location.toLowerCase())) return false;
             if (filters.education && talent.education !== filters.education) return false;
+
+            // Certification Filter
+            if (filters.certification) {
+                const certLower = filters.certification.toLowerCase();
+                const hasCert = talent.certifications?.some(c => c.toLowerCase().includes(certLower));
+                if (!hasCert) return false;
+            }
 
             // Advanced Skill Filtering
             if (filters.skills && filters.skills.some(s => s.skill)) {
