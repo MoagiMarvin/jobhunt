@@ -319,27 +319,6 @@ export default function ProfilePage() {
                 {/* Talent Profile */}
                 <div>
                     <div className="space-y-8">
-                        {/* Upload CV Section */}
-                        <div className="space-y-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200 p-8">
-                            <div className="space-y-2">
-                                <h2 className="text-2xl font-bold text-primary">Upload or Create CV</h2>
-                                <p className="text-slate-600 text-sm">
-                                    Start with an existing CV or create one from scratch. You can manage your Master CV separately.
-                                </p>
-                            </div>
-
-                            <div className="flex gap-4">
-                                <Link href="/profile/master-cv" className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm">
-                                    <Upload className="w-4 h-4" />
-                                    Upload CV
-                                </Link>
-                                <Link href="/profile/create" className="flex-1 py-3 rounded-lg bg-white hover:bg-slate-50 text-primary font-bold border-2 border-slate-200 hover:border-purple-200 transition-all flex items-center justify-center gap-2 text-sm">
-                                    <Sparkles className="w-4 h-4" />
-                                    Create from Scratch
-                                </Link>
-                            </div>
-                        </div>
-
                         {/* Projects Section */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">

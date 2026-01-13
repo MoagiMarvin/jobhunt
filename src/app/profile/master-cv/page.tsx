@@ -122,50 +122,14 @@ export default function MasterCVPage() {
                         </p>
                     </div>
 
-                    {/* Options Grid */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        {/* Hidden File Input */}
-                        <input
-                            type="file"
-                            id="pdf-upload"
-                            accept="application/pdf"
-                            className="hidden"
-                            onChange={handleFileUpload}
-                        />
-
-                        {/* Upload Section */}
-                        <div
-                            onClick={() => !isExtracting && document.getElementById('pdf-upload')?.click()}
-                            className={`border-2 border-dashed rounded-xl p-6 text-center transition-all flex flex-col items-center justify-center group cursor-pointer ${isExtracting ? 'border-blue-400 bg-blue-50/50' : 'border-blue-200 bg-white hover:border-blue-400'}`}
-                        >
-                            {isExtracting ? (
-                                <Loader2 className="w-8 h-8 mb-3 text-blue-500 animate-spin" />
-                            ) : (
-                                <Upload className="w-8 h-8 mb-3 text-blue-400 group-hover:text-blue-600 transition-colors" />
-                            )}
-                            <h3 className="text-md font-semibold text-primary mb-1">
-                                {isExtracting ? 'Reading PDF...' : 'Upload File'}
-                            </h3>
-                            <p className="text-xs text-slate-500 mb-3">
-                                PDF only for best results
-                            </p>
-                            <button type="button" className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 text-blue-600 text-xs font-medium transition-all border border-blue-100 group-hover:border-blue-200">
-                                {isExtracting ? 'Please wait' : 'Choose File'}
-                            </button>
-                        </div>
-
-                        {/* Create from Scratch Section */}
-                        <Link href="/profile/create" className="border-2 border-dashed border-purple-200 bg-white rounded-xl p-6 text-center hover:border-purple-400 transition-all flex flex-col items-center justify-center group cursor-pointer">
-                            <Sparkles className="w-8 h-8 mb-3 text-purple-400 group-hover:text-purple-600 transition-colors" />
-                            <h3 className="text-md font-semibold text-primary mb-1">Create from Scratch</h3>
-                            <p className="text-xs text-slate-500 mb-3">
-                                Don't have a CV?
-                            </p>
-                            <button type="button" className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-purple-50 text-purple-600 text-xs font-medium transition-all border border-purple-100 group-hover:border-purple-200">
-                                Open Builder
-                            </button>
-                        </Link>
-                    </div>
+                    {/* Hidden File Input */}
+                    <input
+                        type="file"
+                        id="pdf-upload"
+                        accept="application/pdf"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                    />
 
                     {/* Text Area Section */}
                     <div className="space-y-3 relative">
