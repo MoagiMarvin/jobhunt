@@ -100,3 +100,63 @@ create table public.saved_candidates (
   notes text, -- Recruiter notes about why they saved this candidate
   saved_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- RECRUITER PROFILES
+create table public.recruiter_profiles (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users not null unique,
+  company_name text not null,
+  full_name text not null,
+  email text not null,
+  phone text,
+  company_website text,
+  job_board_url text, -- Where they post jobs (RSS feed, API endpoint, etc.)
+  job_board_type text, -- "rss", "json_api", "xml_sitemap", "manual"
+  verification_status text default 'pending', -- "pending", "verified", "rejected"
+  verification_token text,
+  verified_at timestamp with time zone,
+  industry text, -- e.g., "Tech", "Finance", "Healthcare"
+  specializations text[], -- e.g., ["React Developer", "Full Stack"]
+  company_size text, -- "Solo", "Small (2-10)", "Medium (11-50)", "Large (50+)"
+  years_in_business integer,
+  linkedin_url text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- SYNCED JOBS (From recruiter job boards)
+create table public.synced_jobs (
+  id uuid default uuid_generate_v4() primary key,
+  recruiter_id uuid references public.recruiter_profiles(id) on delete cascade not null,
+  external_job_id text, -- Job ID from recruiter's system
+  title text not null,
+  description text,
+  location text,
+  salary_min numeric,
+  salary_max numeric,
+  job_type text, -- "Full-time", "Contract", "Part-time"
+  posted_date timestamp with time zone,
+  application_url text, -- Where to submit on recruiter's site
+  sync_metadata jsonb, -- Store original feed data for updates/deletes
+  last_synced_at timestamp with time zone,
+  is_active boolean default true,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- JOB APPLICATIONS (Candidates applying through our platform)
+create table public.job_applications (
+  id uuid default uuid_generate_v4() primary key,
+  synced_job_id uuid references public.synced_jobs(id) on delete cascade not null,
+  candidate_id uuid references public.profiles(id) on delete cascade not null,
+  recruiter_id uuid references public.recruiter_profiles(id) not null,
+  candidate_name text not null,
+  candidate_email text not null,
+  resume_url text,
+  cover_letter text,
+  webhook_sent_at timestamp with time zone,
+  webhook_status text, -- "pending", "delivered", "failed"
+  webhook_response jsonb,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);

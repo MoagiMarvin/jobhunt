@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Briefcase, FileText, Search, User, FolderOpen } from "lucide-react";
+import { Briefcase, FileText, Search, User, FolderOpen, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
@@ -10,6 +10,7 @@ export default function Navbar() {
 
     const links = [
         { href: "/profile", label: "Profile", icon: User },
+        { href: "/recruiter/profile", label: "Recruiter Profile", icon: Building2 },
         { href: "/recruiter/search", label: "Recruiter Portal", icon: Briefcase },
         { href: "/recruiter/groups", label: "Saved Candidates", icon: FolderOpen },
         { href: "/search", label: "Job Search", icon: Search },
