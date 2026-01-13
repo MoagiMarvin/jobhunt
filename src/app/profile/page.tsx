@@ -229,6 +229,14 @@ export default function ProfilePage() {
                     />
                 </div>
 
+                {/* Upload CV Button */}
+                <div className="mb-6 flex justify-end">
+                    <Link href="/profile/master-cv" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all border border-blue-700 shadow-sm">
+                        <Upload className="w-3.5 h-3.5" />
+                        Upload CV
+                    </Link>
+                </div>
+
                 {/* Professional Summary Section (New) */}
                 {/* Professional Summary Section (New) */}
                 <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm relative group">
