@@ -154,6 +154,7 @@ export default function ProfilePage() {
     const [isAddCredentialOpen, setIsAddCredentialOpen] = useState<{ open: boolean, type: "education" | "certification" }>({ open: false, type: "education" });
 
     const [editedUser, setEditedUser] = useState(user);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
 
@@ -303,17 +304,6 @@ export default function ProfilePage() {
                             </div>
                         ))}
                     </div>
-                </div>
-
-                {/* Logout Button */}
-                <div className="flex justify-end mb-6">
-                    <button
-                        onClick={handleLogout}
-                        className="px-6 py-3 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 border-2 border-slate-100 hover:border-red-100 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold shadow-sm"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Logout
-                    </button>
                 </div>
 
                 {/* Talent Profile */}
@@ -635,6 +625,49 @@ export default function ProfilePage() {
                     setIsAddProjectOpen(false);
                 }}
             />
+
+            {/* Settings Menu Button - Bottom Right */}
+            <div className="fixed bottom-8 right-8 z-40">
+                <div className="relative">
+                    <button
+                        onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                        className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all hover:shadow-xl"
+                        title="Settings"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isSettingsOpen && (
+                        <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+                            <button
+                                onClick={() => {
+                                    setIsSettingsOpen(false);
+                                    setIsEditing(true);
+                                }}
+                                className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                            >
+                                <Edit2 className="w-4 h-4" />
+                                Edit Profile
+                            </button>
+                            <div className="border-t border-slate-100"></div>
+                            <button
+                                onClick={() => {
+                                    setIsSettingsOpen(false);
+                                    handleLogout();
+                                }}
+                                className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
             </div>
         </main>
     );
