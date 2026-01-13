@@ -161,26 +161,26 @@ export default function TalentCard({ talent }: TalentCardProps) {
                         </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
-                        <button className="flex-1 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg text-xs font-bold transition-all border border-slate-100">
-                            View Profile
-                        </button>
-                        <button className="flex-[2] py-2 bg-blue-600 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 group/btn">
-                            <Mail className="w-3.5 h-3.5 transition-transform group-hover/btn:scale-110" />
-                            Get in Touch
-                        </button>
-                        <button 
-                            onClick={() => setShowSaveModal(true)}
-                            className={`p-2 rounded-lg transition-all ${saveSuccess ? 'bg-green-100 text-green-600' : 'text-slate-400 hover:text-blue-600'}`}
-                            title="Save to group"
-                        >
-                            <FolderPlus className="w-4 h-4" />
-                        </button>
-                        <button className="p-2 text-slate-400 hover:text-blue-600 rounded-lg transition-all">
-                            <Download className="w-4 h-4" />
-                        </button>
-                    </div>
+                        {/* Actions */}
+                        <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
+                            <button className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg text-xs font-bold transition-all border border-slate-100 min-w-[88px]">
+                                View Profile
+                            </button>
+                            <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 min-w-[110px]">
+                                <Mail className="w-3.5 h-3.5 transition-transform" />
+                                Get in Touch
+                            </button>
+                            <button 
+                                onClick={() => setShowSaveModal(true)}
+                                className={`p-2 rounded-lg transition-all ${saveSuccess ? 'bg-green-100 text-green-600' : 'text-slate-400 hover:text-blue-600'}`}
+                                title="Save to group"
+                            >
+                                <FolderPlus className="w-4 h-4" />
+                            </button>
+                            <button className="p-2 text-slate-400 hover:text-blue-600 rounded-lg transition-all">
+                                <Download className="w-4 h-4" />
+                            </button>
+                        </div>
                 </div>
             </div>
 
