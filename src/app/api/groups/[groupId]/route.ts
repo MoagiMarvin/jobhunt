@@ -5,7 +5,7 @@ const savedCandidates: Record<string, any[]> = {};
 
 export async function POST(req: NextRequest, { params }: { params: { groupId: string } }) {
     try {
-        const { groupId } = params;
+        const { groupId } = await params;
         const { talent_id, talent_name, talent_headline, talent_sector, notes } =
             await req.json();
 
@@ -48,7 +48,7 @@ export async function GET(
     { params }: { params: { groupId: string } }
 ) {
     try {
-        const { groupId } = params;
+        const { groupId } = await params;
         const candidates = savedCandidates[groupId] || [];
 
         return NextResponse.json(candidates);
