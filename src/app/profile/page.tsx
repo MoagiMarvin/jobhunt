@@ -155,6 +155,7 @@ export default function ProfilePage() {
 
     const [editedUser, setEditedUser] = useState(user);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [newTargetRole, setNewTargetRole] = useState("");
 
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
 
@@ -283,27 +284,79 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Target Roles Section */}
-                <div className="mb-8 bg-blue-50/50 rounded-2xl border border-blue-100 p-6 flex flex-col md:flex-row items-center gap-6">
-                    <div className="flex items-center gap-3 shrink-0">
+                <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+                    <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg">
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div>
-                            <h2 className="text-base font-bold text-primary">Targeting Roles</h2>
-                            <p className="text-[10px] text-slate-500 font-medium">What I'm looking for next</p>
+                            <h2 className="text-lg font-bold text-primary">Targeting Roles</h2>
+                            <p className="text-xs text-slate-500 font-medium">What I'm looking for next (Max: 3)</p>
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    {/* Current Roles with Delete */}
+                    <div className="flex flex-wrap gap-2 mb-4">
                         {(user.targetRoles || []).map((role: string, idx: number) => (
                             <div
                                 key={idx}
-                                className="px-4 py-2 bg-white rounded-xl border border-blue-100 text-blue-600 text-sm font-bold shadow-sm hover:shadow-md transition-all cursor-default text-center min-w-[120px]"
+                                className="px-4 py-2 bg-blue-50 rounded-xl border border-blue-200 text-blue-600 text-sm font-bold shadow-sm flex items-center gap-2 group"
                             >
-                                {role}
+                                <span>{role}</span>
+                                <button
+                                    onClick={() => {
+                                        const updatedRoles = user.targetRoles.filter((_: string, i: number) => i !== idx);
+                                        const updatedUser = { ...user, targetRoles: updatedRoles };
+                                        setUser(updatedUser);
+                                        localStorage.setItem("user_basic_info", JSON.stringify(updatedUser));
+                                    }}
+                                    className="text-blue-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
                             </div>
                         ))}
+                        {(!user.targetRoles || user.targetRoles.length === 0) && (
+                            <p className="text-slate-400 text-sm italic">No target roles added yet</p>
+                        )}
                     </div>
+
+                    {/* Add New Role */}
+                    {(user.targetRoles || []).length < 3 && (
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                placeholder="e.g. Full Stack Developer"
+                                value={newTargetRole}
+                                onChange={(e) => setNewTargetRole(e.target.value)}
+                                onKeyPress={(e) => {
+                                    if (e.key === "Enter" && newTargetRole.trim()) {
+                                        const updatedRoles = [...(user.targetRoles || []), newTargetRole.trim()];
+                                        const updatedUser = { ...user, targetRoles: updatedRoles };
+                                        setUser(updatedUser);
+                                        localStorage.setItem("user_basic_info", JSON.stringify(updatedUser));
+                                        setNewTargetRole("");
+                                    }
+                                }}
+                                className="flex-1 px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                            />
+                            <button
+                                onClick={() => {
+                                    if (newTargetRole.trim()) {
+                                        const updatedRoles = [...(user.targetRoles || []), newTargetRole.trim()];
+                                        const updatedUser = { ...user, targetRoles: updatedRoles };
+                                        setUser(updatedUser);
+                                        localStorage.setItem("user_basic_info", JSON.stringify(updatedUser));
+                                        setNewTargetRole("");
+                                    }
+                                }}
+                                disabled={!newTargetRole.trim()}
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold rounded-lg transition-all text-sm"
+                            >
+                                <Plus className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Talent Profile */}
