@@ -15,8 +15,6 @@ import EditSummaryModal from "@/components/talent/EditSummaryModal";
 import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
 
 export default function ProfilePage() {
-    const [cvText, setCvText] = useState("");
-    const [activeTab, setActiveTab] = useState<"cv" | "talent">("talent");
 
     const [user, setUser] = useState({
         name: "Moagi Marvin",
@@ -155,8 +153,6 @@ export default function ProfilePage() {
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
     const [isAddCredentialOpen, setIsAddCredentialOpen] = useState<{ open: boolean, type: "education" | "certification" }>({ open: false, type: "education" });
 
-    const [isExtracting, setIsExtracting] = useState(false);
-    const [isCleaning, setIsCleaning] = useState(false);
     const [editedUser, setEditedUser] = useState(user);
 
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
@@ -188,9 +184,6 @@ export default function ProfilePage() {
 
         const savedLanguages = localStorage.getItem("user_languages_list");
         if (savedLanguages) setLanguages(JSON.parse(savedLanguages));
-
-        const savedCvText = localStorage.getItem("master_cv_text");
-        if (savedCvText) setCvText(savedCvText);
     }, []);
 
     const handleSave = () => {
@@ -198,85 +191,7 @@ export default function ProfilePage() {
         setIsEditing(false);
         // Persist to unified keys
         localStorage.setItem("user_basic_info", JSON.stringify(editedUser));
-        localStorage.setItem("master_cv_text", cvText);
-        alert("Profile and Master CV saved successfully!");
-    };
-
-    const handleClean = async () => {
-        if (!cvText.trim()) return;
-
-        setIsCleaning(true);
-        try {
-            const res = await fetch('/api/clean-cv', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cvText }),
-            });
-
-            const data = await res.json();
-            if (data.error) throw new Error(`${data.error} (${data.details || 'No details'})`);
-
-            setCvText(data.cleanedText);
-            if (data.version === 'basic' || data.version === 'fallback') {
-                alert(`CV Polished (Basic Mode): ${data.note || 'AI was unavailable, using basic patterns.'}`);
-            } else {
-                alert('CV cleaned and formatted for ATS success!');
-            }
-        } catch (error: any) {
-            console.error('Cleaning failed:', error);
-            alert('Failed to clean CV: ' + error.message);
-        } finally {
-            setIsCleaning(false);
-        }
-    };
-
-    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        if (file.type !== 'application/pdf') {
-            alert('Please upload a PDF file.');
-            return;
-        }
-
-        setIsExtracting(true);
-        try {
-            // Load PDF.js dynamically to avoid SSR issues
-            const pdfjs = await import('pdfjs-dist');
-
-            // Set up worker
-            pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
-            const arrayBuffer = await file.arrayBuffer();
-            const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
-            const pdf = await loadingTask.promise;
-
-            let fullText = "";
-
-            // Extract text from each page
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const textContent = await page.getTextContent();
-                const pageText = textContent.items
-                    .map((item: any) => item.str)
-                    .join(" ");
-                fullText += pageText + "\n\n";
-            }
-
-            if (!fullText.trim()) {
-                throw new Error("Could not extract any text from this PDF. It might be a scanned image.");
-            }
-
-            setCvText(fullText.trim());
-            alert('CV text extracted successfully! Please review it below.');
-        } catch (error: any) {
-            console.error('PDF Extraction failed:', error);
-            alert('Failed to extract PDF: ' + error.message);
-        } finally {
-            setIsExtracting(false);
-            // Reset input
-            event.target.value = '';
-        }
+        alert("Profile saved successfully!");
     };
 
     const handleCancel = () => {
@@ -382,30 +297,8 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Tab Navigation & Logout */}
-                <div className="flex flex-col md:flex-row gap-4 mb-6">
-                    <div className="flex-1 flex gap-2 bg-white rounded-xl p-2 border-2 border-blue-100 shadow-sm">
-                        <button
-                            onClick={() => setActiveTab("talent")}
-                            className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === "talent"
-                                ? "bg-blue-600 text-white shadow-md"
-                                : "text-slate-600 hover:bg-slate-50"
-                                }`}
-                        >
-                            <Briefcase className="w-4 h-4" />
-                            Talent Profile
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("cv")}
-                            className={`flex-1 py-3 px-4 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 ${activeTab === "cv"
-                                ? "bg-blue-600 text-white shadow-md"
-                                : "text-slate-600 hover:bg-slate-50"
-                                }`}
-                        >
-                            <FileText className="w-4 h-4" />
-                            Master CV
-                        </button>
-                    </div>
+                {/* Logout Button */}
+                <div className="flex justify-end mb-6">
                     <button
                         onClick={handleLogout}
                         className="px-6 py-3 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 border-2 border-slate-100 hover:border-red-100 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold shadow-sm"
@@ -415,9 +308,30 @@ export default function ProfilePage() {
                     </button>
                 </div>
 
-                {/* Talent Profile Tab */}
-                {activeTab === "talent" && (
+                {/* Talent Profile */}
+                <div>
                     <div className="space-y-8">
+                        {/* Upload CV Section */}
+                        <div className="space-y-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl border-2 border-blue-200 p-8">
+                            <div className="space-y-2">
+                                <h2 className="text-2xl font-bold text-primary">Upload or Create CV</h2>
+                                <p className="text-slate-600 text-sm">
+                                    Start with an existing CV or create one from scratch. You can manage your Master CV separately.
+                                </p>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <Link href="/profile/master-cv" className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                                    <Upload className="w-4 h-4" />
+                                    Upload CV
+                                </Link>
+                                <Link href="/profile/create" className="flex-1 py-3 rounded-lg bg-white hover:bg-slate-50 text-primary font-bold border-2 border-slate-200 hover:border-purple-200 transition-all flex items-center justify-center gap-2 text-sm">
+                                    <Sparkles className="w-4 h-4" />
+                                    Create from Scratch
+                                </Link>
+                            </div>
+                        </div>
+
                         {/* Projects Section */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
@@ -629,124 +543,9 @@ export default function ProfilePage() {
                             </div>
                         </div>
                     </div>
-                )}
+                </div>
 
-                {/* Master CV Tab */}
-                {activeTab === "cv" && (
-                    <div className="space-y-8">
-                        {/* Master CV Section */}
-                        <div className="space-y-6">
-                            <div className="space-y-2">
-                                <h2 className="text-2xl font-bold text-primary">Master CV Profile</h2>
-                                <p className="text-slate-600 text-sm">
-                                    Upload an existing CV, create one from scratch, or paste your details.
-                                </p>
-                            </div>
-
-                            {/* Options Grid */}
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {/* Hidden File Input */}
-                                <input
-                                    type="file"
-                                    id="pdf-upload"
-                                    accept="application/pdf"
-                                    className="hidden"
-                                    onChange={handleFileUpload}
-                                />
-
-                                {/* Upload Section */}
-                                <div
-                                    onClick={() => !isExtracting && document.getElementById('pdf-upload')?.click()}
-                                    className={`border-2 border-dashed rounded-xl p-6 text-center transition-all flex flex-col items-center justify-center group cursor-pointer ${isExtracting ? 'border-blue-400 bg-blue-50/50' : 'border-blue-200 bg-white hover:border-blue-400'}`}
-                                >
-                                    {isExtracting ? (
-                                        <Loader2 className="w-8 h-8 mb-3 text-blue-500 animate-spin" />
-                                    ) : (
-                                        <Upload className="w-8 h-8 mb-3 text-blue-400 group-hover:text-blue-600 transition-colors" />
-                                    )}
-                                    <h3 className="text-md font-semibold text-primary mb-1">
-                                        {isExtracting ? 'Reading PDF...' : 'Upload File'}
-                                    </h3>
-                                    <p className="text-xs text-slate-500 mb-3">
-                                        PDF only for best results
-                                    </p>
-                                    <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 text-blue-600 text-xs font-medium transition-all border border-blue-100 group-hover:border-blue-200">
-                                        {isExtracting ? 'Please wait' : 'Choose File'}
-                                    </button>
-                                </div>
-
-                                {/* Create from Scratch Section */}
-                                {/* Create from Scratch Section */}
-                                <Link href="/profile/create" className="border-2 border-dashed border-purple-200 bg-white rounded-xl p-6 text-center hover:border-purple-400 transition-all flex flex-col items-center justify-center group cursor-pointer">
-                                    <Sparkles className="w-8 h-8 mb-3 text-purple-400 group-hover:text-purple-600 transition-colors" />
-                                    <h3 className="text-md font-semibold text-primary mb-1">Create from Scratch</h3>
-                                    <p className="text-xs text-slate-500 mb-3">
-                                        Don't have a CV?
-                                    </p>
-                                    <button className="px-4 py-2 rounded-lg bg-slate-50 group-hover:bg-purple-50 text-purple-600 text-xs font-medium transition-all border border-purple-100 group-hover:border-purple-200">
-                                        Open Builder
-                                    </button>
-                                </Link>
-                            </div>
-
-                            {/* Text Area Section */}
-                            <div className="space-y-3 relative">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-sm font-semibold flex items-center gap-2 text-primary">
-                                        <FileText className="w-4 h-4" />
-                                        CV Content
-                                    </label>
-                                    <div className="flex items-center gap-3">
-                                        <button
-                                            onClick={handleClean}
-                                            disabled={isCleaning || !cvText}
-                                            className={`text-[10px] font-bold px-2 py-1 rounded border transition-all flex items-center gap-1.5 ${isCleaning ? 'bg-blue-50 text-blue-400 border-blue-100' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300'} disabled:opacity-50`}
-                                        >
-                                            {isCleaning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                            {isCleaning ? "Polishing..." : "Clean & Format with AI"}
-                                        </button>
-                                        {cvText && (
-                                            <span className="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded border border-green-100 animate-pulse">
-                                                Extracted Content
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                <textarea
-                                    value={cvText}
-                                    onChange={(e) => setCvText(e.target.value)}
-                                    placeholder="Paste your CV text here or use the options above..."
-                                    className="w-full h-80 bg-white border-2 border-slate-200 rounded-lg p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 font-mono leading-relaxed"
-                                />
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={handleSave}
-                                    className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm"
-                                >
-                                    <Save className="w-4 h-4" />
-                                    Save Master Profile
-                                </button>
-                                <button
-                                    onClick={() => setCvText("")}
-                                    className="px-6 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all border border-slate-200 text-sm"
-                                >
-                                    Clear
-                                </button>
-                            </div>
-
-                            {/* Info Box */}
-                            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 text-sm text-slate-700">
-                                <strong className="text-primary">💡 Tip:</strong> Include all your skills, experiences, projects, and achievements. The AI will select the most relevant ones for each job application.
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-
+                {/* Modals */}
             <EditProfileModal
                 isOpen={isEditing}
                 onClose={() => setIsEditing(false)}
@@ -849,6 +648,7 @@ export default function ProfilePage() {
                     setIsAddProjectOpen(false);
                 }}
             />
+            </div>
         </main>
     );
 }
