@@ -4,14 +4,17 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2,
-  Mail,
-  Phone,
-  Globe,
   LinkIcon,
   CheckCircle,
   AlertCircle,
   Loader,
+  User,
+  BriefcaseBusiness,
+  Globe2,
+  Plus,
+  X,
 } from "lucide-react";
+import RecruiterProfileHeader from "@/components/recruiter/RecruiterProfileHeader";
 
 interface RecruiterProfile {
   id: string;
@@ -190,26 +193,35 @@ export default function RecruiterProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {/* Header (match /profile flow) */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 flex items-center gap-3">
-            <Building2 className="w-10 h-10 text-blue-600" />
-            Recruiter Profile
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Manage your recruiting business information and connect your job board
-          </p>
+          <RecruiterProfileHeader
+            companyName={profile.company_name}
+            fullName={profile.full_name}
+            email={profile.email}
+            phone={profile.phone}
+            companyWebsite={profile.company_website}
+            linkedinUrl={profile.linkedin_url}
+            jobBoardUrl={profile.job_board_url}
+            industry={profile.industry}
+            verificationStatus={profile.verification_status}
+            isOwner={true}
+            onEdit={() => {
+              const el = document.getElementById("recruiter-profile-form");
+              el?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+          />
         </div>
 
         {/* Messages */}
         {message && (
           <div
-            className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
+            className={`mb-6 p-4 rounded-xl flex items-center gap-3 border ${
               message.type === "success"
-                ? "bg-green-50 border border-green-200"
-                : "bg-red-50 border border-red-200"
+                ? "bg-green-50 border-green-200"
+                : "bg-red-50 border-red-200"
             }`}
           >
             {message.type === "success" ? (
@@ -227,29 +239,29 @@ export default function RecruiterProfilePage() {
           </div>
         )}
 
-        {/* Verification Status */}
-        {profile.verification_status && (
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-gray-600">
-              <strong>Verification Status:</strong>{" "}
-              <span className="capitalize text-blue-700 font-semibold">
-                {profile.verification_status}
-              </span>
-            </p>
-          </div>
-        )}
-
         {/* Main Form */}
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form
+          id="recruiter-profile-form"
+          onSubmit={handleSubmit}
+          className="space-y-8"
+        >
           {/* Basic Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Basic Information
-            </h2>
+          <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg">
+                <User className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-primary">Basic Information</h2>
+                <p className="text-xs text-slate-500 font-medium">
+                  Your contact details used for trust + communication
+                </p>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
                   Full Name
                 </label>
                 <input
@@ -258,12 +270,12 @@ export default function RecruiterProfilePage() {
                   value={profile.full_name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
                   Company Name
                 </label>
                 <input
@@ -272,13 +284,12 @@ export default function RecruiterProfilePage() {
                   value={profile.company_name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                  <Mail className="w-4 h-4" />
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
                   Email
                 </label>
                 <input
@@ -287,42 +298,49 @@ export default function RecruiterProfilePage() {
                   value={profile.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  Phone
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  Phone (optional)
                 </label>
                 <input
                   type="tel"
                   name="phone"
                   value={profile.phone || ""}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
                 />
               </div>
             </div>
           </div>
 
           {/* Business Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Business Information
-            </h2>
+          <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <Building2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-800">Business</h2>
+                <p className="text-xs text-slate-500 font-medium">
+                  Helps talent understand your recruiting scope
+                </p>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
                   Industry
                 </label>
                 <select
                   name="industry"
                   value={profile.industry || ""}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white font-medium"
                 >
                   <option value="">Select an industry</option>
                   <option value="Technology">Technology</option>
@@ -336,15 +354,15 @@ export default function RecruiterProfilePage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
                   Company Size
                 </label>
                 <select
                   name="company_size"
                   value={profile.company_size || ""}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white font-medium"
                 >
                   <option value="">Select company size</option>
                   <option value="Solo">Solo</option>
@@ -354,9 +372,9 @@ export default function RecruiterProfilePage() {
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Years in Recruiting Business
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  Years in recruiting
                 </label>
                 <input
                   type="number"
@@ -364,13 +382,12 @@ export default function RecruiterProfilePage() {
                   value={profile.years_in_business || ""}
                   onChange={handleInputChange}
                   min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
                   Company Website
                 </label>
                 <input
@@ -379,14 +396,14 @@ export default function RecruiterProfilePage() {
                   value={profile.company_website || ""}
                   onChange={handleInputChange}
                   placeholder="https://example.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
                 />
               </div>
             </div>
 
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                LinkedIn Profile
+            <div className="mt-6 space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                LinkedIn
               </label>
               <input
                 type="url"
@@ -394,13 +411,13 @@ export default function RecruiterProfilePage() {
                 value={profile.linkedin_url || ""}
                 onChange={handleInputChange}
                 placeholder="https://linkedin.com/in/yourprofile"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
               />
             </div>
 
             {/* Specializations */}
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="mt-6">
+              <label className="text-sm font-semibold text-slate-700 block mb-2">
                 Specializations
               </label>
               <input
@@ -409,43 +426,55 @@ export default function RecruiterProfilePage() {
                 onChange={(e) => setSpecializationInput(e.target.value)}
                 onKeyDown={addSpecialization}
                 placeholder="Type and press Enter (e.g., React Developer)"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
               />
-              <div className="mt-2 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 {profile.specializations?.map((spec, idx) => (
                   <span
                     key={idx}
-                    className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                    className="px-3 py-1.5 bg-blue-50 rounded-xl border border-blue-200 text-blue-700 text-sm font-bold shadow-sm flex items-center gap-2 group"
                   >
                     {spec}
                     <button
                       type="button"
                       onClick={() => removeSpecialization(idx)}
-                      className="hover:text-blue-900 font-semibold"
+                      className="text-blue-400 hover:text-red-500 transition-colors"
+                      title="Remove"
                     >
-                      ×
+                      <X className="w-4 h-4" />
                     </button>
                   </span>
                 ))}
+                {(!profile.specializations ||
+                  profile.specializations.length === 0) && (
+                  <p className="text-slate-400 text-sm italic">
+                    No specializations added yet.
+                  </p>
+                )}
               </div>
             </div>
           </div>
 
           {/* Job Board Integration */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <LinkIcon className="w-5 h-5" />
-              Job Board Integration
-            </h2>
-
-            <p className="text-sm text-gray-600 mb-4">
-              Connect your job board so candidates on our platform can see and apply for your jobs.
-            </p>
+          <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <LinkIcon className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-800">
+                  Job Board Integration
+                </h2>
+                <p className="text-xs text-slate-500 font-medium">
+                  Connect your feed so candidates can discover your jobs
+                </p>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Job Board URL
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  Job board URL
                 </label>
                 <input
                   type="url"
@@ -453,19 +482,19 @@ export default function RecruiterProfilePage() {
                   value={profile.job_board_url || ""}
                   onChange={handleInputChange}
                   placeholder="https://jobs.yourcompany.com or RSS feed URL"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Feed Type
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  Feed type
                 </label>
                 <select
                   name="job_board_type"
                   value={profile.job_board_type || "rss"}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white font-medium"
                 >
                   <option value="rss">RSS Feed</option>
                   <option value="json_api">JSON API</option>
@@ -475,23 +504,29 @@ export default function RecruiterProfilePage() {
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleSyncJobs}
-              disabled={isSaving || !profile.job_board_url}
-              className="mt-4 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-md flex items-center gap-2"
-            >
-              {isSaving ? <Loader className="w-4 h-4 animate-spin" /> : null}
-              Sync Jobs Now
-            </button>
+            <div className="mt-4 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={handleSyncJobs}
+                disabled={isSaving || !profile.job_board_url}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-slate-300 text-white text-xs font-bold transition-all border border-green-700 shadow-sm"
+              >
+                {isSaving ? <Loader className="w-4 h-4 animate-spin" /> : null}
+                Sync Jobs Now
+              </button>
+              <div className="text-xs text-slate-500 flex items-center gap-2">
+                <Globe2 className="w-4 h-4 text-blue-600" />
+                We’ll pull jobs from your feed and show them on your company profile.
+              </div>
+            </div>
           </div>
 
-          {/* Save Button */}
-          <div className="flex gap-4">
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3">
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold transition-all shadow-sm"
             >
               {isSaving ? <Loader className="w-5 h-5 animate-spin" /> : null}
               {isSaving ? "Saving..." : "Save Profile"}
@@ -499,13 +534,21 @@ export default function RecruiterProfilePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-900 font-semibold py-3 rounded-lg"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition-all border border-slate-200"
             >
               Cancel
             </button>
           </div>
+
+          {/* Small helper row (matches "flow" /profile has extra controls) */}
+          <div className="flex items-center justify-end gap-2 text-xs text-slate-500">
+            <BriefcaseBusiness className="w-4 h-4 text-blue-600" />
+            Tip: add 3–5 specializations so talent finds you in search.
+            <span className="hidden">.</span>
+            <Plus className="w-4 h-4 text-slate-400" />
+          </div>
         </form>
       </div>
-    </div>
+    </main>
   );
 }
