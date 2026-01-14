@@ -11,13 +11,14 @@ interface ProfileHeaderProps {
     portfolio?: string;
     haveLicense?: boolean;
     haveCar?: boolean;
+    educationLevel?: string;
     onEdit?: () => void;
     onDownloadResume?: () => void;
     downloadAction?: React.ReactNode;
     isOwner?: boolean;
 }
 
-import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard } from "lucide-react";
+import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, GraduationCap } from "lucide-react";
 
 export default function ProfileHeader({
     name,
@@ -32,6 +33,7 @@ export default function ProfileHeader({
     portfolio,
     haveLicense,
     haveCar,
+    educationLevel,
     onEdit,
     onDownloadResume,
     downloadAction,
@@ -136,6 +138,13 @@ export default function ProfileHeader({
                                 <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 shadow-sm">
                                     <Car className="w-3 h-3" />
                                     <span className="text-[10px] font-bold uppercase tracking-wider">Own Transport</span>
+                                </div>
+                            )}
+
+                            {educationLevel && (
+                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-green-200 bg-green-50 text-green-700 shadow-sm">
+                                    <GraduationCap className="w-3 h-3" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">{educationLevel}</span>
                                 </div>
                             )}
 

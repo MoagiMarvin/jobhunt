@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText } from "lucide-react";
+import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText, GraduationCap } from "lucide-react";
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -16,6 +16,7 @@ interface EditProfileModalProps {
         availabilityStatus: "Looking for Work" | "Not Looking";
         haveLicense?: boolean;
         haveCar?: boolean;
+        educationLevel?: string;
         github?: string;
         linkedin?: string;
         portfolio?: string;
@@ -172,6 +173,28 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                                     />
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Education Level */}
+                        <div className="space-y-2 col-span-2">
+                            <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                <GraduationCap className="w-4 h-4 text-blue-600" />
+                                Education Level
+                            </label>
+                            <select
+                                value={formData.educationLevel || ""}
+                                onChange={(e) => setFormData({ ...formData, educationLevel: e.target.value })}
+                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-white font-medium"
+                            >
+                                <option value="">Select education level...</option>
+                                <option value="Matric">Matric / Grade 12</option>
+                                <option value="Certificate">Certificate</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Bachelor">Bachelor's Degree</option>
+                                <option value="Honours">Honours Degree</option>
+                                <option value="Masters">Master's Degree</option>
+                                <option value="PhD">PhD</option>
+                            </select>
                         </div>
 
                         {/* Logistics Section */}

@@ -8,7 +8,7 @@ import ProjectCard from "@/components/talent/ProjectCard";
 import CredentialCard from "@/components/talent/CredentialCard";
 import ExperienceCard from "@/components/talent/ExperienceCard";
 import EditProfileModal from "@/components/talent/EditProfileModal";
-import AddSkillModal from "@/components/talent/AddSkillModal";
+import AddSkillModal, { TalentSkill } from "@/components/talent/AddSkillModal";
 import AddCredentialModal from "@/components/talent/AddCredentialModal";
 import AddProjectModal from "@/components/talent/AddProjectModal";
 import EditSummaryModal from "@/components/talent/EditSummaryModal";
@@ -30,11 +30,15 @@ export default function ProfilePage() {
         portfolio: "https://moagi.dev",
         haveLicense: true,
         haveCar: true,
+        educationLevel: "Bachelor",
         summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
     });
 
-    const [skills, setSkills] = useState<string[]>([
-        "React", "TypeScript", "Python", "Public Speaking", "Agile Methodology"
+    const [skills, setSkills] = useState<(string | TalentSkill)[]>([
+        { name: "React", minYears: 1, level: "Advanced" },
+        { name: "TypeScript", minYears: 1, level: "Intermediate" },
+        "Public Speaking",
+        "Agile Methodology"
     ]);
 
     const [languages, setLanguages] = useState([
@@ -225,6 +229,7 @@ export default function ProfilePage() {
                         portfolio={user.portfolio}
                         haveLicense={user.haveLicense}
                         haveCar={user.haveCar}
+                        educationLevel={user.educationLevel}
                         onEdit={() => setIsEditing(true)}
                         downloadAction={<DownloadResumeButton data={{ user, experiences, educationList, skills, projectsList, certificationsList, languages }} />}
                         isOwner={true}
@@ -452,17 +457,37 @@ export default function ProfilePage() {
 
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
                                 <div className="flex flex-wrap gap-2">
-                                    {skills.map((skill: any, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200 group/skill">
-                                            <span className="text-sm font-semibold text-slate-700">{typeof skill === 'string' ? skill : skill.name}</span>
-                                            <button
-                                                onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
-                                                className="text-slate-400 hover:text-red-500 transition-colors"
+                                    {skills.map((skill: any, idx) => {
+                                        const name = typeof skill === "string" ? skill : skill.name;
+                                        const minYears = typeof skill === "string" ? undefined : skill.minYears;
+                                        const level = typeof skill === "string" ? undefined : skill.level;
+
+                                        return (
+                                            <div
+                                                key={idx}
+                                                className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200 group/skill"
                                             >
-                                                <X className="w-3.5 h-3.5" />
-                                            </button>
-                                        </div>
-                                    ))}
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-semibold text-slate-700">
+                                                        {name}
+                                                    </span>
+                                                    {(minYears || level) && (
+                                                        <span className="text-[10px] text-slate-500 font-medium">
+                                                            {minYears ? `${minYears}+ yrs` : null}
+                                                            {minYears && level ? " • " : ""}
+                                                            {level ? level : null}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
+                                                    className="text-slate-400 hover:text-red-500 transition-colors"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
                                     {skills.length === 0 && (
                                         <p className="text-sm text-slate-400 italic">No skills added yet.</p>
                                     )}
@@ -591,8 +616,8 @@ export default function ProfilePage() {
             <AddSkillModal
                 isOpen={isAddSkillOpen}
                 onClose={() => setIsAddSkillOpen(false)}
-                onAdd={(newSkillName) => {
-                    setSkills([...skills, newSkillName]);
+                onAdd={(newSkill) => {
+                    setSkills([...skills, newSkill]);
                     setIsAddSkillOpen(false);
                 }}
             />

@@ -7,6 +7,7 @@ create table public.profiles (
   portfolio_url text,
   phone text,
   summary text, -- The "Master Summary"
+  education_level text, -- e.g., "Matric", "Diploma", "Bachelor", "Honours", "Masters", "PhD"
   master_cv JSONB DEFAULT '{}'::jsonb, -- The "Master Profile" (Skills, Exp, Edu, etc.)
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -52,7 +53,8 @@ create table public.skills (
   user_id uuid references public.profiles(id) not null,
   name text not null, -- e.g., "Python"
   category text, -- e.g., "Language", "Framework", "Soft Skill"
-  proficiency_level text, -- "Beginner", "Intermediate", "Expert"
+  proficiency_level text, -- "Beginner", "Intermediate", "Advanced", "Expert"
+  min_experience_years numeric, -- e.g., 0.5, 2, 5 (in years)
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
