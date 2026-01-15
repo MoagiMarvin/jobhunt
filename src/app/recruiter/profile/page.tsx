@@ -10,7 +10,6 @@ import {
   Loader,
   User,
   BriefcaseBusiness,
-  Globe2,
   Plus,
   X,
 } from "lucide-react";
@@ -139,50 +138,6 @@ export default function RecruiterProfilePage() {
     }
   };
 
-  const handleSyncJobs = async () => {
-    if (!profile.job_board_url) {
-      setMessage({
-        type: "error",
-        text: "Please add a job board URL first",
-      });
-      return;
-    }
-
-    setIsSaving(true);
-    setMessage(null);
-
-    try {
-      const response = await fetch("/api/recruiter/sync-jobs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          job_board_url: profile.job_board_url,
-          job_board_type: profile.job_board_type,
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setMessage({
-          type: "success",
-          text: `Synced ${result.count} jobs successfully!`,
-        });
-      } else {
-        const error = await response.json();
-        setMessage({
-          type: "error",
-          text: error.error || "Failed to sync jobs",
-        });
-      }
-    } catch (error) {
-      setMessage({
-        type: "error",
-        text: error instanceof Error ? error.message : "An error occurred",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -204,7 +159,6 @@ export default function RecruiterProfilePage() {
             phone={profile.phone}
             companyWebsite={profile.company_website}
             linkedinUrl={profile.linkedin_url}
-            jobBoardUrl={profile.job_board_url}
             industry={profile.industry}
             verificationStatus={profile.verification_status}
             isOwner={true}
@@ -218,11 +172,10 @@ export default function RecruiterProfilePage() {
         {/* Messages */}
         {message && (
           <div
-            className={`mb-6 p-4 rounded-xl flex items-center gap-3 border ${
-              message.type === "success"
-                ? "bg-green-50 border-green-200"
-                : "bg-red-50 border-red-200"
-            }`}
+            className={`mb-6 p-4 rounded-xl flex items-center gap-3 border ${message.type === "success"
+              ? "bg-green-50 border-green-200"
+              : "bg-red-50 border-red-200"
+              }`}
           >
             {message.type === "success" ? (
               <CheckCircle className="w-5 h-5 text-green-600" />
@@ -447,76 +400,10 @@ export default function RecruiterProfilePage() {
                 ))}
                 {(!profile.specializations ||
                   profile.specializations.length === 0) && (
-                  <p className="text-slate-400 text-sm italic">
-                    No specializations added yet.
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Job Board Integration */}
-          <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                <LinkIcon className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-slate-800">
-                  Job Board Integration
-                </h2>
-                <p className="text-xs text-slate-500 font-medium">
-                  Connect your feed so candidates can discover your jobs
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
-                  Job board URL
-                </label>
-                <input
-                  type="url"
-                  name="job_board_url"
-                  value={profile.job_board_url || ""}
-                  onChange={handleInputChange}
-                  placeholder="https://jobs.yourcompany.com or RSS feed URL"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
-                  Feed type
-                </label>
-                <select
-                  name="job_board_type"
-                  value={profile.job_board_type || "rss"}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white font-medium"
-                >
-                  <option value="rss">RSS Feed</option>
-                  <option value="json_api">JSON API</option>
-                  <option value="xml_sitemap">XML Sitemap</option>
-                  <option value="manual">Manual (Upload CSV/JSON)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-col sm:flex-row gap-3">
-              <button
-                type="button"
-                onClick={handleSyncJobs}
-                disabled={isSaving || !profile.job_board_url}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-slate-300 text-white text-xs font-bold transition-all border border-green-700 shadow-sm"
-              >
-                {isSaving ? <Loader className="w-4 h-4 animate-spin" /> : null}
-                Sync Jobs Now
-              </button>
-              <div className="text-xs text-slate-500 flex items-center gap-2">
-                <Globe2 className="w-4 h-4 text-blue-600" />
-                We’ll pull jobs from your feed and show them on your company profile.
+                    <p className="text-slate-400 text-sm italic">
+                      No specializations added yet.
+                    </p>
+                  )}
               </div>
             </div>
           </div>
@@ -540,13 +427,12 @@ export default function RecruiterProfilePage() {
             </button>
           </div>
 
-          {/* Small helper row (matches "flow" /profile has extra controls) */}
+          {/* Small helper row */}
           <div className="flex items-center justify-end gap-2 text-xs text-slate-500">
             <BriefcaseBusiness className="w-4 h-4 text-blue-600" />
             Tip: add 3–5 specializations so talent finds you in search.
-            <span className="hidden">.</span>
-            <Plus className="w-4 h-4 text-slate-400" />
           </div>
+
         </form>
       </div>
     </main>

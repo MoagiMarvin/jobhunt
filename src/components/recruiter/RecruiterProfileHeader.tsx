@@ -17,7 +17,6 @@ interface RecruiterProfileHeaderProps {
   phone?: string;
   companyWebsite?: string;
   linkedinUrl?: string;
-  jobBoardUrl?: string;
   industry?: string;
   verificationStatus?: string;
   isOwner?: boolean;
@@ -38,7 +37,6 @@ export default function RecruiterProfileHeader({
   phone,
   companyWebsite,
   linkedinUrl,
-  jobBoardUrl,
   industry,
   verificationStatus,
   isOwner = true,
@@ -170,17 +168,6 @@ export default function RecruiterProfileHeader({
                     title="LinkedIn"
                   >
                     <Linkedin className="w-3.5 h-3.5" />
-                  </a>
-                )}
-                {jobBoardUrl && (
-                  <a
-                    href={jobBoardUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-1.5 rounded-full border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all"
-                    title="Job board"
-                  >
-                    <LinkIcon className="w-3.5 h-3.5" />
                   </a>
                 )}
               </div>
