@@ -21,7 +21,7 @@ export default function SearchPage() {
         setJobs([]);
 
         // Sources we scan: PNet is immediate, others are background
-        const allSources = ['pnet', 'linkedin', 'careers24', 'indeed'];
+        const allSources = ['pnet', 'discovery', 'linkedin', 'careers24', 'indeed'];
         setLoadingSources(allSources);
 
         try {
@@ -37,7 +37,7 @@ export default function SearchPage() {
             setLoadingSources(prev => prev.filter(s => s !== 'pnet'));
 
             // 2. Fetch others in BACKGROUND
-            const backgroundSources = ['linkedin', 'careers24', 'indeed'];
+            const backgroundSources = ['discovery', 'linkedin', 'careers24', 'indeed'];
 
             backgroundSources.forEach(async (src) => {
                 const controller = new AbortController();
@@ -71,9 +71,9 @@ export default function SearchPage() {
         <main className="min-h-screen bg-slate-50 pb-20">
             <div className="max-w-6xl mx-auto px-6 py-12">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 mb-2">Job Search & AI Optimizer</h1>
+                    <h1 className="text-3xl font-bold text-slate-900 mb-2">Discovery Engine</h1>
                     <p className="text-slate-600">
-                        Find jobs online across PNet and LinkedIn to optimize your CV.
+                        Scanning 20+ career portals for the latest Learnerships, Bursaries, and Graduate roles.
                     </p>
                 </div>
 
@@ -104,7 +104,7 @@ export default function SearchPage() {
                 {hasSearched && loadingSources.length > 0 && (
                     <div className="mb-6 flex flex-wrap gap-2 items-center">
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Scanning:</span>
-                        {['pnet', 'linkedin', 'careers24', 'indeed'].map(source => (
+                        {['pnet', 'discovery', 'linkedin', 'careers24', 'indeed'].map(source => (
                             <div
                                 key={source}
                                 className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${loadingSources.includes(source)
@@ -112,7 +112,7 @@ export default function SearchPage() {
                                     : 'bg-green-50 text-green-600 border-green-200 opacity-60'
                                     }`}
                             >
-                                {source.toUpperCase()}
+                                {source === 'discovery' ? 'DISCOVERY ENGINE' : source.toUpperCase()}
                                 {loadingSources.includes(source) ? '...' : ' ✓'}
                             </div>
                         ))}
@@ -171,7 +171,10 @@ function JobCard({ job, router }: { job: any; router: any }) {
                         {job.title}
                     </h3>
                     <div className="flex items-center gap-2 text-sm text-slate-500">
-                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border ${job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border ${job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' :
+                            job.source.toLowerCase().includes('discovery') ? 'bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm' :
+                                'bg-blue-50 text-blue-700 border-blue-100'
+                            }`}>
                             {job.source}
                         </span>
                         <span>{job.company}</span>

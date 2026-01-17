@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
+import { supabase } from '@/lib/supabase';
 
 // Search API for JobHunt (v3.0 - Integrated with User Reference Logic)
 export async function GET(request: Request) {
@@ -20,6 +21,16 @@ export async function GET(request: Request) {
                 case 'careers24': jobs = await scrapeCareers24(query); break;
                 case 'adzuna':
                 case 'indeed': jobs = await scrapeAdzuna(query); break;
+                case 'local': jobs = await searchLocalJobs(query); break;
+                // Discovery Volume Sources
+                case 'discovery':
+                    const discResults = await Promise.all([
+                        scrapeStandardBank(query).catch(() => []),
+                        scrapeCapitecLive(query).catch(() => []),
+                        searchLocalJobs(query).catch(() => [])
+                    ]);
+                    jobs = discResults.flat();
+                    break;
             }
         } catch (e) {
             console.error(`[API] Source error (${source}):`, e);
@@ -27,12 +38,15 @@ export async function GET(request: Request) {
         return NextResponse.json({ jobs });
     }
 
-    // Parallel fetch fallback
+    // Parallel fetch fallback (including everything)
     const results = await Promise.all([
+        searchLocalJobs(query).catch(() => []),
         scrapePNet(query).catch(() => []),
         scrapeLinkedIn(query).catch(() => []),
         scrapeCareers24(query).catch(() => []),
-        scrapeAdzuna(query).catch(() => [])
+        scrapeAdzuna(query).catch(() => []),
+        scrapeStandardBank(query).catch(() => []),
+        scrapeCapitecLive(query).catch(() => [])
     ]);
 
     return NextResponse.json({ jobs: results.flat() });
@@ -257,5 +271,132 @@ async function scrapeAdzuna(query: string) {
             }
         });
         return jobs.slice(0, 10);
+    } catch (e) { return []; }
+}
+
+async function searchLocalJobs(query: string) {
+    try {
+        const { data, error } = await supabase
+            .from('synced_jobs')
+            .select(`
+                id,
+                title,
+                location,
+                application_url,
+                recruiter_id,
+                recruiter_profiles (
+                    company_name
+                )
+            `)
+            .ilike('title', `%${query}%`)
+            .eq('is_active', true)
+            .limit(20);
+
+        if (error) throw error;
+
+        return (data || []).map(job => ({
+            id: job.id,
+            title: job.title,
+            company: (job.recruiter_profiles as any)?.company_name || 'Verified Employer',
+            location: job.location || 'South Africa',
+            link: job.application_url,
+            source: 'Discovery Engine'
+        }));
+    } catch (e) {
+        console.error("[Search] Local search failed:", e);
+        return [];
+    }
+}
+
+async function scrapeStandardBank(query: string) {
+    const qLower = query.toLowerCase();
+    if (!qLower.includes('bank') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn') && !qLower.includes('bursary')) return [];
+    try {
+        const url = "https://www.standardbank.com/sbg/standard-bank-group/careers/early-careers";
+        const res = await fetch(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36' },
+            signal: AbortSignal.timeout(8000)
+        });
+        if (!res.ok) return [];
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const results: any[] = [];
+        $('a').each((i, el) => {
+            const title = $(el).text().trim();
+            const href = $(el).attr('href');
+            if (title.length > 5 && href && (href.includes('graduate') || href.includes('intern')) && isRelevant(title, query)) {
+                results.push({
+                    id: `sb-${Date.now()}-${i}`,
+                    title,
+                    company: "Standard Bank",
+                    location: "South Africa",
+                    link: href.startsWith('http') ? href : `https://www.standardbank.com${href}`,
+                    source: 'Discovery Engine (Live)'
+                });
+            }
+        });
+        if (results.length === 0 && (query.toLowerCase().includes('bank') || query.toLowerCase().includes('grad'))) {
+            results.push({ id: `sb-p-${Date.now()}`, title: "Standard Bank Early Careers Portal", company: "Standard Bank", location: "South Africa", link: url, source: 'Discovery Engine (Live)' });
+        }
+        return results;
+    } catch (e) { return []; }
+}
+
+async function scrapeCapitecLive(query: string) {
+    const qLower = query.toLowerCase();
+    if (!qLower.includes('capitec') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn')) return [];
+    try {
+        const url = "https://www.capitecbank.co.za/about-us/careers/";
+        const res = await fetch(url, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36' },
+            signal: AbortSignal.timeout(8000)
+        });
+        if (!res.ok) return [];
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const results: any[] = [];
+        $('a').each((i, el) => {
+            const text = $(el).text().trim();
+            const href = $(el).attr('href');
+            if (href && (href.includes('career') || href.includes('job') || href.includes('graduate')) && isRelevant(text, query)) {
+                results.push({
+                    id: `cap-${Date.now()}-${i}`,
+                    title: text || "Capitec Careers",
+                    company: "Capitec Bank",
+                    location: "South Africa",
+                    link: href.startsWith('http') ? href : `https://www.capitecbank.co.za${href}`,
+                    source: 'Discovery Engine (Live)'
+                });
+            }
+        });
+        return results;
+    } catch (e) { return []; }
+}
+
+async function scrapeShoprite(query: string) {
+    const qLower = query.toLowerCase();
+    if (!qLower.includes('shoprite') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn')) return [];
+    try {
+        const url = "https://www.shopriteholdings.co.za/careers.html";
+        const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) });
+        if (!res.ok) return [];
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const results: any[] = [];
+        $('a').each((i, el) => {
+            const text = $(el).text().trim();
+            const href = $(el).attr('href');
+            if (href && (href.includes('graduate') || href.includes('careers') || href.includes('programme')) && isRelevant(text, query)) {
+                results.push({
+                    id: `shop-${Date.now()}-${i}`,
+                    title: text || "Shoprite Careers",
+                    company: "Shoprite Group",
+                    location: "South Africa",
+                    link: href.startsWith('http') ? href : `https://www.shopriteholdings.co.za/${href}`,
+                    source: 'Discovery Engine (Live)'
+                });
+            }
+        });
+        return results;
     } catch (e) { return []; }
 }
