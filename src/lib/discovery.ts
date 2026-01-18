@@ -37,21 +37,38 @@ export class DiscoveryEngine {
         const $ = cheerio.load(html);
         const links = new Set<string>();
 
+        // Priority 1: Semantic job links
         $('a').each((_, el) => {
             const href = $(el).attr('href');
             const text = $(el).text().toLowerCase();
+            const title = $(el).attr('title')?.toLowerCase() || '';
 
-            if (href && (
-                href.includes('/job/') ||
-                href.includes('/vacancy/') ||
-                href.includes('/careers/') ||
-                href.includes('/learnership/') ||
-                href.includes('/internship/') ||
-                text.includes('apply now') ||
-                text.includes('view job') ||
-                text.includes('details')
-            )) {
-                links.add(new URL(href, baseUrl).toString());
+            if (href) {
+                const isJobUrl =
+                    href.includes('/job/') ||
+                    href.includes('/vacancy/') ||
+                    href.includes('/careers/') ||
+                    href.includes('/job-ad/') ||
+                    href.includes('/opportunities/') ||
+                    href.includes('/view/');
+
+                const isJobText =
+                    text.includes('apply') ||
+                    text.includes('intern') ||
+                    text.includes('learnership') ||
+                    text.includes('graduate') ||
+                    text.includes('details') ||
+                    title.includes('view job');
+
+                if (isJobUrl || isJobText) {
+                    try {
+                        const absoluteUrl = new URL(href, baseUrl).toString();
+                        // Ignore common junk links
+                        if (!absoluteUrl.includes('login') && !absoluteUrl.includes('register') && !absoluteUrl.includes('share')) {
+                            links.add(absoluteUrl);
+                        }
+                    } catch (e) { }
+                }
             }
         });
 
@@ -109,5 +126,48 @@ export class DiscoveryEngine {
             console.error("[Discovery] XML Feed Parse Error:", e);
             return [];
         }
+    }
+
+    /**
+     * Zero-Token Rule-Based Job Classifier
+     */
+    static classify(title: string) {
+        const t = title.toLowerCase();
+
+        const industries: Record<string, string[]> = {
+            'IT & Tech': ['dev', 'software', 'eng', 'tech', 'data', 'it ', 'web', 'cyber', 'network', 'cloud', 'system', 'program'],
+            'Finance & Accounting': ['account', 'audit', 'bank', 'finance', 'tax', 'credit', 'billing', 'payroll', 'equity'],
+            'Medical & Health': ['nurse', 'medic', 'health', 'physio', 'doctor', 'clinic', 'pharm', 'care'],
+            'Retail & Sales': ['sales', 'retail', 'clerk', 'cashier', 'merchand', 'store', 'stock'],
+            'Engineering & Industrial': ['mechanic', 'electr', 'civil', 'engineer', 'technician', 'mine', 'mining', 'factory'],
+            'Legal & Admin': ['admin', 'legal', 'law', 'secretar', 'clerk', 'compliance', 'hr ', 'human res'],
+            'Logistics & Transport': ['drive', 'logist', 'fleet', 'warehouse', 'deliver', 'truck', 'courier']
+        };
+
+        const levels: Record<string, string[]> = {
+            'Internship': ['intern'],
+            'Graduate': ['graduate', 'grad ', 'trainee', 'candidate'],
+            'Learnership': ['learnership', 'yes '],
+            'Bursary': ['bursary', 'funding', 'scholarship'],
+            'Entry Level': ['entry', 'junior', 'assistant', 'clerk', 'matric']
+        };
+
+        let industry = 'General';
+        for (const [ind, keywords] of Object.entries(industries)) {
+            if (keywords.some(k => t.includes(k))) {
+                industry = ind;
+                break;
+            }
+        }
+
+        let level = 'Full Time';
+        for (const [lvl, keywords] of Object.entries(levels)) {
+            if (keywords.some(k => t.includes(k))) {
+                level = lvl;
+                break;
+            }
+        }
+
+        return { industry, level };
     }
 }

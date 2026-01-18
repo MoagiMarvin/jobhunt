@@ -28,8 +28,28 @@ export async function GET(request: Request) {
 
         const html = await response.text();
         const $ = cheerio.load(html);
+        const bodyText = $('body').text();
+
+        let salary = "";
+        const salaryPatterns = [
+            /R\s?\d{1,3}(?:\s?\d{3})*(?:\.\d{2})?\s?-\s?R\s?\d{1,3}(?:\s?\d{3})*(?:\.\d{2})?/, // R10 000 - R15 000
+            /R\s?\d{1,3}(?:\s?\d{3})*(?:\.\d{2})?\s?(?:per month|p\.m\.|pm|per annum|p\.a\.|pa|monthly|annually)/i,
+            /(?:salary|remuneration|stipend):\s?R?\s?\d{1,3}(?:\s?\d{3})*/i,
+            /Market Related/i,
+            /Negotiable/i
+        ];
+
+        for (const pattern of salaryPatterns) {
+            const match = bodyText.match(pattern);
+            if (match) {
+                salary = match[0].trim();
+                break;
+            }
+        }
 
         let requirements: string[] = [];
+        let duties: string[] = [];
+        let summary = "";
         const headingKeywords = [
             'requirement', 'requirements', 'duty', 'duties', 'responsibility', 'responsibilities',
             'qualification', 'qualifications', 'education', 'key responsibility', 'key responsibilities',
@@ -100,10 +120,13 @@ export async function GET(request: Request) {
                 }
 
                 if (sectionBullets.length > 0) {
-                    requirements.push(`SECTION: [${category}] ${headingText}`);
-                    sectionBullets.forEach(bullet => {
-                        if (!requirements.includes(bullet)) requirements.push(bullet);
-                    });
+                    if (category === "DUTIES") {
+                        duties.push(`--- ${headingText} ---`);
+                        duties.push(...sectionBullets);
+                    } else {
+                        requirements.push(`--- ${headingText} ---`);
+                        requirements.push(...sectionBullets);
+                    }
                 }
             }
         });
@@ -173,7 +196,10 @@ export async function GET(request: Request) {
         }
 
         return NextResponse.json({
-            requirements: cleanReqs.length > 0 ? cleanReqs : ["Could not automatically extract requirements. Please paste the job description manually."]
+            requirements: cleanReqs,
+            duties: duties,
+            salary: salary,
+            summary: summary || cleanReqs.slice(0, 3).join(". ")
         });
 
     } catch (error: any) {

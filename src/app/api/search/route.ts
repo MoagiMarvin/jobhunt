@@ -21,13 +21,19 @@ export async function GET(request: Request) {
                 case 'careers24': jobs = await scrapeCareers24(query); break;
                 case 'adzuna':
                 case 'indeed': jobs = await scrapeAdzuna(query); break;
-                case 'local': jobs = await searchLocalJobs(query); break;
-                // Discovery Volume Sources
+                // Add pnet case explicitly to match source param
+                case 'pnet': jobs = await scrapePNet(query); break;
+                case 'local':
+                    const ind = searchParams.get('industry');
+                    const lvl = searchParams.get('level');
+                    jobs = await searchLocalJobs(query, ind, lvl);
+                    break;
+                // Discovery Volume Sources (External only to avoid local duplicates)
                 case 'discovery':
                     const discResults = await Promise.all([
                         scrapeStandardBank(query).catch(() => []),
                         scrapeCapitecLive(query).catch(() => []),
-                        searchLocalJobs(query).catch(() => [])
+                        scrapeShoprite(query).catch(() => [])
                     ]);
                     jobs = discResults.flat();
                     break;
@@ -40,13 +46,10 @@ export async function GET(request: Request) {
 
     // Parallel fetch fallback (including everything)
     const results = await Promise.all([
-        searchLocalJobs(query).catch(() => []),
         scrapePNet(query).catch(() => []),
         scrapeLinkedIn(query).catch(() => []),
         scrapeCareers24(query).catch(() => []),
-        scrapeAdzuna(query).catch(() => []),
-        scrapeStandardBank(query).catch(() => []),
-        scrapeCapitecLive(query).catch(() => [])
+        scrapeAdzuna(query).catch(() => [])
     ]);
 
     return NextResponse.json({ jobs: results.flat() });
@@ -56,18 +59,35 @@ export async function GET(request: Request) {
  * RELEVANCE GUARD: Ensures the job title actually contains the search query.
  * Prevents "Junior Accountant" for "Driver" searches.
  */
-function isRelevant(title: string, query: string): boolean {
+/**
+ * RELEVANCE GUARD: Ensures the job title actually contains the search query.
+ * For external sources, we trust their engine more, so we relax this.
+ */
+function isRelevant(title: string, query: string, relax = false): boolean {
+    if (relax) return true; // Trust the source's own search engine
+
     const keywords = query.toLowerCase().split(/\s+/).filter(k => k.length >= 2);
     if (keywords.length === 0) return true;
     const titleLower = title.toLowerCase();
-    return keywords.some(keyword => titleLower.includes(keyword));
+
+    // Check for direct matches
+    if (keywords.some(keyword => titleLower.includes(keyword))) return true;
+
+    // Synonyms for Software / IT
+    const techSynonyms = ['dev', 'engineer', 'technician', 'programmer', 'coder', 'architect', 'analyst', 'systems', 'data', 'cloud', 'digital', 'it'];
+    const isTechSearch = keywords.some(k => ['software', 'dev', 'code', 'program', 'tech', 'it', 'web', 'app', 'computer', 'digital'].includes(k));
+    const isTechJob = techSynonyms.some(s => titleLower.includes(s));
+
+    if (isTechSearch && isTechJob) return true;
+
+    return false;
 }
 
 // --- SCRAPERS ---
 
 async function scrapePNet(query: string) {
     try {
-        // Optimized SEO URL Pattern from reference
+        // REVERTED to SEO URL Pattern - It's more resistant to 403 blocks than the search engine URL
         const keyword = query.trim().replace(/\s+/g, '-').toLowerCase();
         const url = `https://www.pnet.co.za/jobs/${keyword}`;
 
@@ -87,56 +107,55 @@ async function scrapePNet(query: string) {
         const jobs: any[] = [];
 
         // Broad Selectors focusing on the job cards
-        const articles = $('article, .job-item, .res-card, [data-at="job-item"]');
+        const articles = $('article, .job-item, .res-card, [data-at="job-item"], .job-ad-component');
 
         articles.each((i, el) => {
-            const titleEl = $(el).find('h2, h3, [data-at="job-item-title"], .job-title, .res-card__title').first();
+            const titleEl = $(el).find('h2, h3, [data-at="job-item-title"], .job-title, .res-card__title, .job-ad-title').first();
 
-            // TARGETED LINK EXTRACTION: Find the link INSIDE the title or the title itself if it's an <a>
-            const titleLink = titleEl.find('a').first().length > 0 ? titleEl.find('a').first() : (titleEl.is('a') ? titleEl : null);
+            // TARGETED LINK EXTRACTION
+            const titleLink = titleEl.find('a').first().length > 0 ? titleEl.find('a').first() : (titleEl.is('a') ? titleEl : $(el).find('a').first());
 
-            // FALLBACK: Look for direct job-ad links elsewhere in the card if title link is missing
             const directLinkEl = $(el).find('a[href*="/job-ad/"]').first();
             const linkEl = titleLink || directLinkEl;
 
-            const companyEl = $(el).find('[data-at="job-item-company-name"], .res-card__subtitle, .company').first();
-            const locationEl = $(el).find('[data-at="job-item-location"], .res-card__metadata--location, .location').first();
+            const companyEl = $(el).find('[data-at="job-item-company-name"], .res-card__subtitle, .company, .job-ad-company').first();
+            const locationEl = $(el).find('[data-at="job-item-location"], .res-card__metadata--location, .location, .job-ad-location').first();
 
             const title = titleEl.text().trim();
             const link = linkEl ? linkEl.attr('href') : null;
             const company = companyEl.text().trim();
             const location = locationEl.text().trim();
 
-            // Quality Filter: MUST have Title, Link, Company, and Location to be valid.
-            // Banners and "Top Jobs" headers usually fail this check.
-            if (title && link && company && location && isRelevant(title, query)) {
-                // Ensure link is direct to the job-ad if possible
+            if (title && link && company && isRelevant(title, query, true)) {
                 const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
 
                 jobs.push({
-                    id: `pnet-${Date.now()}-${i}`,
+                    id: `pnet-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
                     title,
                     company,
-                    location,
+                    location: location || "South Africa",
                     link: fullLink,
                     source: 'PNet'
                 });
             }
         });
 
+        console.log(`[PNet Scraper] Found ${jobs.length} jobs via Primary Plan`);
+
         // "Plan B" Fallback Strategy from reference - only if standard cards fail
         if (jobs.length === 0) {
+            console.log(`[PNet Scraper] Triggering Plan B...`);
             $('a[href*="/job-ad/"]').each((i, el) => {
-                const title = $(el).text().trim();
+                const title = $(el).find('span, div, h2, h3').length > 0 ? $(el).find('span, div, h2, h3').first().text().trim() : $(el).text().trim();
                 const link = $(el).attr('href');
-                if (title.length > 5 && link && isRelevant(title, query) && !title.includes('Login')) {
+                if (title.length > 5 && link && isRelevant(title, query, true) && !title.includes('Login')) {
                     const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
                     jobs.push({
-                        id: `pnet-fb-${Date.now()}-${i}`,
+                        id: `pnet-fb-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
                         title,
                         company: "PNet Listing",
                         location: "South Africa",
-                        link: link.startsWith('http') ? link : `https://www.pnet.co.za${link}`,
+                        link: fullLink,
                         source: 'PNet'
                     });
                 }
@@ -181,12 +200,12 @@ async function scrapeCareers24(query: string) {
             const title = titleEl.text().trim();
             const link = titleLink.attr('href');
 
-            if (title && link && isRelevant(title, query)) {
+            if (title && link && isRelevant(title, query, true)) {
                 // Ensure link is a direct vacancy page
                 const fullLink = link.startsWith('http') ? link : `https://www.careers24.com${link}`;
 
                 jobs.push({
-                    id: `c24-${Date.now()}-${i}`,
+                    id: `c24-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
                     title,
                     company: companyEl.text().trim() || "Careers24",
                     location: locationEl.text().trim() || "South Africa",
@@ -221,12 +240,12 @@ async function scrapeLinkedIn(query: string) {
             const linkEl = $(el).find('a.base-card__full-link, a.base-search-card__full-link, a').first();
             const link = linkEl.attr('href');
 
-            if (title && link && isRelevant(title, query)) {
+            if (title && link && isRelevant(title, query, true)) {
                 // Remove tracking parameters for cleaner scraping
                 const cleanLink = link.split('?')[0];
 
                 jobs.push({
-                    id: `li-${Date.now()}-${i}`,
+                    id: `li-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
                     title,
                     company: $(el).find('.base-search-card__subtitle').text().trim() || "LinkedIn Employer",
                     location: $(el).find('.job-search-card__location').text().trim() || "South Africa",
@@ -257,11 +276,11 @@ async function scrapeAdzuna(query: string) {
             const title = titleEl.text().trim();
             const link = titleEl.attr('href');
 
-            if (title && link && isRelevant(title, query)) {
+            if (title && link && isRelevant(title, query, true)) {
                 const fullLink = link.startsWith('http') ? link : `https://www.adzuna.co.za${link}`;
 
                 jobs.push({
-                    id: `ind-${Date.now()}-${i}`,
+                    id: `ind-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
                     title,
                     company: $(el).find('.ui-job-card-company, .company').first().text().trim() || "Indeed Professional",
                     location: $(el).find('.ui-job-card-location, .location').first().text().trim() || "South Africa",
@@ -274,34 +293,78 @@ async function scrapeAdzuna(query: string) {
     } catch (e) { return []; }
 }
 
-async function searchLocalJobs(query: string) {
+async function searchLocalJobs(query: string, industry?: string | null, level?: string | null) {
     try {
-        const { data, error } = await supabase
+        const keywords = query.toLowerCase().split(/\s+/).filter(k => k.length >= 2);
+
+        // Industry Expansion Map (Synonyms)
+        const industryExpansion: Record<string, string> = {
+            'drive': 'Logistics & Transport', 'truck': 'Logistics & Transport', 'courier': 'Logistics & Transport', 'deliver': 'Logistics & Transport',
+            'nurse': 'Medical & Health', 'clinic': 'Medical & Health', 'medic': 'Medical & Health',
+            'dev': 'IT & Tech', 'software': 'IT & Tech', 'tech': 'IT & Tech', 'code': 'IT & Tech', 'program': 'IT & Tech',
+            'account': 'Finance & Accounting', 'bank': 'Finance & Accounting', 'finance': 'Finance & Accounting',
+            'admin': 'Legal & Admin', 'clerk': 'Legal & Admin', 'secretary': 'Legal & Admin',
+            'mechanic': 'Engineering & Industrial', 'electric': 'Engineering & Industrial', 'engineer': 'Engineering & Industrial'
+        };
+
+        let supabaseQuery = supabase
             .from('synced_jobs')
             .select(`
                 id,
                 title,
+                description,
                 location,
                 application_url,
                 recruiter_id,
+                sync_metadata,
                 recruiter_profiles (
                     company_name
                 )
             `)
-            .ilike('title', `%${query}%`)
-            .eq('is_active', true)
-            .limit(20);
+            .eq('is_active', true);
+
+        // Advanced Relevance: Match any keyword in title 
+        // OR Expand to Industry if keyword matches synonym map
+        if (keywords.length > 0) {
+            const orFilters: string[] = [];
+            keywords.forEach(k => {
+                orFilters.push(`title.ilike.%${k}%`);
+                // Check if this keyword implies an industry
+                for (const [key, ind] of Object.entries(industryExpansion)) {
+                    if (k.includes(key) || key.includes(k)) {
+                        orFilters.push(`sync_metadata->>industry.eq.${ind}`);
+                        break;
+                    }
+                }
+            });
+            supabaseQuery = supabaseQuery.or(orFilters.join(','));
+        }
+
+        if (industry && industry !== 'All') {
+            supabaseQuery = supabaseQuery.filter('sync_metadata->>industry', 'eq', industry);
+        }
+        if (level && level !== 'All') {
+            supabaseQuery = supabaseQuery.filter('sync_metadata->>level', 'eq', level);
+        }
+
+        const { data, error } = await supabaseQuery.limit(50);
 
         if (error) throw error;
 
-        return (data || []).map(job => ({
-            id: job.id,
-            title: job.title,
-            company: (job.recruiter_profiles as any)?.company_name || 'Verified Employer',
-            location: job.location || 'South Africa',
-            link: job.application_url,
-            source: 'Discovery Engine'
-        }));
+        return (data || []).map(job => {
+            const metadata = (job.sync_metadata as any) || {};
+            return {
+                id: job.id,
+                title: job.title,
+                description: job.description,
+                company: (job.recruiter_profiles as any)?.company_name || metadata.company || 'Verified Employer',
+                location: job.location || 'South Africa',
+                link: job.application_url,
+                source: metadata.source || 'Discovery Engine',
+                salary: metadata.salary,
+                metadata: metadata
+            };
+        });
     } catch (e) {
         console.error("[Search] Local search failed:", e);
         return [];
@@ -310,7 +373,10 @@ async function searchLocalJobs(query: string) {
 
 async function scrapeStandardBank(query: string) {
     const qLower = query.toLowerCase();
-    if (!qLower.includes('bank') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn') && !qLower.includes('bursary')) return [];
+    const techKeywords = ['software', 'dev', 'tech', 'data', 'digital', 'it', 'engineer', 'program'];
+    const isTechSearch = techKeywords.some(k => qLower.includes(k));
+
+    if (!qLower.includes('bank') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn') && !qLower.includes('bursary') && !isTechSearch) return [];
     try {
         const url = "https://www.standardbank.com/sbg/standard-bank-group/careers/early-careers";
         const res = await fetch(url, {
@@ -344,7 +410,10 @@ async function scrapeStandardBank(query: string) {
 
 async function scrapeCapitecLive(query: string) {
     const qLower = query.toLowerCase();
-    if (!qLower.includes('capitec') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn')) return [];
+    const techKeywords = ['software', 'dev', 'tech', 'data', 'digital', 'it', 'engineer', 'program'];
+    const isTechSearch = techKeywords.some(k => qLower.includes(k));
+
+    if (!qLower.includes('capitec') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn') && !isTechSearch) return [];
     try {
         const url = "https://www.capitecbank.co.za/about-us/careers/";
         const res = await fetch(url, {
@@ -375,7 +444,10 @@ async function scrapeCapitecLive(query: string) {
 
 async function scrapeShoprite(query: string) {
     const qLower = query.toLowerCase();
-    if (!qLower.includes('shoprite') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn')) return [];
+    const techKeywords = ['software', 'dev', 'tech', 'data', 'digital', 'it', 'engineer', 'program'];
+    const isTechSearch = techKeywords.some(k => qLower.includes(k));
+
+    if (!qLower.includes('shoprite') && !qLower.includes('grad') && !qLower.includes('intern') && !qLower.includes('learn') && !isTechSearch) return [];
     try {
         const url = "https://www.shopriteholdings.co.za/careers.html";
         const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' }, signal: AbortSignal.timeout(8000) });

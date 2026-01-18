@@ -11,119 +11,183 @@ const supabase = createClient(url, key);
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
-async function scrapeCareers24(query) {
-    console.log(`🔍 Scraping Careers24 for: ${query}`);
+async function fetchHtml(url) {
     try {
-        let url = `https://www.careers24.com/jobs/search-results/?keywords=${encodeURIComponent(query)}`;
-        if (query === 'internship') url = "https://www.careers24.com/jobs/internship/";
-        if (query === 'learnership') url = "https://www.careers24.com/jobs/learnership/";
-        if (query === 'bursary') url = "https://www.careers24.com/jobs/search-results/?keywords=bursary";
-
-        const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
-        const html = await res.text();
-        const $ = cheerio.load(html);
-        const jobs = [];
-
-        $('.job-card, .c24-job-card').each((i, el) => {
-            const titleEl = $(el).find('h2, h3, .job-title, .c24-job-title').first();
-            const linkEl = titleEl.find('a').first().length > 0 ? titleEl.find('a').first() : (titleEl.is('a') ? titleEl : $(el).find('a').first());
-            const title = titleEl.text().trim();
-            const link = linkEl.attr('href');
-
-            if (title && link) {
-                // Relaxed filter: If we are on a category page, we trust the site more.
-                const titleLower = title.toLowerCase();
-                const entryKeywords = ['intern', 'grad', 'trainee', 'learn', 'bursary', 'entry', 'junior', 'matric', 'student', 'youth'];
-
-                const isRelevant = entryKeywords.some(k => titleLower.includes(k)) ||
-                    titleLower.includes(query.toLowerCase()) ||
-                    (['internship', 'learnership'].includes(query)); // Trust these specific pages
-
-                if (isRelevant) {
-                    const company = $(el).find('.company-name, .job-card-company').first().text().trim() || "Careers24 Employer";
-                    const location = $(el).find('.location, .job-card-location').first().text().trim() || "South Africa";
-
-                    jobs.push({
-                        title,
-                        link: link.startsWith('http') ? link : `https://www.careers24.com${link}`,
-                        company,
-                        location
-                    });
-                }
-            }
+        const res = await fetch(url, {
+            headers: { 'User-Agent': USER_AGENT },
+            signal: AbortSignal.timeout(10000)
         });
-        return jobs;
-    } catch (e) { console.error("Careers24 error:", e.message); return []; }
+        if (!res.ok) return null;
+        return await res.text();
+    } catch (e) {
+        console.error(`[Fetch] Failed: ${url}`, e.message);
+        return null;
+    }
 }
 
-async function scrapePNet(query) {
-    console.log(`🔍 Scraping PNet for: ${query}`);
-    try {
-        const keyword = query.trim().replace(/\s+/g, '-').toLowerCase();
-        const url = `https://www.pnet.co.za/jobs/${keyword}`;
-        const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } });
-        const html = await res.text();
-        const $ = cheerio.load(html);
-        const jobs = [];
+async function scrapePortal(seed) {
+    console.log(`🔍 Processing Portal: ${seed.company} (${seed.name})`);
+    const html = await fetchHtml(seed.url);
+    if (!html) return [];
 
-        $('article, [data-at="job-item"]').each((i, el) => {
-            const titleEl = $(el).find('h2, h3, [data-at="job-item-title"]').first();
-            const linkEl = titleEl.find('a').first().length > 0 ? titleEl.find('a').first() : (titleEl.is('a') ? titleEl : $(el).find('a[href*="/job-ad/"]').first());
-            const title = titleEl.text().trim();
-            const link = linkEl.attr('href');
+    const $ = cheerio.load(html);
+    const jobs = [];
 
-            if (title && link) {
-                jobs.push({
-                    title,
-                    link: link.startsWith('http') ? link : `https://www.pnet.co.za${link}`,
-                    company: $(el).find('[data-at="job-item-company-name"]').first().text().trim() || "PNet Employer",
-                    location: $(el).find('[data-at="job-item-location"]').first().text().trim() || "South Africa"
-                });
+    // Heuristic: Find links that look like jobs or applications
+    $('a').each((i, el) => {
+        const text = $(el).text().trim();
+        const href = $(el).attr('href');
+        if (!href || href.length < 5) return;
+
+        const absoluteUrl = href.startsWith('http') ? href : new URL(href, seed.url).toString();
+        const textLower = text.toLowerCase();
+
+        // Keywords for entry-level / direct jobs
+        const isJob =
+            textLower.includes('graduate') ||
+            textLower.includes('intern') ||
+            textLower.includes('learnership') ||
+            textLower.includes('bursary') ||
+            textLower.includes('trainee') ||
+            textLower.includes('view vacancy') ||
+            textLower.includes('details');
+
+        if (isJob && !absoluteUrl.includes('login') && !absoluteUrl.includes('register')) {
+            // Sanitation: Filter out garbage titles (CSS selectors or too short)
+            let cleanTitle = text.trim();
+            if (cleanTitle.startsWith('.') || cleanTitle.includes('{') || cleanTitle.length < 5) {
+                cleanTitle = `${seed.company} Opportunity`;
             }
-        });
-        return jobs;
-    } catch (e) { console.error("PNet error:", e.message); return []; }
+
+            jobs.push({
+                title: cleanTitle,
+                link: absoluteUrl,
+                company: seed.company,
+                location: "South Africa"
+            });
+        }
+    });
+
+    return jobs;
+}
+
+// Specialized scraper for SuccessFactors feeds (if XML is obtainable)
+async function scrapeATSFeed(seed) {
+    console.log(`📡 Fetching ATS Feed: ${seed.company}`);
+    // For now, we use a simple fallback until we fix the XML parsing perfectly
+    return await scrapePortal(seed);
+}
+
+async function enrichExistingJobs() {
+    console.log("💎 Starting Enrichment for existing jobs...");
+    const { data: jobs, error } = await supabase
+        .from('synced_jobs')
+        .select('id, application_url, title')
+        .or('description.eq.Indexed via Discovery Engine for internship.,description.eq.Direct opportunity from Standard Bank careers portal.,description.is.null')
+        .limit(50);
+
+    if (error) return console.error("Enrichment fetch error:", error);
+    console.log(`Found ${jobs?.length} jobs to enrich.`);
+
+    for (const job of jobs || []) {
+        console.log(`  📄 Enriching: ${job.title}...`);
+        const html = await fetchHtml(job.application_url);
+        if (html) {
+            const $ = cheerio.load(html);
+            const bodyText = $('main, article, .job-description, .vacancy-details, #job-description, .c24-vacancy-body').text().trim();
+            if (bodyText.length > 200) {
+                const cleanText = bodyText.substring(0, 5000);
+                await supabase.from('synced_jobs').update({ description: cleanText }).eq('id', job.id);
+                console.log(`    ✅ Updated description (${cleanText.length} chars)`);
+            } else {
+                console.log(`    ⚠️ No rich content found.`);
+            }
+        }
+        await new Promise(r => setTimeout(r, 1000)); // Rate limiting
+    }
+}
+
+const CATEGORIES = {
+    'IT & Tech': ['dev', 'software', 'eng', 'tech', 'data', 'it ', 'web', 'cyber', 'network', 'cloud', 'system', 'program'],
+    'Finance & Accounting': ['account', 'audit', 'bank', 'finance', 'tax', 'credit', 'billing', 'payroll', 'equity'],
+    'Medical & Health': ['nurse', 'medic', 'health', 'physio', 'doctor', 'clinic', 'pharm', 'care'],
+    'Retail & Sales': ['sales', 'retail', 'clerk', 'cashier', 'merchand', 'store', 'stock'],
+    'Engineering & Industrial': ['mechanic', 'electr', 'civil', 'engineer', 'technician', 'mine', 'mining', 'factory'],
+    'Legal & Admin': ['admin', 'legal', 'law', 'secretar', 'clerk', 'compliance', 'hr ', 'human res'],
+    'Logistics & Transport': ['drive', 'logist', 'fleet', 'warehouse', 'deliver', 'truck', 'courier']
+};
+
+const LEVELS = {
+    'Internship': ['intern'],
+    'Graduate': ['graduate', 'grad ', 'trainee', 'candidate'],
+    'Learnership': ['learnership', 'yes '],
+    'Bursary': ['bursary', 'funding', 'scholarship'],
+    'Entry Level': ['entry', 'junior', 'assistant', 'clerk', 'matric']
+};
+
+function classify(title) {
+    const t = title.toLowerCase();
+    let industry = 'General';
+    for (const [ind, keywords] of Object.entries(CATEGORIES)) {
+        if (keywords.some(k => t.includes(k))) { industry = ind; break; }
+    }
+    let level = 'Full Time';
+    for (const [lvl, keywords] of Object.entries(LEVELS)) {
+        if (keywords.some(k => t.includes(k))) { level = lvl; break; }
+    }
+    return { industry, level };
 }
 
 async function run() {
-    console.log("🏁 Starting Massive Sync Engine...");
-    const recruiterId = '4c80a1c4-0586-4216-a94b-83ba9f7826d9'; // System Discovery
-    const queries = ['internship', 'learnership', 'graduate 2026', 'bursary'];
+    const mode = process.argv[2] || 'sync';
 
-    for (const q of queries) {
-        const [c24Jobs, pnetJobs] = await Promise.all([
-            scrapeCareers24(q),
-            scrapePNet(q)
-        ]);
+    if (mode === 'enrich') {
+        await enrichExistingJobs();
+    } else {
+        console.log("🏁 Starting MASSIVE Rule-Based Sync...");
+        const recruiterId = '4c80a1c4-0586-4216-a94b-83ba9f7826d9'; // System Discovery
 
-        const allJobs = [...c24Jobs, ...pnetJobs];
-        console.log(`Found ${allJobs.length} potential jobs for ${q}`);
+        const seeds = [
+            { company: "Standard Bank", name: "Standard Bank All", url: "https://www.standardbank.com/sbg/standard-bank-group/careers/early-careers", type: "career_page" },
+            { company: "Nedbank", name: "Nedbank All", url: "https://jobs.nedbank.co.za/content/Nedbank-Graduate-Programme/", type: "career_page" }, // Using grad page as entry point
+            { company: "Capitec", name: "Capitec All Careers", url: "https://www.capitecbank.co.za/about-us/careers/", type: "career_page" },
+            { company: "PNet", name: "PNet All Jobs", url: "https://www.pnet.co.za/jobs", type: "aggregator" }
+        ];
 
-        let count = 0;
-        for (const job of allJobs) {
-            const category = q.includes('intern') ? 'Internship' :
-                q.includes('learn') ? 'Learnership' :
-                    q.includes('bursary') ? 'Bursary' : 'Graduate';
+        for (const seed of seeds) {
+            const jobs = await scrapePortal(seed);
+            console.log(`✅ ${seed.company}: Found ${jobs.length} potential jobs.`);
 
-            const { error } = await supabase.from('synced_jobs').upsert({
-                recruiter_id: recruiterId,
-                title: job.title,
-                description: `Indexed via Discovery Engine for ${q}.`,
-                location: job.location,
-                application_url: job.link,
-                is_active: true,
-                sync_metadata: {
-                    category,
-                    company: job.company,
-                    indexed_at: new Date().toISOString()
-                }
-            }, { onConflict: 'application_url' });
+            let count = 0;
+            for (const job of jobs) {
+                const { industry, level } = classify(job.title);
+                console.log(`  📄 Processing: ${job.title} [${industry} | ${level}]`);
 
-            if (!error) count++;
+                const { error } = await supabase.from('synced_jobs').upsert({
+                    recruiter_id: recruiterId,
+                    title: job.title,
+                    description: `Rich details waiting for ${job.title}. Category: ${industry}`,
+                    location: job.location,
+                    application_url: job.link,
+                    is_active: true,
+                    sync_metadata: {
+                        industry,
+                        level,
+                        company: job.company,
+                        source: 'Discovery Engine',
+                        indexed_at: new Date().toISOString()
+                    }
+                }, { onConflict: 'application_url' });
+
+                if (!error) count++;
+            }
+            console.log(`🚀 Synced ${count} jobs for ${seed.company}`);
         }
-        console.log(`Successfully synced ${count} jobs for ${q}`);
+
+        console.log("✨ Sync Finished. Running Enrichment...");
+        await enrichExistingJobs();
     }
-    console.log("✨ Massive Sync Finished!");
+    console.log("🏁 Process Finished!");
 }
 
 run();
