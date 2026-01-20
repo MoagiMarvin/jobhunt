@@ -39,9 +39,15 @@ export async function POST(req: Request) {
             console.log("CV Cleaning: No API key found. Using Basic Regex Clean.");
             const cleanedText = basicClean(cvText);
             return NextResponse.json({
-                cleanedText,
+                parsedCv: {
+                    personalInfo: { name: "Candidate Name", headline: "Professional", email: "", phone: "", location: "" },
+                    summary: "Profile details found in CV.",
+                    skills: [],
+                    experiences: [],
+                    education: []
+                },
                 version: "basic",
-                note: "Using basic cleaning because GEMINI_API_KEY is not set."
+                note: "Using basic parsing because GEMINI_API_KEY is not set."
             });
         }
 
@@ -52,36 +58,64 @@ export async function POST(req: Request) {
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `
-      You are an expert Resume/CV Formatting Specialist. 
+      You are an expert Resume/CV Parser. 
       I will provide you with a CV that has been extracted from a PDF. 
-      The extraction process has created formatting artifacts like:
-      - Extra spaces between letters (e.g., "S O F T W A R E" instead of "Software")
-      - Broken lines
-      - Jumbled contact information
+      The extraction process has created formatting artifacts, but your goal is to extract the core professional information into a structured JSON format.
       
       YOUR TASK:
-      1. Fix all formatting issues.
-      2. Join split words back together.
-      3. Organize the text into logical sections: PROFESSIONAL SUMMARY, SKILLS, EXPERIENCE, EDUCATION, PROJECTS, CONTACT.
-      4. Ensure the text is clean, professional, and easily readable by even the simplest "dumb" Applicant Tracking Systems (ATS).
-      5. Do NOT add new information or remove existing experience—only fix the formatting and structure.
-      
+      1. Extract the candidate's personal info, summary, skills, experience, and education.
+      2. Return a CLEAN JSON OBJECT only (no markdown, no backticks).
+      3. Map the data to this EXACT structure:
+
+      JSON STRUCTURE:
+      {
+        "personalInfo": {
+          "name": "Full Name",
+          "headline": "Professional Title/Headline",
+          "email": "Email",
+          "phone": "Phone",
+          "location": "City, Country"
+        },
+        "summary": "Professional summary paragraph...",
+        "skills": ["Skill 1", "Skill 2", ...],
+        "experiences": [
+          {
+            "role": "Job Title",
+            "company": "Company Name",
+            "duration": "Date Range",
+            "description": "Short summary of responsibilities"
+          }
+        ],
+        "education": [
+          {
+            "title": "Degree Name",
+            "issuer": "University/Institution",
+            "date": "Year range/completion"
+          }
+        ]
+      }
+
       INPUT TEXT:
       """
       ${cvText}
       """
 
-      RETURN ONLY THE CLEANED TEXT. Do not add any conversational filler.
+      RETURN ONLY THE JSON OBJECT.
     `;
 
         try {
-            console.log("CV Cleaning: Sending to Gemini...");
+            console.log("CV Parsing: Sending to Gemini...");
             const result = await model.generateContent(prompt);
             const response = await result.response;
-            const cleanedText = response.text().trim();
+            let text = response.text().trim();
 
-            console.log(`CV Cleaning: AI Success! Cleaned text length: ${cleanedText.length}`);
-            return NextResponse.json({ cleanedText, version: "ai" });
+            if (text.startsWith("```json")) text = text.replace(/```json|```/g, "");
+            if (text.startsWith("```")) text = text.replace(/```/g, "");
+
+            const parsedCv = JSON.parse(text);
+
+            console.log("CV Parsing: AI Success!");
+            return NextResponse.json({ parsedCv, version: "ai" });
         } catch (aiError: any) {
             console.error("CV Cleaning: AI Failed, falling back to basic clean.", aiError.message);
             return NextResponse.json({

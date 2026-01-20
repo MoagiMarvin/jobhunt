@@ -14,6 +14,8 @@ interface DownloadResumeButtonProps {
         projectsList: any[];
         certificationsList: any[];
         languages?: { language: string; proficiency: string }[];
+        references?: any[];
+        matricData?: any;
     };
 }
 
@@ -37,7 +39,7 @@ export default function DownloadResumeButton({ data }: DownloadResumeButtonProps
     return (
         <PDFDownloadLink
             document={
-                <ResumeDocument />
+                <ResumeDocument data={data} />
             }
             fileName={`${data.user.name.replace(/\s+/g, '_')}_Resume.pdf`}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-sm shadow-sm"

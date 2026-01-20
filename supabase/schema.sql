@@ -162,3 +162,26 @@ create table public.job_applications (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- PROFESSIONAL REFERENCES
+create table public.references (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  name text not null,
+  relationship text, -- e.g., "Former Manager"
+  company text,
+  phone text,
+  email text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- SECONDARY EDUCATION (MATRIC)
+create table public.secondary_education (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  school_name text not null,
+  completion_year integer,
+  subjects jsonb default '[]'::jsonb, -- e.g., [{"subject": "Mathematics", "grade": "Level 7"}]
+  distinctions_count integer default 0,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);

@@ -40,11 +40,11 @@ function basicOptimize(cvText: string, userDetails: any) {
 export async function POST(req: Request) {
   console.log("CV Optimization: Request received");
   try {
-    const { cvText, jobRequirements, userDetails } = await req.json();
+    const { profileData, jobRequirements, userDetails } = await req.json();
 
-    if (!cvText || !jobRequirements) {
+    if (!profileData || !jobRequirements) {
       return NextResponse.json(
-        { error: "CV text and Job requirements are required." },
+        { error: "Profile data and Job requirements are required." },
         { status: 400 }
       );
     }
@@ -52,22 +52,21 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey || apiKey === "" || apiKey === "your_api_key_here") {
       console.log("CV Optimization: No API key. Using Basic Template.");
-      return NextResponse.json(basicOptimize(cvText, userDetails));
+      return NextResponse.json(basicOptimize(JSON.stringify(profileData), userDetails));
     }
 
-    console.log(`CV Optimization: Processing ${cvText.length} characters with Gemini`);
+    console.log("CV Optimization: Processing with Gemini");
 
-    // Initialize AI only if key is present
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
       You are an expert Career Coach and Resume Writer. 
-      Your goal is to tailor a candidate's CV to a specific job description to ensure maximum ATS score and human impact.
+      Your goal is to tailor a candidate's profile to a specific job description.
 
-      CANDIDATE MASTER CV:
+      CANDIDATE MASTER PROFILE (JSON):
       \"\"\"
-      ${cvText}
+      ${JSON.stringify(profileData)}
       \"\"\"
 
       JOB REQUIREMENTS:
@@ -75,7 +74,7 @@ export async function POST(req: Request) {
       ${jobRequirements.join("\n")}
       \"\"\"
 
-      USER DETAILS (Use these for personal info):
+      USER DETAILS:
       ${JSON.stringify(userDetails || {})}
 
       INSTRUCTIONS:
@@ -132,7 +131,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ...optimizedCv, version: "ai" });
     } catch (aiError: any) {
       console.error("CV Optimization AI Failed:", aiError.message);
-      return NextResponse.json(basicOptimize(cvText, userDetails));
+      return NextResponse.json(basicOptimize(JSON.stringify(profileData), userDetails));
     }
 
   } catch (error: any) {

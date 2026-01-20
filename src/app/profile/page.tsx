@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School } from "lucide-react";
 import Link from "next/link";
 import ProfileHeader from "@/components/talent/ProfileHeader";
 import ProjectCard from "@/components/talent/ProjectCard";
@@ -13,6 +13,10 @@ import AddCredentialModal from "@/components/talent/AddCredentialModal";
 import AddProjectModal from "@/components/talent/AddProjectModal";
 import EditSummaryModal from "@/components/talent/EditSummaryModal";
 import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
+import ReferenceCard from "@/components/talent/ReferenceCard";
+import AddReferenceModal from "@/components/talent/AddReferenceModal";
+import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
+import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
 
 export default function ProfilePage() {
 
@@ -149,6 +153,18 @@ export default function ProfilePage() {
         }
     ]);
 
+    const [references, setReferences] = useState([
+        {
+            name: "Sarah Jenkins",
+            relationship: "Senior Developer / Manager",
+            company: "Tech StartUp SA",
+            phone: "+27 11 987 6543",
+            email: "sarah@techstartup.co.za"
+        }
+    ]);
+
+    const [matricData, setMatricData] = useState<any>(null);
+
     const [isEditing, setIsEditing] = useState(false);
     const [isEditSummaryOpen, setIsEditSummaryOpen] = useState(false);
     const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
@@ -156,6 +172,8 @@ export default function ProfilePage() {
     const [newLanguage, setNewLanguage] = useState({ language: "", proficiency: "Fluent" });
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
     const [isAddCredentialOpen, setIsAddCredentialOpen] = useState<{ open: boolean, type: "education" | "certification" }>({ open: false, type: "education" });
+    const [isAddReferenceOpen, setIsAddReferenceOpen] = useState(false);
+    const [isAddMatricOpen, setIsAddMatricOpen] = useState(false);
 
     const [editedUser, setEditedUser] = useState(user);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -190,6 +208,12 @@ export default function ProfilePage() {
 
         const savedLanguages = localStorage.getItem("user_languages_list");
         if (savedLanguages) setLanguages(JSON.parse(savedLanguages));
+
+        const savedReferences = localStorage.getItem("user_references_list");
+        if (savedReferences) setReferences(JSON.parse(savedReferences));
+
+        const savedMatric = localStorage.getItem("user_matric_data");
+        if (savedMatric) setMatricData(JSON.parse(savedMatric));
     }, []);
 
     const handleSave = () => {
@@ -231,7 +255,7 @@ export default function ProfilePage() {
                         haveCar={user.haveCar}
                         educationLevel={user.educationLevel}
                         onEdit={() => setIsEditing(true)}
-                        downloadAction={<DownloadResumeButton data={{ user, experiences, educationList, skills, projectsList, certificationsList, languages }} />}
+                        downloadAction={<DownloadResumeButton data={{ user, experiences, educationList, skills, projectsList, certificationsList, languages, references, matricData }} />}
                         isOwner={true}
                     />
                 </div>
@@ -535,14 +559,14 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <GraduationCap className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Education</h2>
+                                    <h2 className="text-xl font-bold text-primary">Tertiary Education</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
-                                    Add Education
+                                    Add Degree
                                 </button>
                             </div>
                             <div className="space-y-4">
@@ -562,6 +586,39 @@ export default function ProfilePage() {
                                     />
                                 ))}
                             </div>
+                        </div>
+
+                        {/* Matric Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <School className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-bold text-primary">Secondary Education</h2>
+                                </div>
+                                {!matricData && (
+                                    <button
+                                        onClick={() => setIsAddMatricOpen(true)}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-blue-600 transition-all shadow-sm"
+                                    >
+                                        <Plus className="w-3.5 h-3.5" />
+                                        Add Matric Results
+                                    </button>
+                                )}
+                            </div>
+                            {matricData ? (
+                                <SecondaryEducationCard
+                                    {...matricData}
+                                    onDelete={() => {
+                                        setMatricData(null);
+                                        localStorage.removeItem("user_matric_data");
+                                    }}
+                                    isOwner={true}
+                                />
+                            ) : (
+                                <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-xl">
+                                    <p className="text-slate-400 text-sm italic">High school details are important for graduate programs. Add yours now.</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Certifications Section */}
@@ -597,155 +654,214 @@ export default function ProfilePage() {
                                 ))}
                             </div>
                         </div>
+
+                        {/* References Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <User className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-bold text-primary">Professional References</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsAddReferenceOpen(true)}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Reference
+                                </button>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {references.map((ref: any, idx: number) => (
+                                    <ReferenceCard
+                                        key={idx}
+                                        {...ref}
+                                        onDelete={() => {
+                                            const updated = references.filter((_, i) => i !== idx);
+                                            setReferences(updated);
+                                            localStorage.setItem("user_references_list", JSON.stringify(updated));
+                                        }}
+                                        isOwner={true}
+                                    />
+                                ))}
+                            </div>
+                            {references.length === 0 && (
+                                <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-xl">
+                                    <p className="text-slate-400 text-sm italic">Recruiters often require 2-3 references. Add them here.</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Modals */}
-            <EditProfileModal
-                isOpen={isEditing}
-                onClose={() => setIsEditing(false)}
-                onSave={(newData) => {
-                    setUser(newData);
-                    setIsEditing(false);
-                    // Mock persist
-                    localStorage.setItem("user_details", JSON.stringify(newData));
-                    alert("Profile updated successfully!");
-                }}
-                initialData={user}
-            />
-            <AddSkillModal
-                isOpen={isAddSkillOpen}
-                onClose={() => setIsAddSkillOpen(false)}
-                onAdd={(newSkill) => {
-                    setSkills([...skills, newSkill]);
-                    setIsAddSkillOpen(false);
-                }}
-            />
-            <EditSummaryModal
-                isOpen={isEditSummaryOpen}
-                initialSummary={user.summary}
-                onClose={() => setIsEditSummaryOpen(false)}
-                onSave={(newSummary) => {
-                    const updatedUser = { ...user, summary: newSummary };
-                    setUser(updatedUser);
-                    localStorage.setItem("user_basic_info", JSON.stringify(updatedUser)); // Persist immediately
-                }}
-            />
-            {/* Simple Inline Language Modal (For speed) */}
-            {isAddLanguageOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl animate-in fade-in zoom-in">
-                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <Languages className="w-5 h-5 text-blue-600" /> Add Language
-                        </h3>
-                        <div className="space-y-3">
-                            <input
-                                type="text"
-                                placeholder="Language (e.g. French)"
-                                className="w-full px-4 py-2 border rounded-lg"
-                                value={newLanguage.language}
-                                onChange={e => setNewLanguage({ ...newLanguage, language: e.target.value })}
-                            />
-                            <select
-                                className="w-full px-4 py-2 border rounded-lg"
-                                value={newLanguage.proficiency}
-                                onChange={e => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
-                            >
-                                <option value="Native">Native</option>
-                                <option value="Fluent">Fluent</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Basic">Basic</option>
-                            </select>
-                            <div className="flex gap-2 mt-4">
-                                <button
-                                    onClick={() => setIsAddLanguageOpen(false)}
-                                    className="flex-1 py-2 rounded-lg bg-slate-100 font-semibold text-slate-600"
+                <EditProfileModal
+                    isOpen={isEditing}
+                    onClose={() => setIsEditing(false)}
+                    onSave={(newData) => {
+                        setUser(newData);
+                        setIsEditing(false);
+                        // Mock persist
+                        localStorage.setItem("user_details", JSON.stringify(newData));
+                        alert("Profile updated successfully!");
+                    }}
+                    initialData={user}
+                />
+                <AddSkillModal
+                    isOpen={isAddSkillOpen}
+                    onClose={() => setIsAddSkillOpen(false)}
+                    onAdd={(newSkill) => {
+                        setSkills([...skills, newSkill]);
+                        setIsAddSkillOpen(false);
+                    }}
+                />
+                <EditSummaryModal
+                    isOpen={isEditSummaryOpen}
+                    initialSummary={user.summary}
+                    onClose={() => setIsEditSummaryOpen(false)}
+                    onSave={(newSummary) => {
+                        const updatedUser = { ...user, summary: newSummary };
+                        setUser(updatedUser);
+                        localStorage.setItem("user_basic_info", JSON.stringify(updatedUser)); // Persist immediately
+                    }}
+                />
+                {/* Simple Inline Language Modal (For speed) */}
+                {isAddLanguageOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                        <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl animate-in fade-in zoom-in">
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <Languages className="w-5 h-5 text-blue-600" /> Add Language
+                            </h3>
+                            <div className="space-y-3">
+                                <input
+                                    type="text"
+                                    placeholder="Language (e.g. French)"
+                                    className="w-full px-4 py-2 border rounded-lg"
+                                    value={newLanguage.language}
+                                    onChange={e => setNewLanguage({ ...newLanguage, language: e.target.value })}
+                                />
+                                <select
+                                    className="w-full px-4 py-2 border rounded-lg"
+                                    value={newLanguage.proficiency}
+                                    onChange={e => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
                                 >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        if (newLanguage.language) {
-                                            setLanguages([...languages, newLanguage]);
-                                            setNewLanguage({ language: "", proficiency: "Fluent" });
-                                            setIsAddLanguageOpen(false);
-                                        }
-                                    }}
-                                    className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
-                                >
-                                    Add
-                                </button>
+                                    <option value="Native">Native</option>
+                                    <option value="Fluent">Fluent</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Basic">Basic</option>
+                                </select>
+                                <div className="flex gap-2 mt-4">
+                                    <button
+                                        onClick={() => setIsAddLanguageOpen(false)}
+                                        className="flex-1 py-2 rounded-lg bg-slate-100 font-semibold text-slate-600"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            if (newLanguage.language) {
+                                                setLanguages([...languages, newLanguage]);
+                                                setNewLanguage({ language: "", proficiency: "Fluent" });
+                                                setIsAddLanguageOpen(false);
+                                            }
+                                        }}
+                                        className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                )}
+
+                <AddCredentialModal
+                    isOpen={isAddCredentialOpen.open}
+                    type={isAddCredentialOpen.type}
+                    onClose={() => setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false })}
+                    onAdd={(newCredential: any) => {
+                        if (isAddCredentialOpen.type === "education") {
+                            setEducationList([...educationList, newCredential]);
+                        } else {
+                            setCertificationsList([...certificationsList, newCredential]);
+                        }
+                        setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
+                    }}
+                />
+
+                <AddProjectModal
+                    isOpen={isAddProjectOpen}
+                    onClose={() => setIsAddProjectOpen(false)}
+                    onAdd={(newProject: any) => {
+                        const updated = [...projectsList, newProject];
+                        setProjectsList(updated);
+                        localStorage.setItem("user_projects_list", JSON.stringify(updated));
+                        setIsAddProjectOpen(false);
+                    }}
+                />
+
+                <AddReferenceModal
+                    isOpen={isAddReferenceOpen}
+                    onClose={() => setIsAddReferenceOpen(false)}
+                    onAdd={(newRef) => {
+                        const updated = [...references, newRef];
+                        setReferences(updated);
+                        localStorage.setItem("user_references_list", JSON.stringify(updated));
+                        setIsAddReferenceOpen(false);
+                    }}
+                />
+
+                <AddSecondaryEducationModal
+                    isOpen={isAddMatricOpen}
+                    onClose={() => setIsAddMatricOpen(false)}
+                    onAdd={(data) => {
+                        setMatricData(data);
+                        localStorage.setItem("user_matric_data", JSON.stringify(data));
+                        setIsAddMatricOpen(false);
+                    }}
+                />
+
+                {/* Settings Menu Button - Bottom Right */}
+                <div className="fixed bottom-8 right-8 z-40">
+                    <div className="relative">
+                        <button
+                            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                            className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all hover:shadow-xl"
+                            title="Settings"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {isSettingsOpen && (
+                            <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+                                <button
+                                    onClick={() => {
+                                        setIsSettingsOpen(false);
+                                        setIsEditing(true);
+                                    }}
+                                    className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                >
+                                    <Edit2 className="w-4 h-4" />
+                                    Edit Profile
+                                </button>
+                                <div className="border-t border-slate-100"></div>
+                                <button
+                                    onClick={() => {
+                                        setIsSettingsOpen(false);
+                                        handleLogout();
+                                    }}
+                                    className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            )}
-
-            <AddCredentialModal
-                isOpen={isAddCredentialOpen.open}
-                type={isAddCredentialOpen.type}
-                onClose={() => setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false })}
-                onAdd={(newCredential: any) => {
-                    if (isAddCredentialOpen.type === "education") {
-                        setEducationList([...educationList, newCredential]);
-                    } else {
-                        setCertificationsList([...certificationsList, newCredential]);
-                    }
-                    setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
-                }}
-            />
-
-            <AddProjectModal
-                isOpen={isAddProjectOpen}
-                onClose={() => setIsAddProjectOpen(false)}
-                onAdd={(newProject: any) => {
-                    setProjectsList([...projectsList, newProject]);
-                    setIsAddProjectOpen(false);
-                }}
-            />
-
-            {/* Settings Menu Button - Bottom Right */}
-            <div className="fixed bottom-8 right-8 z-40">
-                <div className="relative">
-                    <button
-                        onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                        className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all hover:shadow-xl"
-                        title="Settings"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {isSettingsOpen && (
-                        <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
-                            <button
-                                onClick={() => {
-                                    setIsSettingsOpen(false);
-                                    setIsEditing(true);
-                                }}
-                                className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
-                            >
-                                <Edit2 className="w-4 h-4" />
-                                Edit Profile
-                            </button>
-                            <div className="border-t border-slate-100"></div>
-                            <button
-                                onClick={() => {
-                                    setIsSettingsOpen(false);
-                                    handleLogout();
-                                }}
-                                className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                Logout
-                            </button>
-                        </div>
-                    )}
-                </div>
-            </div>
             </div>
         </main>
     );
