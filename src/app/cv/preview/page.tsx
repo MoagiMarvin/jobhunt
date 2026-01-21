@@ -351,11 +351,23 @@ export default function CVPreviewPage() {
                                                 </button>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3">
-                                                <input placeholder="Job Title" value={exp.role} onChange={(e) => handleUpdateExperience(idx, "role", e.target.value)} className="editor-input font-bold" />
-                                                <input placeholder="Company" value={exp.company} onChange={(e) => handleUpdateExperience(idx, "company", e.target.value)} className="editor-input" />
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Role</label>
+                                                    <input placeholder="Job Title" value={exp.role} onChange={(e) => handleUpdateExperience(idx, "role", e.target.value)} className="editor-input font-bold" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Company</label>
+                                                    <input placeholder="Company" value={exp.company} onChange={(e) => handleUpdateExperience(idx, "company", e.target.value)} className="editor-input" />
+                                                </div>
                                             </div>
-                                            <input placeholder="Duration (e.g. Jan 2020 - Present)" value={exp.duration} onChange={(e) => handleUpdateExperience(idx, "duration", e.target.value)} className="editor-input text-[10px] py-1.5" />
-                                            <textarea placeholder="Key Achievements..." value={exp.description} onChange={(e) => handleUpdateExperience(idx, "description", e.target.value)} className="editor-textarea h-24 text-xs" />
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase">Duration</label>
+                                                <input placeholder="Jan 2020 - Present" value={exp.duration} onChange={(e) => handleUpdateExperience(idx, "duration", e.target.value)} className="editor-input text-xs" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <label className="text-[10px] font-bold text-slate-400 uppercase">Achievements</label>
+                                                <textarea placeholder="Key Achievements..." value={exp.description} onChange={(e) => handleUpdateExperience(idx, "description", e.target.value)} className="editor-textarea h-24 text-xs" />
+                                            </div>
                                         </div>
                                     ))}
                                     <button onClick={() => setData({ ...data, experiences: [...data.experiences, { role: "", company: "", duration: "", description: "" }] })} className="w-full py-2 flex items-center justify-center gap-2 border-2 border-dashed border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all font-bold text-xs">
@@ -380,36 +392,73 @@ export default function CVPreviewPage() {
                             {openSection === 'education' && (
                                 <div className="p-4 border-t border-slate-100 space-y-4 animate-in slide-in-from-top-2 duration-200">
                                     {/* Matric Section */}
-                                    {data.matricData && (
-                                        <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 mb-4">
-                                            <h4 className="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-3">Matric Results</h4>
+                                    {data.matricData ? (
+                                        <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 mb-4 relative group">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <h4 className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Matric / High School</h4>
+                                                <button
+                                                    onClick={() => setData({ ...data, matricData: null })}
+                                                    className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
                                             <div className="space-y-3">
-                                                <input placeholder="School Name" value={data.matricData.schoolName} onChange={(e) => handleUpdateMatric("schoolName", e.target.value)} className="editor-input" />
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">School Name</label>
+                                                    <input placeholder="e.g. Pretoria Boys High" value={data.matricData.schoolName} onChange={(e) => handleUpdateMatric("schoolName", e.target.value)} className="editor-input" />
+                                                </div>
                                                 <div className="grid grid-cols-2 gap-3">
-                                                    <input placeholder="Year" value={data.matricData.completionYear} onChange={(e) => handleUpdateMatric("completionYear", e.target.value)} className="editor-input" />
-                                                    <input placeholder="Distinctions" value={data.matricData.distinctions_count || data.matricData.distinctionsCount || "0"} onChange={(e) => handleUpdateMatric("distinctions_count", e.target.value)} className="editor-input" />
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Year</label>
+                                                        <input placeholder="2020" value={data.matricData.completionYear} onChange={(e) => handleUpdateMatric("completionYear", e.target.value)} className="editor-input" />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Distinctions</label>
+                                                        <input placeholder="0" value={data.matricData.distinctions_count || data.matricData.distinctionsCount || "0"} onChange={(e) => handleUpdateMatric("distinctions_count", e.target.value)} className="editor-input" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    ) : (
+                                        <button onClick={() => setData({ ...data, matricData: { schoolName: "", completionYear: "", distinctionsCount: "0" } })} className="w-full py-2 flex items-center justify-center gap-2 border-2 border-dashed border-blue-100 text-blue-400 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all font-bold text-[10px] uppercase mb-4">
+                                            <Plus className="w-3 h-3" /> Add Matric Results
+                                        </button>
                                     )}
 
+                                    <div className="space-y-1 self-start">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Higher Education</label>
+                                    </div>
+
                                     {data.educationList.map((edu: any, idx: number) => (
-                                        <div key={idx} className="space-y-2 p-3 bg-slate-50 rounded-lg border border-slate-200 group">
-                                            <div className="flex justify-between items-center mb-1">
-                                                <input value={edu.title} onChange={(e) => handleUpdateEducation(idx, "title", e.target.value)} className="bg-transparent font-bold text-xs text-slate-800 outline-none w-full" />
+                                        <div key={idx} className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-200 relative group">
+                                            <div className="flex justify-between items-start">
+                                                <h4 className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Education #{idx + 1}</h4>
                                                 <button onClick={() => {
                                                     const newList = data.educationList.filter((_: any, i: number) => i !== idx);
                                                     setData({ ...data, educationList: newList });
-                                                }} className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="w-3 h-3" /></button>
+                                                }} className="text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                <input value={edu.issuer} onChange={(e) => handleUpdateEducation(idx, "issuer", e.target.value)} className="bg-transparent text-[10px] text-slate-500 outline-none w-full" />
-                                                <input value={edu.date} onChange={(e) => handleUpdateEducation(idx, "date", e.target.value)} className="bg-transparent text-[10px] text-slate-500 outline-none w-full text-right" placeholder="Date" />
+                                            <div className="space-y-3">
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Degree / Qualification</label>
+                                                    <input placeholder="e.g. BSc Computer Science" value={edu.title} onChange={(e) => handleUpdateEducation(idx, "title", e.target.value)} className="editor-input font-bold" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Institution</label>
+                                                    <input placeholder="e.g. University of Witwatersrand" value={edu.issuer} onChange={(e) => handleUpdateEducation(idx, "issuer", e.target.value)} className="editor-input" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Duration / Year</label>
+                                                    <input placeholder="e.g. 2021 - 2024" value={edu.date} onChange={(e) => handleUpdateEducation(idx, "date", e.target.value)} className="editor-input text-xs" />
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
-                                    <button onClick={() => setData({ ...data, educationList: [...data.educationList, { title: "", issuer: "", date: "", type: "education" }] })} className="w-full py-2 flex items-center justify-center gap-2 border-2 border-dashed border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all font-bold text-xs">
-                                        <Plus className="w-4 h-4" /> Add Education
+                                    <button onClick={() => setData({ ...data, educationList: [...data.educationList, { title: "", issuer: "", date: "", type: "education" }] })} className="w-full py-2 flex items-center justify-center gap-2 border-2 border-dashed border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all font-bold text-xs mt-2">
+                                        <Plus className="w-4 h-4" /> Add Qualification
                                     </button>
                                 </div>
                             )}
