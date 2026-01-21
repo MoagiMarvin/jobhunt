@@ -1,3 +1,8 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, GraduationCap } from "lucide-react";
+
 interface ProfileHeaderProps {
     name: string;
     headline: string;
@@ -10,6 +15,7 @@ interface ProfileHeaderProps {
     linkedin?: string;
     portfolio?: string;
     haveLicense?: boolean;
+    licenseCode?: string;
     haveCar?: boolean;
     educationLevel?: string;
     onEdit?: () => void;
@@ -17,8 +23,6 @@ interface ProfileHeaderProps {
     downloadAction?: React.ReactNode;
     isOwner?: boolean;
 }
-
-import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, GraduationCap } from "lucide-react";
 
 export default function ProfileHeader({
     name,
@@ -32,6 +36,7 @@ export default function ProfileHeader({
     linkedin,
     portfolio,
     haveLicense,
+    licenseCode,
     haveCar,
     educationLevel,
     onEdit,
@@ -39,6 +44,12 @@ export default function ProfileHeader({
     downloadAction,
     isOwner = true
 }: ProfileHeaderProps) {
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     const statusConfig = {
         "Looking for Work": {
             bg: "bg-green-50",
@@ -130,7 +141,9 @@ export default function ProfileHeader({
                             {haveLicense && (
                                 <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-purple-200 bg-purple-50 text-purple-700 shadow-sm">
                                     <CreditCard className="w-3 h-3" />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">Driver's License</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">
+                                        {isMounted && licenseCode ? `License: ${licenseCode}` : "Driver's License"}
+                                    </span>
                                 </div>
                             )}
 

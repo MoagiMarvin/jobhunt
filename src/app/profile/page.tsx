@@ -33,6 +33,7 @@ export default function ProfilePage() {
         linkedin: "https://linkedin.com/in/moagi",
         portfolio: "https://moagi.dev",
         haveLicense: true,
+        licenseCode: "Code 8 / B",
         haveCar: true,
         educationLevel: "Bachelor",
         summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
@@ -252,10 +253,21 @@ export default function ProfilePage() {
                         linkedin={user.linkedin}
                         portfolio={user.portfolio}
                         haveLicense={user.haveLicense}
+                        licenseCode={user.licenseCode}
                         haveCar={user.haveCar}
                         educationLevel={user.educationLevel}
                         onEdit={() => setIsEditing(true)}
-                        downloadAction={<DownloadResumeButton data={{ user, experiences, educationList, skills, projectsList, certificationsList, languages, references, matricData }} />}
+                        downloadAction={<DownloadResumeButton data={{
+                            user,
+                            experiences,
+                            educationList,
+                            certificationsList,
+                            skills,
+                            projectsList,
+                            languages,
+                            references,
+                            matricData
+                        }} />}
                         isOwner={true}
                     />
                 </div>
@@ -701,7 +713,7 @@ export default function ProfilePage() {
                         setUser(newData);
                         setIsEditing(false);
                         // Mock persist
-                        localStorage.setItem("user_details", JSON.stringify(newData));
+                        localStorage.setItem("user_basic_info", JSON.stringify(newData));
                         alert("Profile updated successfully!");
                     }}
                     initialData={user}

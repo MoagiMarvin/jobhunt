@@ -1,62 +1,53 @@
 "use client";
 
-import { PDFDownloadLink } from '@react-pdf/renderer';
+import { useState, useEffect } from 'react';
+import { Download, FileEdit } from 'lucide-react';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { ResumeDocument } from './ResumeDocument';
-import { Download, Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+
+const PDFDownloadLink = dynamic(
+    () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
+    { ssr: false }
+);
 
 interface DownloadResumeButtonProps {
-    data: {
-        user: any;
-        experiences: any[];
-        educationList: any[];
-        skills: any[];
-        projectsList: any[];
-        certificationsList: any[];
-        languages?: { language: string; proficiency: string }[];
-        references?: any[];
-        matricData?: any;
-    };
+    data?: any;
 }
 
 export default function DownloadResumeButton({ data }: DownloadResumeButtonProps) {
-    const [isClient, setIsClient] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
-        setIsClient(true);
-        console.log("DownloadResumeButton Data:", data);
-    }, [data]);
+        setIsMounted(true);
+    }, []);
 
-    if (!isClient) {
-        return (
-            <button disabled className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-slate-400 font-semibold text-sm">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Loading PDF...
-            </button>
-        );
-    }
+    if (!isMounted) return null;
 
     return (
-        <PDFDownloadLink
-            document={
-                <ResumeDocument data={data} />
-            }
-            fileName={`${data.user.name.replace(/\s+/g, '_')}_Resume.pdf`}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-sm shadow-sm"
-        >
-            {({ blob, url, loading, error }) =>
-                loading ? (
-                    <span className="flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Generating...
-                    </span>
-                ) : (
-                    <span className="flex items-center gap-2">
-                        <Download className="w-4 h-4" />
-                        Download Resume
-                    </span>
-                )
-            }
-        </PDFDownloadLink>
+        <div className="flex items-center gap-2">
+            {data && (
+                <PDFDownloadLink
+                    document={<ResumeDocument data={data} />}
+                    fileName={`${(data.user?.name || 'Resume').replace(/\s+/g, '_')}_Resume.pdf`}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-slate-700 hover:bg-slate-50 transition-all font-semibold text-sm border border-slate-200 shadow-sm"
+                >
+                    {({ loading }: any) => (
+                        <>
+                            <Download className="w-4 h-4 text-blue-600" />
+                            {loading ? 'Preparing...' : 'Quick Download'}
+                        </>
+                    )}
+                </PDFDownloadLink>
+            )}
+
+            <Link
+                href="/cv/preview"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all font-semibold text-sm shadow-sm"
+            >
+                <FileEdit className="w-4 h-4" />
+                Customize
+            </Link>
+        </div>
     );
 }

@@ -146,6 +146,9 @@ export default function CreateCVPage() {
             ...basics,
             headline: basics.jobTitle, // Map job title to headline
             availabilityStatus: "Looking for Work",
+            haveLicense: basics.driverLicense !== "" && basics.driverLicense !== "None",
+            licenseCode: basics.driverLicense,
+            haveCar: basics.ownVehicle,
         };
         localStorage.setItem("user_basic_info", JSON.stringify(basicInfo));
 

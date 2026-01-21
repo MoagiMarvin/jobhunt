@@ -15,6 +15,7 @@ interface EditProfileModalProps {
         location: string;
         availabilityStatus: "Looking for Work" | "Not Looking";
         haveLicense?: boolean;
+        licenseCode?: string;
         haveCar?: boolean;
         educationLevel?: string;
         github?: string;
@@ -201,21 +202,31 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                         <div className="col-span-2 space-y-4 pt-4 border-t border-slate-100">
                             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Logistics & Transport</h3>
                             <div className="grid grid-cols-2 gap-4">
-                                <label className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.haveLicense ? 'border-blue-600 bg-blue-50' : 'border-slate-100 bg-white'}`}>
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.haveLicense}
-                                        onChange={(e) => setFormData({ ...formData, haveLicense: e.target.checked })}
-                                        className="hidden"
-                                    />
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${formData.haveLicense ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                                        <CreditCard className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className={`text-sm font-bold ${formData.haveLicense ? 'text-blue-700' : 'text-slate-600'}`}>Driver's License</p>
-                                        <p className="text-[10px] text-slate-400">Valid license</p>
-                                    </div>
-                                </label>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 flex items-center gap-2 uppercase">
+                                        <CreditCard className="w-3.5 h-3.5 text-blue-600" />
+                                        Driver's License
+                                    </label>
+                                    <select
+                                        value={formData.licenseCode || "None"}
+                                        onChange={(e) => {
+                                            const code = e.target.value;
+                                            setFormData({
+                                                ...formData,
+                                                licenseCode: code === "None" ? "" : code,
+                                                haveLicense: code !== "None"
+                                            });
+                                        }}
+                                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-white font-medium"
+                                    >
+                                        <option value="None">None / No License</option>
+                                        <option value="Learners">Learner's License</option>
+                                        <option value="Code 8 (B)">Code 8 / B (Light Vehicle)</option>
+                                        <option value="Code 10 (C1)">Code 10 / C1 (Heavy Vehicle)</option>
+                                        <option value="Code 14 (EC)">Code 14 / EC (Extra Heavy)</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
 
                                 <label className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.haveCar ? 'border-blue-600 bg-blue-50' : 'border-slate-100 bg-white'}`}>
                                     <input
