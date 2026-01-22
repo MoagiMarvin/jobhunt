@@ -1,10 +1,8 @@
-import { School, Award, Trash2, CheckCircle2 } from "lucide-react";
+import { School, Trash2 } from "lucide-react";
 
 interface SecondaryEducationCardProps {
     schoolName: string;
     completionYear: number;
-    subjects?: { subject: string; grade: string }[];
-    distinctionsCount?: number;
     onDelete?: () => void;
     isOwner?: boolean;
 }
@@ -12,8 +10,6 @@ interface SecondaryEducationCardProps {
 export default function SecondaryEducationCard({
     schoolName,
     completionYear,
-    subjects = [],
-    distinctionsCount = 0,
     onDelete,
     isOwner = true
 }: SecondaryEducationCardProps) {
@@ -36,20 +32,9 @@ export default function SecondaryEducationCard({
                     <div className="flex justify-between items-start">
                         <div>
                             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-tight">{schoolName}</h3>
-                            <p className="text-[11px] text-slate-500 font-bold">Class of {completionYear} • {distinctionsCount} Distinctions</p>
+                            <p className="text-[11px] text-slate-500 font-bold">Class of {completionYear}</p>
                         </div>
                     </div>
-
-                    {subjects.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                            {subjects.map((sub, idx) => (
-                                <div key={idx} className="px-2 py-1 bg-slate-50 border border-slate-100 rounded-md flex items-center gap-1.5">
-                                    <span className="text-[10px] font-bold text-slate-700">{sub.subject}</span>
-                                    <span className="text-[10px] font-black text-blue-600">{sub.grade}</span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

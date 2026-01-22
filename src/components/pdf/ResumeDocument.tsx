@@ -265,11 +265,10 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                     {matricData && (
                         <View style={styles.itemContainer}>
                             <View style={styles.itemHeader}>
-                                <Text style={styles.itemTitle}>Matric / National Senior Certificate</Text>
+                                <Text style={styles.itemTitle}>Matric</Text>
                                 <Text style={styles.itemDate}>Class of {matricData.completionYear}</Text>
                             </View>
                             <Text style={styles.itemSubtitle}>{matricData.schoolName}</Text>
-                            <Text style={styles.bulletPoint}>• {matricData.distinctions_count || matricData.distinctionsCount} Distinctions</Text>
                         </View>
                     )}
                 </View>

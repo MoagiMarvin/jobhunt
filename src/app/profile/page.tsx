@@ -35,7 +35,6 @@ export default function ProfilePage() {
         haveLicense: true,
         licenseCode: "Code 8 / B",
         haveCar: true,
-        educationLevel: "Bachelor",
         summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
     });
 
@@ -255,7 +254,6 @@ export default function ProfilePage() {
                         haveLicense={user.haveLicense}
                         licenseCode={user.licenseCode}
                         haveCar={user.haveCar}
-                        educationLevel={user.educationLevel}
                         onEdit={() => setIsEditing(true)}
                         downloadAction={<DownloadResumeButton data={{
                             user,
@@ -605,15 +603,15 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <School className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Secondary Education</h2>
+                                    <h2 className="text-xl font-bold text-primary">Matric</h2>
                                 </div>
                                 {!matricData && (
                                     <button
                                         onClick={() => setIsAddMatricOpen(true)}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold hover:bg-blue-600 transition-all shadow-sm"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                     >
                                         <Plus className="w-3.5 h-3.5" />
-                                        Add Matric Results
+                                        Add Matric
                                     </button>
                                 )}
                             </div>
