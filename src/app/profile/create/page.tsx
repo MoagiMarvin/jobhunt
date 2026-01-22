@@ -417,18 +417,31 @@ export default function CreateCVPage() {
 
                         <div className="space-y-4">
                             {skills.length > 0 ? (
-                                <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-                                    <div className="flex flex-wrap gap-2">
-                                        {skills.map((skill, idx) => (
-                                            <span key={idx} className="px-3 py-1 bg-white text-slate-700 rounded-full text-sm font-medium border border-slate-200 flex items-center gap-2 shadow-sm">
-                                                {skill}
-                                                <button onClick={() => setSkills(skills.filter((_, i) => i !== idx))} className="text-slate-400 hover:text-red-500"><X className="w-3 h-3" /></button>
-                                            </span>
-                                        ))}
+                                <div className="p-6 bg-slate-50 rounded-xl border border-slate-200 shadow-sm">
+                                    <div className="flex flex-col space-y-4">
+                                        {[...skills].reverse().map((skill, idx) => {
+                                            const originalIdx = skills.length - 1 - idx;
+                                            return (
+                                                <div key={idx} className="flex items-start gap-4 group">
+                                                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-200" />
+                                                    <span className="flex-1 text-sm font-bold text-slate-800 leading-relaxed">
+                                                        {skill}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => setSkills(skills.filter((_, i) => i !== originalIdx))}
+                                                        className="text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg"
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             ) : (
-                                <div className="text-center py-4 text-slate-400 text-sm">No skills added yet. Type above and press Enter or click +.</div>
+                                <div className="text-center py-6 text-slate-400 text-sm italic border-2 border-dashed border-slate-200 rounded-xl">
+                                    No skills added yet. Type above and press Enter to list your competencies.
+                                </div>
                             )}
                         </div>
                     </div>

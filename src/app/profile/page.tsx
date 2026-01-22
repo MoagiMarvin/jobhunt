@@ -493,32 +493,37 @@ export default function ProfilePage() {
 
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
                                 <div className="flex flex-col space-y-3">
-                                    {skills.map((skill: any, idx) => {
+                                    {[...skills].reverse().map((skill: any, idx) => {
                                         const name = typeof skill === "string" ? skill : skill.name;
                                         const minYears = typeof skill === "string" ? undefined : skill.minYears;
                                         const level = typeof skill === "string" ? undefined : skill.level;
 
+                                        // Reverse index for deletion
+                                        const originalIdx = skills.length - 1 - idx;
+
                                         return (
                                             <div
                                                 key={idx}
-                                                className="flex items-start gap-4 p-3 hover:bg-slate-50 rounded-xl transition-all group/skill border border-transparent hover:border-slate-100"
+                                                className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl transition-all group/skill border border-slate-100 hover:border-blue-100"
                                             >
-                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
-                                                <div className="flex-1 flex flex-col">
-                                                    <span className="text-sm font-semibold text-slate-700 leading-relaxed">
+                                                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-200" />
+                                                <div className="flex-1 flex flex-col gap-1">
+                                                    <span className="text-sm font-bold text-slate-800 leading-relaxed">
                                                         {name}
                                                     </span>
                                                     {(minYears || level) && (
-                                                        <span className="text-[10px] text-slate-500 font-medium">
-                                                            {minYears ? `${minYears}+ yrs` : null}
-                                                            {minYears && level ? " • " : ""}
-                                                            {level ? level : null}
-                                                        </span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold uppercase">
+                                                                {minYears ? `${minYears}+ yrs` : null}
+                                                                {minYears && level ? " • " : ""}
+                                                                {level ? level : null}
+                                                            </span>
+                                                        </div>
                                                     )}
                                                 </div>
                                                 <button
-                                                    onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
-                                                    className="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover/skill:opacity-100"
+                                                    onClick={() => setSkills(skills.filter((_, i) => i !== originalIdx))}
+                                                    className="text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover/skill:opacity-100 p-1 hover:bg-red-50 rounded-lg"
                                                 >
                                                     <X className="w-4 h-4" />
                                                 </button>
@@ -526,7 +531,9 @@ export default function ProfilePage() {
                                         );
                                     })}
                                     {skills.length === 0 && (
-                                        <p className="text-sm text-slate-400 italic">No skills added yet.</p>
+                                        <div className="text-center py-8 text-slate-400 text-sm italic border-2 border-dashed border-slate-100 rounded-xl">
+                                            No skills showcased yet.
+                                        </div>
                                     )}
                                 </div>
                             </div>

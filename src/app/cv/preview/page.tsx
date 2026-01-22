@@ -478,25 +478,32 @@ export default function CVPreviewPage() {
                             </button>
                             {openSection === 'skills' && (
                                 <div className="p-4 border-t border-slate-100 space-y-4 animate-in slide-in-from-top-2 duration-200">
-                                    <div className="flex flex-wrap gap-2">
-                                        {data.skills.map((skill: any, idx: number) => (
-                                            <div key={idx} className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-bold text-slate-700">
-                                                <input
-                                                    value={typeof skill === 'string' ? skill : skill.name}
-                                                    onChange={(e) => {
-                                                        const newSkills = [...data.skills];
-                                                        if (typeof skill === 'string') newSkills[idx] = e.target.value;
-                                                        else newSkills[idx] = { ...skill, name: e.target.value };
+                                    <div className="flex flex-col space-y-3">
+                                        {[...data.skills].reverse().map((skill: any, idx: number) => {
+                                            const originalIdx = data.skills.length - 1 - idx;
+                                            return (
+                                                <div key={idx} className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 group relative">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                                                    <input
+                                                        value={typeof skill === 'string' ? skill : (skill.name || "")}
+                                                        onChange={(e) => {
+                                                            const newSkills = [...data.skills];
+                                                            if (typeof skill === 'string') newSkills[originalIdx] = e.target.value;
+                                                            else newSkills[originalIdx] = { ...skill, name: e.target.value };
+                                                            setData({ ...data, skills: newSkills });
+                                                        }}
+                                                        className="bg-transparent outline-none flex-1 text-[11px] font-bold text-slate-700 leading-relaxed"
+                                                        placeholder="Describe your skill..."
+                                                    />
+                                                    <button onClick={() => {
+                                                        const newSkills = data.skills.filter((_: any, i: number) => i !== originalIdx);
                                                         setData({ ...data, skills: newSkills });
-                                                    }}
-                                                    className="bg-transparent outline-none w-20"
-                                                />
-                                                <button onClick={() => {
-                                                    const newSkills = data.skills.filter((_: any, i: number) => i !== idx);
-                                                    setData({ ...data, skills: newSkills });
-                                                }} className="text-slate-400 hover:text-red-500"><X className="w-3 h-3" /></button>
-                                            </div>
-                                        ))}
+                                                    }} className="text-slate-300 hover:text-red-500 transition-colors">
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                     <button onClick={() => setData({ ...data, skills: [...data.skills, "New Skill"] })} className="w-full py-2 flex items-center justify-center gap-2 border-2 border-dashed border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 rounded-xl transition-all font-bold text-xs">
                                         <Plus className="w-4 h-4" /> Add Skill
