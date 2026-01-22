@@ -17,6 +17,7 @@ import ReferenceCard from "@/components/talent/ReferenceCard";
 import AddReferenceModal from "@/components/talent/AddReferenceModal";
 import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
 import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
+import AddExperienceModal from "@/components/talent/AddExperienceModal";
 
 export default function ProfilePage() {
 
@@ -174,6 +175,7 @@ export default function ProfilePage() {
     const [isAddCredentialOpen, setIsAddCredentialOpen] = useState<{ open: boolean, type: "education" | "certification" }>({ open: false, type: "education" });
     const [isAddReferenceOpen, setIsAddReferenceOpen] = useState(false);
     const [isAddMatricOpen, setIsAddMatricOpen] = useState(false);
+    const [isAddExperienceOpen, setIsAddExperienceOpen] = useState(false);
 
     const [editedUser, setEditedUser] = useState(user);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -454,7 +456,7 @@ export default function ProfilePage() {
                                     <h2 className="text-xl font-bold text-primary">Experience</h2>
                                 </div>
                                 <button
-                                    onClick={() => alert("Add Experience feature coming soon with database integration.")}
+                                    onClick={() => setIsAddExperienceOpen(true)}
                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
@@ -490,7 +492,7 @@ export default function ProfilePage() {
                             </div>
 
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-col space-y-3">
                                     {skills.map((skill: any, idx) => {
                                         const name = typeof skill === "string" ? skill : skill.name;
                                         const minYears = typeof skill === "string" ? undefined : skill.minYears;
@@ -499,10 +501,11 @@ export default function ProfilePage() {
                                         return (
                                             <div
                                                 key={idx}
-                                                className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200 group/skill"
+                                                className="flex items-start gap-4 p-3 hover:bg-slate-50 rounded-xl transition-all group/skill border border-transparent hover:border-slate-100"
                                             >
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-semibold text-slate-700">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                                                <div className="flex-1 flex flex-col">
+                                                    <span className="text-sm font-semibold text-slate-700 leading-relaxed">
                                                         {name}
                                                     </span>
                                                     {(minYears || level) && (
@@ -515,9 +518,9 @@ export default function ProfilePage() {
                                                 </div>
                                                 <button
                                                     onClick={() => setSkills(skills.filter((_, i) => i !== idx))}
-                                                    className="text-slate-400 hover:text-red-500 transition-colors"
+                                                    className="text-slate-400 hover:text-red-500 transition-colors opacity-0 group-hover/skill:opacity-100"
                                                 >
-                                                    <X className="w-3.5 h-3.5" />
+                                                    <X className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         );
@@ -827,6 +830,17 @@ export default function ProfilePage() {
                         setMatricData(data);
                         localStorage.setItem("user_matric_data", JSON.stringify(data));
                         setIsAddMatricOpen(false);
+                    }}
+                />
+
+                <AddExperienceModal
+                    isOpen={isAddExperienceOpen}
+                    onClose={() => setIsAddExperienceOpen(false)}
+                    onAdd={(newExp) => {
+                        const updated = [...experiences, newExp];
+                        setExperiences(updated);
+                        localStorage.setItem("user_experience_list", JSON.stringify(updated));
+                        setIsAddExperienceOpen(false);
                     }}
                 />
 

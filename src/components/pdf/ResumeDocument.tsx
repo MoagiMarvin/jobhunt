@@ -122,23 +122,22 @@ const getStyles = (themeName: string = 'modern') => {
             marginBottom: 2,
             lineHeight: 1.3,
         },
-        skillsGrid: {
+        skillRow: {
             flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 5,
+            marginBottom: 3,
+            alignItems: 'flex-start',
         },
-        skillBadge: {
-            backgroundColor: themeName === 'minimalist' ? 'transparent' : '#EFF6FF',
-            paddingHorizontal: 6,
-            paddingVertical: 3,
-            borderRadius: 4,
-            borderWidth: 0.5,
-            borderColor: themeName === 'minimalist' ? '#333333' : '#DBEAFE',
+        skillBulletText: {
+            fontSize: 9,
+            color: theme.primary,
+            marginRight: 6,
+            width: 8,
         },
-        skillText: {
-            fontSize: 8,
-            color: themeName === 'minimalist' ? '#000000' : '#1E40AF',
-            fontWeight: 'bold',
+        skillItemText: {
+            fontSize: 9,
+            color: '#1E293B',
+            flex: 1,
+            lineHeight: 1.4,
         },
         referenceContainer: {
             flexDirection: 'row',
@@ -209,12 +208,13 @@ export const ResumeDocument = ({ data }: { data: any }) => {
 
                 {/* Technical Skills */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Technical Skills</Text>
-                    <View style={styles.skillsGrid}>
-                        {skills?.map((skill: any, idx: number) => (
-                            <View key={idx} style={styles.skillBadge}>
-                                <Text style={styles.skillText}>
-                                    {typeof skill === 'string' ? skill : (skill.name || skill.skill)}
+                    <Text style={styles.sectionTitle}>Skills & Expertise</Text>
+                    <View style={{ marginTop: 2 }}>
+                        {skills?.map((s: any, idx: number) => (
+                            <View key={idx} style={styles.skillRow}>
+                                <Text style={styles.skillBulletText}>•</Text>
+                                <Text style={styles.skillItemText}>
+                                    {typeof s === 'string' ? s : (s.name || s.skill)}
                                 </Text>
                             </View>
                         ))}
