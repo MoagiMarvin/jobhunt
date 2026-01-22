@@ -32,7 +32,7 @@ export default function SecondaryEducationCard({
                     <div className="flex justify-between items-start">
                         <div>
                             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-tight">{schoolName}</h3>
-                            <p className="text-[11px] text-slate-500 font-bold">Class of {completionYear}</p>
+                            <p className="text-[11px] text-slate-900 font-bold">Class of {completionYear}</p>
                         </div>
                     </div>
                 </div>

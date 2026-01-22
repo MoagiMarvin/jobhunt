@@ -57,7 +57,7 @@ export default function CredentialCard({
                         {/* Removed Verified Badge */}
                     </div>
 
-                    <div className="flex items-center gap-3 text-[10px] text-slate-500">
+                    <div className="flex items-center gap-3 text-[10px] text-slate-900 font-bold">
                         <span>{date}</span>
                         {qualification_level && (
                             <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md font-bold text-[9px]">

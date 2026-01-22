@@ -82,8 +82,8 @@ export default function ProfileHeader({
                     <div className="flex-1 pt-4">
                         <div className="flex items-start justify-between gap-4 mb-3">
                             <div>
-                                <h1 className="text-2xl font-bold text-primary mb-1">{name}</h1>
-                                <p className="text-base text-slate-600 font-medium">{headline}</p>
+                                <h1 className="text-xl font-extrabold text-slate-900 mb-0.5 tracking-tight">{name}</h1>
+                                <p className="text-sm text-slate-500 font-semibold leading-relaxed">{headline}</p>
                             </div>
                             <div className="flex flex-col gap-2">
                                 {isOwner && onEdit && (
@@ -109,21 +109,21 @@ export default function ProfileHeader({
 
                         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
                             {location && (
-                                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
                                     <MapPin className="w-3.5 h-3.5 text-blue-600" />
                                     {location}
                                 </div>
                             )}
 
                             {email && (
-                                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
                                     <Mail className="w-3.5 h-3.5 text-blue-600" />
                                     {email}
                                 </div>
                             )}
 
                             {phone && (
-                                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
                                     <Phone className="w-3.5 h-3.5 text-blue-600" />
                                     {phone}
                                 </div>

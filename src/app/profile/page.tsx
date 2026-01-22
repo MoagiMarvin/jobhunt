@@ -358,7 +358,7 @@ export default function ProfilePage() {
                             </div>
                         ))}
                         {(!user.targetRoles || user.targetRoles.length === 0) && (
-                            <p className="text-slate-400 text-sm italic">No target roles added yet</p>
+                            <p className="text-slate-600 font-bold uppercase tracking-wider">No target roles added yet</p>
                         )}
                     </div>
 
@@ -408,7 +408,7 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <FolderKanban className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Projects</h2>
+                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Projects</h2>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -453,7 +453,7 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Building2 className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Experience</h2>
+                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Experience</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddExperienceOpen(true)}
@@ -480,7 +480,7 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Sparkles className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Skills</h2>
+                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Skills</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddSkillOpen(true)}
@@ -531,7 +531,7 @@ export default function ProfilePage() {
                                         );
                                     })}
                                     {skills.length === 0 && (
-                                        <div className="text-center py-8 text-slate-400 text-sm italic border-2 border-dashed border-slate-100 rounded-xl">
+                                        <div className="text-center py-8 text-slate-600 font-bold uppercase tracking-wider border-2 border-dashed border-slate-100 rounded-xl">
                                             No skills showcased yet.
                                         </div>
                                     )}
@@ -544,7 +544,7 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Languages className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Languages</h2>
+                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Languages</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddLanguageOpen(true)}
@@ -579,7 +579,7 @@ export default function ProfilePage() {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <GraduationCap className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Tertiary Education</h2>
+                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Tertiary Education</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}

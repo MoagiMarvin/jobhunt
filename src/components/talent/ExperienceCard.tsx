@@ -43,8 +43,8 @@ export default function ExperienceCard({
                 {/* Content */}
                 <div className="flex-1 space-y-2 pb-2">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <h3 className="text-base font-bold text-primary">{role}</h3>
-                        <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                        <h3 className="text-sm font-bold text-slate-900 tracking-tight">{role}</h3>
+                        <div className="text-slate-600 uppercase tracking-wider font-extrabold flex items-center gap-1.5 text-[10px] bg-slate-100 px-2 py-0.5 rounded-lg">
                             <Calendar className="w-3.5 h-3.5" />
                             {duration}
                         </div>

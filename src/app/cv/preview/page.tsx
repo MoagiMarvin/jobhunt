@@ -295,7 +295,7 @@ export default function CVPreviewPage() {
                             {openSection === 'basics' && (
                                 <div className="p-4 border-t border-slate-100 space-y-4 animate-in slide-in-from-top-2 duration-200">
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Target Job Title</label>
+                                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Target Job Title</label>
                                         <input
                                             type="text"
                                             value={data.user.headline}
@@ -304,7 +304,7 @@ export default function CVPreviewPage() {
                                         />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Professional Summary</label>
+                                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Professional Summary</label>
                                         <textarea
                                             value={data.user.summary}
                                             onChange={(e) => handleUpdateUser("summary", e.target.value)}
@@ -313,11 +313,11 @@ export default function CVPreviewPage() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Location</label>
+                                            <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Location</label>
                                             <input type="text" value={data.user.location} onChange={(e) => handleUpdateUser("location", e.target.value)} className="editor-input" />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Phone</label>
+                                            <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Phone</label>
                                             <input type="text" value={data.user.phone} onChange={(e) => handleUpdateUser("phone", e.target.value)} className="editor-input" />
                                         </div>
                                     </div>
@@ -352,20 +352,20 @@ export default function CVPreviewPage() {
                                             </div>
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Role</label>
+                                                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Role</label>
                                                     <input placeholder="Job Title" value={exp.role} onChange={(e) => handleUpdateExperience(idx, "role", e.target.value)} className="editor-input font-bold" />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Company</label>
+                                                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Company</label>
                                                     <input placeholder="Company" value={exp.company} onChange={(e) => handleUpdateExperience(idx, "company", e.target.value)} className="editor-input" />
                                                 </div>
                                             </div>
                                             <div className="space-y-1">
-                                                <label className="text-[10px] font-bold text-slate-400 uppercase">Duration</label>
+                                                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Duration</label>
                                                 <input placeholder="Jan 2020 - Present" value={exp.duration} onChange={(e) => handleUpdateExperience(idx, "duration", e.target.value)} className="editor-input text-xs" />
                                             </div>
                                             <div className="space-y-1">
-                                                <label className="text-[10px] font-bold text-slate-400 uppercase">Achievements</label>
+                                                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Achievements</label>
                                                 <textarea placeholder="Key Achievements..." value={exp.description} onChange={(e) => handleUpdateExperience(idx, "description", e.target.value)} className="editor-textarea h-24 text-xs" />
                                             </div>
                                         </div>
@@ -405,16 +405,16 @@ export default function CVPreviewPage() {
                                             </div>
                                             <div className="space-y-3">
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">School Name</label>
+                                                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">School Name</label>
                                                     <input placeholder="e.g. Pretoria Boys High" value={data.matricData.schoolName} onChange={(e) => handleUpdateMatric("schoolName", e.target.value)} className="editor-input" />
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-3">
                                                     <div className="space-y-1">
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Year</label>
+                                                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Year</label>
                                                         <input placeholder="2020" value={data.matricData.completionYear} onChange={(e) => handleUpdateMatric("completionYear", e.target.value)} className="editor-input" />
                                                     </div>
                                                     <div className="space-y-1">
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Distinctions</label>
+                                                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Distinctions</label>
                                                         <input placeholder="0" value={data.matricData.distinctions_count || data.matricData.distinctionsCount || "0"} onChange={(e) => handleUpdateMatric("distinctions_count", e.target.value)} className="editor-input" />
                                                     </div>
                                                 </div>
@@ -427,7 +427,7 @@ export default function CVPreviewPage() {
                                     )}
 
                                     <div className="space-y-1 self-start">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Higher Education</label>
+                                        <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Higher Education</label>
                                     </div>
 
                                     {data.educationList.map((edu: any, idx: number) => (
@@ -443,15 +443,15 @@ export default function CVPreviewPage() {
                                             </div>
                                             <div className="space-y-3">
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Degree / Qualification</label>
+                                                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Degree / Qualification</label>
                                                     <input placeholder="e.g. BSc Computer Science" value={edu.title} onChange={(e) => handleUpdateEducation(idx, "title", e.target.value)} className="editor-input font-bold" />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Institution</label>
+                                                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Institution</label>
                                                     <input placeholder="e.g. University of Witwatersrand" value={edu.issuer} onChange={(e) => handleUpdateEducation(idx, "issuer", e.target.value)} className="editor-input" />
                                                 </div>
                                                 <div className="space-y-1">
-                                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Duration / Year</label>
+                                                    <label className="text-[10px] font-bold text-slate-600 uppercase tracking-tight">Duration / Year</label>
                                                     <input placeholder="e.g. 2021 - 2024" value={edu.date} onChange={(e) => handleUpdateEducation(idx, "date", e.target.value)} className="editor-input text-xs" />
                                                 </div>
                                             </div>
@@ -715,13 +715,13 @@ export default function CVPreviewPage() {
                 .editor-input {
                     width: 100%;
                     padding: 0.6rem 0.75rem;
-                    border: 1px solid #e2e8f0;
+                    border: 1px solid #cbd5e1;
                     border-radius: 0.75rem;
                     outline: none;
                     transition: all 0.2s;
-                    font-size: 0.8125rem;
-                    font-weight: 500;
-                    color: #1e293b;
+                    font-size: 0.875rem;
+                    font-weight: 400;
+                    color: #000000;
                 }
                 .editor-input:focus {
                     border-color: #3b82f6;
@@ -730,14 +730,14 @@ export default function CVPreviewPage() {
                 .editor-textarea {
                     width: 100%;
                     padding: 0.75rem;
-                    border: 1px solid #e2e8f0;
+                    border: 1px solid #cbd5e1;
                     border-radius: 0.75rem;
                     outline: none;
                     transition: all 0.2s;
-                    font-size: 0.8125rem;
+                    font-size: 0.875rem;
                     line-height: 1.6;
-                    font-weight: 500;
-                    color: #1e293b;
+                    font-weight: 400;
+                    color: #000000;
                     resize: none;
                 }
                 .editor-textarea:focus {
