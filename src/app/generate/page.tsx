@@ -2,7 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle, Loader2, Mail, Phone } from "lucide-react";
+import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import MinimalistCVPreview from "@/components/cv/MinimalistCVPreview";
 
 export default function GeneratePage() {
     return (
@@ -479,70 +480,7 @@ function GenerateContent() {
                                 <p className="text-[10px] text-slate-400">Rewriting bullet points for maximum impact.</p>
                             </div>
                         ) : optimizedCv ? (
-                            <div className="w-full max-w-[210mm] bg-white text-slate-900 shadow-2xl rounded-sm overflow-hidden border border-slate-200 p-10 space-y-6">
-                                {/* Real CV Header */}
-                                <div className="border-b-2 border-slate-800 pb-6">
-                                    <h1 className="text-4xl font-bold text-slate-900">{optimizedCv.personalInfo?.name || profileData?.personalInfo?.fullName}</h1>
-                                    <p className="text-slate-500 font-medium text-lg mt-1">{optimizedCv.personalInfo?.title || "Candidate"}</p>
-                                    <div className="flex flex-wrap gap-4 text-xs text-slate-400 mt-3 font-medium">
-                                        <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{optimizedCv.personalInfo?.email || profileData?.personalInfo?.email}</span>
-                                        <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{optimizedCv.personalInfo?.phone || profileData?.personalInfo?.phone}</span>
-                                        {optimizedCv.personalInfo?.location && <span>• {optimizedCv.personalInfo.location}</span>}
-                                    </div>
-                                </div>
-
-                                {/* Tailored Summary */}
-                                <div className="space-y-2">
-                                    <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Professional Summary</h2>
-                                    <p className="text-sm leading-relaxed text-slate-700">
-                                        {optimizedCv.summary}
-                                    </p>
-                                </div>
-
-                                {/* Experience Sections */}
-                                <div className="space-y-4">
-                                    <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Professional Experience</h2>
-                                    {optimizedCv.experience?.map((exp: any, i: number) => (
-                                        <div key={i} className="space-y-2">
-                                            <div className="flex justify-between items-baseline">
-                                                <h3 className="font-bold text-slate-900 text-sm">{exp.role}</h3>
-                                                <span className="text-[10px] font-bold text-slate-400">{exp.dates}</span>
-                                            </div>
-                                            <p className="text-xs text-slate-500 italic font-medium">{exp.company}</p>
-                                            <ul className="list-disc pl-4 text-xs text-slate-700 space-y-1.5 mt-2 marker:text-blue-400">
-                                                {exp.bulletPoints?.map((bullet: string, j: number) => (
-                                                    <li key={j} className="leading-normal">{bullet}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Skills Grid */}
-                                <div className="space-y-2 pt-2">
-                                    <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Core Competencies</h2>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {optimizedCv.skills?.map((skill: string) => (
-                                            <span key={skill} className="text-[10px] font-bold px-2 py-1 bg-slate-50 text-slate-600 rounded border border-slate-200">
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Education */}
-                                {optimizedCv.education?.length > 0 && (
-                                    <div className="space-y-2 pt-2">
-                                        <h2 className="uppercase tracking-widest text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded w-fit">Education</h2>
-                                        {optimizedCv.education.map((edu: any, i: number) => (
-                                            <div key={i} className="flex justify-between text-xs">
-                                                <span className="font-bold">{edu.degree} @ {edu.school}</span>
-                                                <span className="text-slate-400">{edu.year}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                            <MinimalistCVPreview cv={optimizedCv} profileData={profileData} />
                         ) : (
                             <div className="text-center p-12 text-slate-400">
                                 <FileText className="w-16 h-16 mx-auto mb-4 opacity-10" />
