@@ -114,14 +114,17 @@ export async function POST(req: Request) {
     if (apiKey) console.log("DEBUG: Key Start ->", apiKey.substring(0, 5) + "...");
 
     try {
-        const { jobRequirements, cvText } = await req.json();
+        const { jobRequirements, profileData } = await req.json();
 
-        if (!cvText || !jobRequirements) {
+        if (!profileData || !jobRequirements) {
             return NextResponse.json(
-                { error: "CV text and Job requirements are required." },
+                { error: "Profile data and Job requirements are required." },
                 { status: 400 }
             );
         }
+
+        // Convert profileData to text for analysis
+        const cvText = JSON.stringify(profileData);
 
         // 1. ALWAYS calculate Legacy Score (Keyword-based)
         const legacyAnalysis = basicAnalyze(cvText, jobRequirements);

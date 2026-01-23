@@ -2,16 +2,16 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 // Basic optimization for when AI is unavailable
-function basicOptimize(cvText: string, userDetails: any) {
+function basicOptimize(cvText: string, profileDataObj: any) {
   // Very simple parsing for mock-up replacement
   const lines = cvText.split('\n').filter(l => l.trim().length > 0);
 
   return {
     personalInfo: {
-      name: userDetails?.name || "Candidate Name",
+      name: profileDataObj?.personalInfo?.fullName || "Candidate Name",
       title: "Professional", // Default
-      email: userDetails?.email || "",
-      phone: userDetails?.phone || "",
+      email: profileDataObj?.personalInfo?.email || "",
+      phone: profileDataObj?.personalInfo?.phone || "",
       location: "South Africa",
       links: []
     },
@@ -40,7 +40,7 @@ function basicOptimize(cvText: string, userDetails: any) {
 export async function POST(req: Request) {
   console.log("CV Optimization: Request received");
   try {
-    const { profileData, jobRequirements, userDetails } = await req.json();
+    const { profileData, jobRequirements } = await req.json();
 
     if (!profileData || !jobRequirements) {
       return NextResponse.json(
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey || apiKey === "" || apiKey === "your_api_key_here") {
       console.log("CV Optimization: No API key. Using Basic Template.");
-      return NextResponse.json(basicOptimize(JSON.stringify(profileData), userDetails));
+      return NextResponse.json(basicOptimize(JSON.stringify(profileData), profileData));
     }
 
     console.log("CV Optimization: Processing with Gemini");
@@ -72,10 +72,7 @@ export async function POST(req: Request) {
       JOB REQUIREMENTS:
       \"\"\"
       ${jobRequirements.join("\n")}
-      \"\"\"
-
-      USER DETAILS:
-      ${JSON.stringify(userDetails || {})}
+      """
 
       INSTRUCTIONS:
       1. Analyze the Job Requirements to identify the most important skills and keywords.
@@ -131,7 +128,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ...optimizedCv, version: "ai" });
     } catch (aiError: any) {
       console.error("CV Optimization AI Failed:", aiError.message);
-      return NextResponse.json(basicOptimize(JSON.stringify(profileData), userDetails));
+      return NextResponse.json(basicOptimize(JSON.stringify(profileData), profileData));
     }
 
   } catch (error: any) {

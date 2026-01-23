@@ -22,27 +22,53 @@ function GenerateContent() {
     const [isScraped, setIsScraped] = useState(false);
     const [isScraping, setIsScraping] = useState(false);
     const [scrapedRequirements, setScrapedRequirements] = useState<string[]>([]);
-    const [cvText, setCvText] = useState("");
-    const [userDetails, setUserDetails] = useState<any>(null);
+    const [profileData, setProfileData] = useState<any>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysis, setAnalysis] = useState<any>(null);
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [optimizedCv, setOptimizedCv] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Load Master CV and User details on mount
+    // Load Profile Data from multiple localStorage keys
     useEffect(() => {
-        const savedCv = localStorage.getItem("master_cv_text");
-        if (savedCv) setCvText(savedCv);
+        console.log("🔍 Loading profile data from localStorage...");
+        const basicInfo = localStorage.getItem("user_basic_info");
+        const skills = localStorage.getItem("user_skills_list");
+        const experience = localStorage.getItem("user_experience_list");
+        const credentials = localStorage.getItem("user_credentials_list");
+        const projects = localStorage.getItem("user_projects_list");
+        const languages = localStorage.getItem("user_languages_list");
+        const references = localStorage.getItem("user_references_list");
+        const matric = localStorage.getItem("user_matric_data");
 
-        const savedUser = localStorage.getItem("user_details");
-        if (savedUser) setUserDetails(JSON.parse(savedUser));
+        console.log("📦 basicInfo exists?", !!basicInfo);
+        console.log("📦 skills exists?", !!skills);
+        console.log("📦 experience exists?", !!experience);
+
+        // Combine all profile data into one object
+        if (basicInfo) {
+            const profileData = {
+                personalInfo: JSON.parse(basicInfo),
+                skills: skills ? JSON.parse(skills) : [],
+                experience: experience ? JSON.parse(experience) : [],
+                credentials: credentials ? JSON.parse(credentials) : [],
+                projects: projects ? JSON.parse(projects) : [],
+                languages: languages ? JSON.parse(languages) : [],
+                references: references ? JSON.parse(references) : [],
+                matric: matric ? JSON.parse(matric) : null
+            };
+            console.log("✅ Profile data loaded:", profileData.personalInfo?.name || "No name");
+            setProfileData(profileData);
+        } else {
+            console.log("❌ No basic info found in localStorage!");
+        }
     }, []);
 
 
     const handleOptimize = async (requirements: string[]) => {
-        if (!cvText) {
-            alert("Please save a Master CV in your Profile first.");
+        console.log("🎯 handleOptimize called, profileData?", !!profileData);
+        if (!profileData) {
+            alert("Please save your Profile first at /profile. (No profile data loaded)");
             return;
         }
 
@@ -53,8 +79,7 @@ function GenerateContent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     jobRequirements: requirements,
-                    cvText,
-                    userDetails
+                    profileData
                 }),
             });
 
@@ -70,8 +95,8 @@ function GenerateContent() {
     };
 
     const handleAnalyze = async (requirements: string[]) => {
-        if (!cvText) {
-            console.warn("No Master CV found for analysis.");
+        if (!profileData) {
+            console.warn("No Profile Data found for analysis.");
             return;
         }
 
@@ -83,7 +108,7 @@ function GenerateContent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     jobRequirements: requirements,
-                    cvText
+                    profileData
                 }),
             });
 
@@ -139,12 +164,12 @@ function GenerateContent() {
         setIsScraped(true);
     };
 
-    // Trigger analysis automatically when both requirements and CV are ready
+    // Trigger analysis automatically when both requirements and profile are ready
     useEffect(() => {
-        if (scrapedRequirements.length > 0 && cvText && !analysis && !isAnalyzing) {
+        if (scrapedRequirements.length > 0 && profileData && !analysis && !isAnalyzing) {
             handleAnalyze(scrapedRequirements);
         }
-    }, [scrapedRequirements, cvText, analysis, isAnalyzing]);
+    }, [scrapedRequirements, profileData, analysis, isAnalyzing]);
 
     // Handle incoming link automatically
     useEffect(() => {
@@ -401,8 +426,8 @@ function GenerateContent() {
                                             </>
                                         ) : (
                                             <div className="py-4 text-center space-y-3">
-                                                {!cvText ? (
-                                                    <p className="text-sm text-red-500 font-medium">Please save a Master CV in your Profile first!</p>
+                                                {!profileData ? (
+                                                    <p className="text-sm text-red-500 font-medium">Please complete your Profile at /profile first!</p>
                                                 ) : error ? (
                                                     <div className="space-y-2">
                                                         <p className="text-sm text-amber-600 font-medium">{error}</p>
@@ -457,11 +482,11 @@ function GenerateContent() {
                             <div className="w-full max-w-[210mm] bg-white text-slate-900 shadow-2xl rounded-sm overflow-hidden border border-slate-200 p-10 space-y-6">
                                 {/* Real CV Header */}
                                 <div className="border-b-2 border-slate-800 pb-6">
-                                    <h1 className="text-4xl font-bold text-slate-900">{optimizedCv.personalInfo?.name || userDetails?.name}</h1>
+                                    <h1 className="text-4xl font-bold text-slate-900">{optimizedCv.personalInfo?.name || profileData?.personalInfo?.fullName}</h1>
                                     <p className="text-slate-500 font-medium text-lg mt-1">{optimizedCv.personalInfo?.title || "Candidate"}</p>
                                     <div className="flex flex-wrap gap-4 text-xs text-slate-400 mt-3 font-medium">
-                                        <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{optimizedCv.personalInfo?.email || userDetails?.email}</span>
-                                        <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{optimizedCv.personalInfo?.phone || userDetails?.phone}</span>
+                                        <span className="flex items-center gap-1.5"><Mail className="w-3 h-3" />{optimizedCv.personalInfo?.email || profileData?.personalInfo?.email}</span>
+                                        <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" />{optimizedCv.personalInfo?.phone || profileData?.personalInfo?.phone}</span>
                                         {optimizedCv.personalInfo?.location && <span>• {optimizedCv.personalInfo.location}</span>}
                                     </div>
                                 </div>
