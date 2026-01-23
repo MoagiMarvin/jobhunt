@@ -1,150 +1,189 @@
 import React from 'react';
 
 interface MinimalistCVPreviewProps {
-    cv: any;
-    profileData: any;
+    cv?: any;
+    profileData?: any;
+    data?: any;
 }
 
-export default function MinimalistCVPreview({ cv, profileData }: MinimalistCVPreviewProps) {
+export default function MinimalistCVPreview({ cv, profileData, data }: MinimalistCVPreviewProps) {
+    // Standardize data source
+    const info = data || profileData || {};
+    const resume = data || cv || {};
+
+    // Standardize individual sections
+    const user = info.user || info.personalInfo || resume.personalInfo || {};
+    const summary = resume.summary || user.summary || "";
+    const skills = resume.skills || info.skills || [];
+    const experiences = resume.experiences || resume.experience || info.experiences || info.experience || [];
+    const educationArr = info.educationList || resume.education || [];
+    const certs = info.certificationsList || (info.credentials?.filter((c: any) => c.type === 'certification')) || [];
+    const languagesArr = info.languages || [];
+    const referencesArr = info.references || [];
+    const projectsArr = info.projectsList || info.projects || [];
+    const matricData = info.matricData || info.matric;
+
     return (
         <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm overflow-hidden border border-slate-300 p-10 space-y-4 text-left">
             {/* Header */}
             <div className="border-b border-slate-300 pb-4">
                 <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
-                    {cv.personalInfo?.name || profileData?.personalInfo?.fullName || profileData?.personalInfo?.name}
+                    {user.name || user.fullName || "Your Name"}
                 </h1>
                 <p className="text-sm text-black font-bold uppercase tracking-wide mt-1">
-                    {cv.personalInfo?.title || profileData?.personalInfo?.headline || "Professional"}
+                    {user.headline || user.title || "Professional"}
                 </p>
                 <div className="flex flex-wrap gap-2 text-xs text-black mt-2">
-                    <span>{cv.personalInfo?.email || profileData?.personalInfo?.email}</span>
-                    <span>•</span>
-                    <span>{cv.personalInfo?.phone || profileData?.personalInfo?.phone}</span>
-                    <span>•</span>
-                    <span>{cv.personalInfo?.location || profileData?.personalInfo?.location}</span>
+                    <span>{user.email}</span>
+                    {user.phone && (
+                        <>
+                            <span>•</span>
+                            <span>{user.phone}</span>
+                        </>
+                    )}
+                    {user.location && (
+                        <>
+                            <span>•</span>
+                            <span>{user.location}</span>
+                        </>
+                    )}
                 </div>
-                {(profileData?.personalInfo?.haveLicense || profileData?.personalInfo?.haveCar) && (
+                {(user.haveLicense || user.haveCar) && (
                     <div className="flex gap-2 text-xs text-black mt-1">
-                        {profileData?.personalInfo?.haveLicense && (
-                            <span>Driver's License: {profileData?.personalInfo?.licenseCode || 'Yes'}</span>
+                        {user.haveLicense && (
+                            <span>Driver's License: {user.licenseCode || 'Yes'}</span>
                         )}
-                        {profileData?.personalInfo?.haveLicense && profileData?.personalInfo?.haveCar && <span>•</span>}
-                        {profileData?.personalInfo?.haveCar && <span>Own Transport: Yes</span>}
+                        {user.haveLicense && user.haveCar && <span>•</span>}
+                        {user.haveCar && <span>Own Transport: Yes</span>}
                     </div>
                 )}
             </div>
 
             {/* Professional Summary */}
-            {cv.summary && (
+            {summary && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Professional Summary
                     </h2>
-                    <p className="text-xs leading-relaxed text-black">{cv.summary}</p>
+                    <p className="text-xs leading-relaxed text-black">{summary}</p>
                 </div>
             )}
 
+
             {/* Skills */}
-            {cv.skills?.length > 0 && (
+            {skills.length > 0 && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Skills &amp; Expertise
                     </h2>
                     <div className="space-y-1">
-                        {cv.skills.map((skill: string, i: number) => (
+                        {skills.map((skill: any, i: number) => (
                             <div key={i} className="flex items-start gap-2">
                                 <span className="text-xs text-black w-2">•</span>
-                                <span className="text-xs text-black flex-1">{skill}</span>
+                                <span className="text-xs text-black flex-1">
+                                    {typeof skill === 'string' ? skill : (skill.name || skill.skill)}
+                                </span>
                             </div>
                         ))}
                     </div>
                 </div>
             )}
 
+
             {/* Experience */}
-            {cv.experience?.length > 0 && (
+            {experiences.length > 0 && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Professional Experience
                     </h2>
-                    {cv.experience.map((exp: any, i: number) => (
+                    {experiences.map((exp: any, i: number) => (
                         <div key={i} className="mb-3">
                             <div className="flex justify-between items-baseline">
-                                <h3 className="font-bold text-xs text-black">{exp.role}</h3>
-                                <span className="text-xs font-bold text-black">{exp.dates}</span>
+                                <h3 className="font-bold text-xs text-black">{exp.role || exp.title}</h3>
+                                <span className="text-xs font-bold text-black">{exp.duration || exp.dates}</span>
                             </div>
                             <p className="text-xs text-black mb-1">{exp.company}</p>
                             <ul className="list-none space-y-1">
-                                {exp.bulletPoints?.map((bullet: string, j: number) => (
+                                {exp.bulletPoints ? exp.bulletPoints.map((bullet: string, j: number) => (
                                     <li key={j} className="text-xs text-black leading-normal flex items-start gap-2 ml-2">
                                         <span>•</span>
                                         <span className="flex-1">{bullet}</span>
                                     </li>
-                                ))}
+                                )) : exp.description && (
+                                    <li className="text-xs text-black leading-normal flex items-start gap-2 ml-2">
+                                        <span>•</span>
+                                        <span className="flex-1">{exp.description}</span>
+                                    </li>
+                                )}
                             </ul>
                         </div>
                     ))}
                 </div>
             )}
 
+
             {/* Projects */}
-            {profileData?.projects?.length > 0 && (
+            {projectsArr.length > 0 && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Key Projects
                     </h2>
-                    {profileData.projects.slice(0, 3).map((project: any, i: number) => (
+                    {projectsArr.slice(0, 3).map((project: any, i: number) => (
                         <div key={i} className="mb-2">
                             <h3 className="font-bold text-xs text-black">{project.title}</h3>
                             <p className="text-xs text-black flex items-start gap-2 ml-2">
                                 <span>•</span>
                                 <span className="flex-1">{project.description}</span>
                             </p>
-                            <p className="text-xs font-bold text-black ml-4 mt-0.5">
-                                Built with: {project.technologies?.join(", ")}
-                            </p>
+                            {project.technologies && (
+                                <p className="text-xs font-bold text-black ml-4 mt-0.5">
+                                    Built with: {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
+                                </p>
+                            )}
                         </div>
                     ))}
                 </div>
             )}
+
 
             {/* Education */}
             <div>
                 <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                     Education
                 </h2>
-                {cv.education?.map((edu: any, i: number) => (
+                {educationArr.map((edu: any, i: number) => (
                     <div key={i} className="mb-2">
                         <div className="flex justify-between items-baseline">
-                            <h3 className="font-bold text-xs text-black">{edu.degree}</h3>
-                            <span className="text-xs font-bold text-black">{edu.year}</span>
+                            <h3 className="font-bold text-xs text-black">{edu.degree || edu.title}</h3>
+                            <span className="text-xs font-bold text-black">{edu.year || edu.date}</span>
                         </div>
-                        <p className="text-xs text-black">{edu.school}</p>
+                        <p className="text-xs text-black">{edu.school || edu.issuer}</p>
                     </div>
                 ))}
-                {profileData?.matric && (
+                {matricData && (
                     <div className="mb-2">
                         <div className="flex justify-between items-baseline">
                             <h3 className="font-bold text-xs text-black">Matric</h3>
                             <span className="text-xs font-bold text-black">
-                                Class of {profileData.matric.completionYear}
+                                Class of {matricData.completionYear}
                             </span>
                         </div>
-                        <p className="text-xs text-black">{profileData.matric.schoolName}</p>
+                        <p className="text-xs text-black">{matricData.schoolName}</p>
                     </div>
                 )}
             </div>
 
+
             {/* Certifications */}
-            {profileData?.credentials?.filter((c: any) => c.type === 'certification').length > 0 && (
+            {certs.length > 0 && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Certifications &amp; Awards
                     </h2>
-                    {profileData.credentials.filter((c: any) => c.type === 'certification').map((cert: any, i: number) => (
+                    {certs.map((cert: any, i: number) => (
                         <div key={i} className="mb-2">
                             <div className="flex justify-between items-baseline">
-                                <h3 className="font-bold text-xs text-black">{cert.title}</h3>
+                                <h3 className="font-bold text-xs text-black">{cert.title || cert.name}</h3>
                                 <span className="text-xs font-bold text-black">{cert.date}</span>
                             </div>
                             <p className="text-xs text-black">{cert.issuer}</p>
@@ -153,30 +192,34 @@ export default function MinimalistCVPreview({ cv, profileData }: MinimalistCVPre
                 </div>
             )}
 
+
             {/* Languages */}
-            {profileData?.languages?.length > 0 && (
+            {languagesArr.length > 0 && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Languages
                     </h2>
                     <div className="flex flex-wrap gap-2 text-xs text-black">
-                        {profileData.languages.map((lang: any, i: number) => (
+                        {languagesArr.map((lang: any, i: number) => (
                             <span key={i}>
-                                {lang.language} ({lang.proficiency}){i < profileData.languages.length - 1 ? ' •' : ''}
+                                {typeof lang === 'string' ? lang : (lang.language || lang.name)}
+                                {(lang.proficiency || lang.level) && ` (${lang.proficiency || lang.level})`}
+                                {i < languagesArr.length - 1 ? ' •' : ''}
                             </span>
                         ))}
                     </div>
                 </div>
             )}
 
+
             {/* References */}
-            {profileData?.references?.length > 0 && (
+            {referencesArr.length > 0 && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Professional References
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
-                        {profileData.references.map((ref: any, i: number) => (
+                        {referencesArr.map((ref: any, i: number) => (
                             <div key={i}>
                                 <p className="text-xs font-bold text-black">{ref.name}</p>
                                 <p className="text-xs text-slate-800">{ref.relationship} at {ref.company}</p>
@@ -186,6 +229,7 @@ export default function MinimalistCVPreview({ cv, profileData }: MinimalistCVPre
                     </div>
                 </div>
             )}
+
         </div>
     );
 }

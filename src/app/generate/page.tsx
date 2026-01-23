@@ -4,6 +4,70 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import MinimalistCVPreview from "@/components/cv/MinimalistCVPreview";
+import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
+
+/** MOCK DATA FOR FALLBACK (Matches Profile Page) **/
+const MOCK_PROFILE = {
+    user: {
+        name: "Moagi Marvin",
+        email: "moagi@example.com",
+        phone: "+27 61 234 5678",
+        headline: "Computer Science Graduate | Full-Stack Developer",
+        location: "Johannesburg, South Africa",
+        summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
+    },
+    skills: ["React", "TypeScript", "Node.js", "Python", "AWS", "Public Speaking", "Agile Methodology"],
+    experiences: [
+        {
+            role: "Full Stack Intern",
+            company: "Tech StartUp SA",
+            duration: "Jun 2024 - Present",
+            description: "Developed and maintained several React-based dashboards and integrated Supabase for real-time data sync."
+        },
+        {
+            role: "Open Source Contributor",
+            company: "GitHub / Community",
+            duration: "2023 - 2024",
+            description: "Mentored 3 junior developers and improved documentation for a popular UI library used by 2k+ developers."
+        }
+    ],
+    educationList: [
+        {
+            title: "BSc Computer Science",
+            issuer: "University of Johannesburg",
+            date: "2021 - 2024",
+            qualification_level: "Bachelor's Degree",
+        }
+    ],
+    certificationsList: [
+        {
+            title: "Google Cloud Professional Developer",
+            issuer: "Google Cloud",
+            date: "January 2024",
+        }
+    ],
+    projectsList: [
+        {
+            title: "AI CV Optimizer",
+            description: "Built with Next.js and Gemini AI to help students optimize their career paths.",
+            technologies: ["Next.js", "Gemini AI", "Tailwind"],
+        }
+    ],
+    languages: [
+        { language: "English", proficiency: "Native" },
+        { language: "Zulu", proficiency: "Fluent" }
+    ],
+    references: [
+        {
+            name: "Sarah Jenkins",
+            relationship: "Senior Developer / Manager",
+            company: "Tech StartUp SA",
+            phone: "+27 11 987 6543",
+            email: "sarah@techstartup.co.za"
+        }
+    ]
+};
+
 
 export default function GeneratePage() {
     return (
@@ -26,13 +90,10 @@ function GenerateContent() {
     const [profileData, setProfileData] = useState<any>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysis, setAnalysis] = useState<any>(null);
-    const [isOptimizing, setIsOptimizing] = useState(false);
-    const [optimizedCv, setOptimizedCv] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
 
     // Load Profile Data from multiple localStorage keys
     useEffect(() => {
-        console.log("🔍 Loading profile data from localStorage...");
         const basicInfo = localStorage.getItem("user_basic_info");
         const skills = localStorage.getItem("user_skills_list");
         const experience = localStorage.getItem("user_experience_list");
@@ -42,58 +103,42 @@ function GenerateContent() {
         const references = localStorage.getItem("user_references_list");
         const matric = localStorage.getItem("user_matric_data");
 
-        console.log("📦 basicInfo exists?", !!basicInfo);
-        console.log("📦 skills exists?", !!skills);
-        console.log("📦 experience exists?", !!experience);
+        const safeParse = (item: string | null, fallback: any) => {
+            if (!item) return fallback;
+            try {
+                const parsed = JSON.parse(item);
+                return (Array.isArray(parsed) && parsed.length === 0) ? fallback : parsed;
+            } catch {
+                return fallback;
+            }
+        };
 
-        // Combine all profile data into one object
-        if (basicInfo) {
-            const profileData = {
-                personalInfo: JSON.parse(basicInfo),
-                skills: skills ? JSON.parse(skills) : [],
-                experience: experience ? JSON.parse(experience) : [],
-                credentials: credentials ? JSON.parse(credentials) : [],
-                projects: projects ? JSON.parse(projects) : [],
-                languages: languages ? JSON.parse(languages) : [],
-                references: references ? JSON.parse(references) : [],
-                matric: matric ? JSON.parse(matric) : null
-            };
-            console.log("✅ Profile data loaded:", profileData.personalInfo?.name || "No name");
-            setProfileData(profileData);
-        } else {
-            console.log("❌ No basic info found in localStorage!");
-        }
+        const basic = safeParse(basicInfo, MOCK_PROFILE.user);
+        const creds = safeParse(credentials, []);
+
+        const data = {
+            user: basic,
+            personalInfo: basic, // for back-compat
+            skills: safeParse(skills, MOCK_PROFILE.skills),
+            experiences: safeParse(experience, MOCK_PROFILE.experiences),
+            educationList: creds.filter((c: any) => c.type === 'education').length > 0
+                ? creds.filter((c: any) => c.type === 'education')
+                : MOCK_PROFILE.educationList,
+            certificationsList: creds.filter((c: any) => c.type === 'certification').length > 0
+                ? creds.filter((c: any) => c.type === 'certification')
+                : MOCK_PROFILE.certificationsList,
+            projectsList: safeParse(projects, MOCK_PROFILE.projectsList),
+            languages: safeParse(languages, MOCK_PROFILE.languages),
+            references: safeParse(references, MOCK_PROFILE.references),
+            matricData: safeParse(matric, null),
+            // Legacy mapping for MinimalistCVPreview internals
+            credentials: creds,
+            experience: safeParse(experience, MOCK_PROFILE.experiences)
+        };
+
+        setProfileData(data);
     }, []);
 
-
-    const handleOptimize = async (requirements: string[]) => {
-        console.log("🎯 handleOptimize called, profileData?", !!profileData);
-        if (!profileData) {
-            alert("Please save your Profile first at /profile. (No profile data loaded)");
-            return;
-        }
-
-        setIsOptimizing(true);
-        try {
-            const res = await fetch('/api/optimize-cv', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    jobRequirements: requirements,
-                    profileData
-                }),
-            });
-
-            const data = await res.json();
-            if (data.error) throw new Error(data.error);
-            setOptimizedCv(data);
-        } catch (err: any) {
-            console.error("Optimization failed:", err);
-            setError("Failed to generate tailored CV: " + err.message);
-        } finally {
-            setIsOptimizing(false);
-        }
-    };
 
     const handleAnalyze = async (requirements: string[]) => {
         if (!profileData) {
@@ -116,9 +161,6 @@ function GenerateContent() {
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             setAnalysis(data);
-
-            // Wait a small bit then auto-optimize for smooth UX
-            setTimeout(() => handleOptimize(requirements), 500);
         } catch (err: any) {
             console.error("Analysis failed:", err);
             setError("Analysis snagged: " + (err.message || "Unknown error"));
@@ -446,16 +488,6 @@ function GenerateContent() {
                                         )}
                                     </div>
                                 </div>
-
-                                {/* Generate Button */}
-                                <button
-                                    onClick={() => handleOptimize(scrapedRequirements)}
-                                    disabled={isOptimizing || scrapedRequirements.length === 0}
-                                    className="w-full py-4 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                                >
-                                    {isOptimizing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-                                    {isOptimizing ? "Generation in progress..." : "Generate Optimized CV"}
-                                </button>
                             </>
                         )}
 
@@ -470,37 +502,23 @@ function GenerateContent() {
 
                     {/* Right: CV Preview */}
                     <div className="bg-white rounded-xl p-8 flex items-center justify-center sticky top-24 h-fit border-2 border-primary/10 shadow-xl overflow-hidden min-h-[600px]">
-                        {isOptimizing ? (
-                            <div className="text-center space-y-4">
-                                <div className="relative">
-                                    <div className="w-20 h-20 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto"></div>
-                                    <Sparkles className="w-8 h-8 text-blue-500 absolute inset-0 m-auto animate-pulse" />
-                                </div>
-                                <p className="text-sm font-bold text-slate-600 tracking-tight">AI is crafting your tailored CV...</p>
-                                <p className="text-[10px] text-slate-400">Rewriting bullet points for maximum impact.</p>
-                            </div>
-                        ) : optimizedCv ? (
-                            <MinimalistCVPreview cv={optimizedCv} profileData={profileData} />
+                        {profileData ? (
+                            <MinimalistCVPreview data={profileData} />
                         ) : (
+
                             <div className="text-center p-12 text-slate-400">
                                 <FileText className="w-16 h-16 mx-auto mb-4 opacity-10" />
-                                <p className="text-sm font-medium">Your optimized CV preview will appear here.</p>
-                                <p className="text-[10px] mt-1">AI needs to analyze job requirements first.</p>
+                                <p className="text-sm font-medium">Complete your profile at /profile to see your CV preview.</p>
+                                <p className="text-[10px] mt-1">Your full profile CV will be displayed here.</p>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Download Section */}
-                {optimizedCv && (
+                {profileData && (
                     <div className="mt-12 flex justify-center">
-                        <button
-                            onClick={() => window.print()}
-                            className="px-8 py-3 rounded-lg bg-slate-900 hover:bg-black text-white font-bold transition-all flex items-center gap-2 shadow-xl hover:-translate-y-1"
-                        >
-                            <Download className="w-5 h-5" />
-                            Download Tailored CV (PDF)
-                        </button>
+                        <DownloadResumeButton data={profileData} />
                     </div>
                 )}
             </div>

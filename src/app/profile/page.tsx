@@ -522,7 +522,11 @@ export default function ProfilePage() {
                                                     )}
                                                 </div>
                                                 <button
-                                                    onClick={() => setSkills(skills.filter((_, i) => i !== originalIdx))}
+                                                    onClick={() => {
+                                                        const updated = skills.filter((_, i) => i !== originalIdx);
+                                                        setSkills(updated);
+                                                        localStorage.setItem("user_skills_list", JSON.stringify(updated));
+                                                    }}
                                                     className="text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover/skill:opacity-100 p-1 hover:bg-red-50 rounded-lg"
                                                 >
                                                     <X className="w-4 h-4" />
@@ -563,7 +567,11 @@ export default function ProfilePage() {
                                                 <p className="text-[10px] text-slate-500">{lang.proficiency}</p>
                                             </div>
                                             <button
-                                                onClick={() => setLanguages(languages.filter((_, i) => i !== idx))}
+                                                onClick={() => {
+                                                    const updated = languages.filter((_, i) => i !== idx);
+                                                    setLanguages(updated);
+                                                    localStorage.setItem("user_languages_list", JSON.stringify(updated));
+                                                }}
                                                 className="text-slate-400 hover:text-red-500"
                                             >
                                                 <X className="w-4 h-4" />
@@ -601,7 +609,13 @@ export default function ProfilePage() {
                                         document_url={edu.document_url}
                                         isVerified={edu.isVerified}
                                         viewerRole="owner"
-                                        onDelete={() => setEducationList(educationList.filter((_: any, i: number) => i !== idx))}
+                                        onDelete={() => {
+                                            const updated = educationList.filter((_: any, i: number) => i !== idx);
+                                            setEducationList(updated);
+                                            // Save combined credentials to localStorage
+                                            const allCredentials = [...updated.map((e: any) => ({ ...e, type: 'education' })), ...certificationsList.map((c: any) => ({ ...c, type: 'certification' }))];
+                                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+                                        }}
                                         isOwner={true}
                                     />
                                 ))}
@@ -668,7 +682,13 @@ export default function ProfilePage() {
                                         document_url={cert.document_url}
                                         isVerified={cert.isVerified}
                                         viewerRole="owner"
-                                        onDelete={() => setCertificationsList(certificationsList.filter((_: any, i: number) => i !== idx))}
+                                        onDelete={() => {
+                                            const updated = certificationsList.filter((_: any, i: number) => i !== idx);
+                                            setCertificationsList(updated);
+                                            // Save combined credentials to localStorage
+                                            const allCredentials = [...educationList.map((e: any) => ({ ...e, type: 'education' })), ...updated.map((c: any) => ({ ...c, type: 'certification' }))];
+                                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+                                        }}
                                         isOwner={true}
                                     />
                                 ))}
@@ -730,7 +750,9 @@ export default function ProfilePage() {
                     isOpen={isAddSkillOpen}
                     onClose={() => setIsAddSkillOpen(false)}
                     onAdd={(newSkill) => {
-                        setSkills([...skills, newSkill]);
+                        const updated = [...skills, newSkill];
+                        setSkills(updated);
+                        localStorage.setItem("user_skills_list", JSON.stringify(updated));
                         setIsAddSkillOpen(false);
                     }}
                 />
@@ -779,7 +801,9 @@ export default function ProfilePage() {
                                     <button
                                         onClick={() => {
                                             if (newLanguage.language) {
-                                                setLanguages([...languages, newLanguage]);
+                                                const updated = [...languages, newLanguage];
+                                                setLanguages(updated);
+                                                localStorage.setItem("user_languages_list", JSON.stringify(updated));
                                                 setNewLanguage({ language: "", proficiency: "Fluent" });
                                                 setIsAddLanguageOpen(false);
                                             }
@@ -800,9 +824,17 @@ export default function ProfilePage() {
                     onClose={() => setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false })}
                     onAdd={(newCredential: any) => {
                         if (isAddCredentialOpen.type === "education") {
-                            setEducationList([...educationList, newCredential]);
+                            const updated = [...educationList, newCredential];
+                            setEducationList(updated);
+                            // Save combined credentials to localStorage
+                            const allCredentials = [...updated.map((e: any) => ({ ...e, type: 'education' })), ...certificationsList.map((c: any) => ({ ...c, type: 'certification' }))];
+                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
                         } else {
-                            setCertificationsList([...certificationsList, newCredential]);
+                            const updated = [...certificationsList, newCredential];
+                            setCertificationsList(updated);
+                            // Save combined credentials to localStorage
+                            const allCredentials = [...educationList.map((e: any) => ({ ...e, type: 'education' })), ...updated.map((c: any) => ({ ...c, type: 'certification' }))];
+                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
                         }
                         setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
                     }}
