@@ -91,6 +91,9 @@ function GenerateContent() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysis, setAnalysis] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isOptimizing, setIsOptimizing] = useState(false);
+    const [optimizedData, setOptimizedData] = useState<any>(null);
+    const [viewMode, setViewMode] = useState<"master" | "optimized">("master");
 
     // Load Profile Data from multiple localStorage keys
     useEffect(() => {
@@ -166,6 +169,40 @@ function GenerateContent() {
             setError("Analysis snagged: " + (err.message || "Unknown error"));
         } finally {
             setIsAnalyzing(false);
+        }
+    };
+
+    const handleOptimize = async () => {
+        if (!profileData || !scrapedRequirements.length) return;
+
+        setIsOptimizing(true);
+        setError(null);
+        try {
+            const res = await fetch('/api/optimize-cv', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    profileData,
+                    jobRequirements: scrapedRequirements
+                }),
+            });
+
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            // Ensure we keep the master references as requested
+            const tailoredData = {
+                ...data,
+                references: profileData.references || []
+            };
+
+            setOptimizedData(tailoredData);
+            setViewMode("optimized");
+        } catch (err: any) {
+            console.error("Optimization failed:", err);
+            setError("Failed to generate AI CV: " + err.message);
+        } finally {
+            setIsOptimizing(false);
         }
     };
 
@@ -380,6 +417,39 @@ function GenerateContent() {
                                         {isAnalyzing && <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />}
                                     </div>
 
+                                    {/* Generate AI CV Button */}
+                                    <div className="bg-white/80 p-4 rounded-xl border border-blue-200 shadow-sm flex flex-col items-center gap-3">
+                                        <div className="text-center space-y-1">
+                                            <p className="text-xs font-bold text-slate-700">Ready to beat the ATS?</p>
+                                            <p className="text-[10px] text-slate-500 max-w-[200px]">AI will tailor your achievements and keywords to match this specific job ad.</p>
+                                        </div>
+                                        <button
+                                            onClick={handleOptimize}
+                                            disabled={isOptimizing || isAnalyzing}
+                                            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm shadow-lg hover:shadow-blue-200/50 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 overflow-hidden relative group"
+                                        >
+                                            <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                                            {isOptimizing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                                            {isOptimizing ? "CREATING YOUR CV..." : "GENERATE AI CV"}
+                                        </button>
+                                        {optimizedData && (
+                                            <div className="flex gap-2 w-full mt-1">
+                                                <button
+                                                    onClick={() => setViewMode("master")}
+                                                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'master' ? 'bg-slate-200 text-slate-700' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                                >
+                                                    View Master
+                                                </button>
+                                                <button
+                                                    onClick={() => setViewMode("optimized")}
+                                                    className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${viewMode === 'optimized' ? 'bg-blue-100 text-blue-700' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                                >
+                                                    View AI CV
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+
                                     {/* Two Gauges Side-by-Side */}
                                     <div className="grid grid-cols-2 gap-4">
                                         {/* Legacy Score */}
@@ -502,8 +572,15 @@ function GenerateContent() {
 
                     {/* Right: CV Preview */}
                     <div className="bg-white rounded-xl p-8 flex items-center justify-center sticky top-24 h-fit border-2 border-primary/10 shadow-xl overflow-hidden min-h-[600px]">
+                        <div className="absolute top-4 right-4 z-10 flex gap-2">
+                            {optimizedData && (
+                                <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest shadow-sm ${viewMode === 'optimized' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                    {viewMode === 'optimized' ? 'AI Tailored' : 'Master CV'}
+                                </span>
+                            )}
+                        </div>
                         {profileData ? (
-                            <MinimalistCVPreview data={profileData} />
+                            <MinimalistCVPreview data={viewMode === "optimized" ? optimizedData : profileData} />
                         ) : (
 
                             <div className="text-center p-12 text-slate-400">
@@ -516,9 +593,9 @@ function GenerateContent() {
                 </div>
 
                 {/* Download Section */}
-                {profileData && (
+                {(profileData || optimizedData) && (
                     <div className="mt-12 flex justify-center">
-                        <DownloadResumeButton data={profileData} />
+                        <DownloadResumeButton data={viewMode === "optimized" ? optimizedData : profileData} />
                     </div>
                 )}
             </div>

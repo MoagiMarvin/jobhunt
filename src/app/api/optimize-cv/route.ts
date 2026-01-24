@@ -80,7 +80,8 @@ export async function POST(req: Request) {
       3. For "Experience", select the most relevant roles and rewrite bullet points to use strong action verbs and match job keywords. 
       4. Ensure you include South African cultural markers if relevant (like "Matric").
       5. Identify the top 10-15 skills that match the job.
-      6. Return a CLEAN JSON OBJECT only (no markdown, no backticks).
+      6. CRITICAL: Do NOT modify the "references" section. Keep it exactly as it is in the master profile.
+      7. Return a CLEAN JSON OBJECT only (no markdown, no backticks).
 
       JSON STRUCTURE:
       {
@@ -111,7 +112,8 @@ export async function POST(req: Request) {
             "school": "Institution",
             "year": "Year"
           }
-        ]
+        ],
+        "references": []
       }
     `;
 
