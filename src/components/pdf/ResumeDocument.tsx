@@ -164,38 +164,51 @@ const getStyles = (themeName: string = 'modern') => {
 export const ResumeDocument = ({ data }: { data: any }) => {
     if (!data) return null;
 
-    const { user, experiences, educationList, skills, projectsList, certificationsList, languages, references, matricData, template = 'modern' } = data;
+    // Standardize data source (Same logic as MinimalistCVPreview)
+    const info = data || {};
+    const user = info.user || info.personalInfo || {};
+    const summary = info.summary || user.summary || "";
+    const skills = info.skills || [];
+    const experiences = info.experiences || info.experience || [];
+    const educationArr = info.educationList || info.education || [];
+    const certs = info.certificationsList || (info.credentials?.filter((c: any) => c.type === 'certification')) || [];
+    const languagesArr = info.languages || [];
+    const referencesArr = info.references || [];
+    const projectsArr = info.projectsList || info.projects || [];
+    const matricData = info.matricData || info.matric;
+
+    const template = info.template || 'modern';
     const styles = getStyles(template);
 
     return (
-        <Document title={`${user?.name} - Resume`}>
+        <Document title={`${user?.name || 'Resume'} - Resume`}>
             <Page size="A4" style={styles.page}>
                 {/* Header Section */}
                 <View style={styles.header}>
-                    <Text style={styles.name}>{user?.name}</Text>
-                    <Text style={styles.title}>{user?.headline}</Text>
+                    <Text style={styles.name}>{user.name || user.fullName}</Text>
+                    <Text style={styles.title}>{user.headline || user.title}</Text>
                     <View style={styles.contactGrid}>
-                        <Text style={styles.contactItem}>{user?.email}</Text>
+                        <Text style={styles.contactItem}>{user.email}</Text>
                         <Text style={styles.contactItem}>•</Text>
-                        <Text style={styles.contactItem}>{user?.phone}</Text>
+                        <Text style={styles.contactItem}>{user.phone}</Text>
                         <Text style={styles.contactItem}>•</Text>
-                        <Text style={styles.contactItem}>{user?.location}</Text>
-                        {user?.linkedin && (
+                        <Text style={styles.contactItem}>{user.location}</Text>
+                        {user.linkedin && (
                             <>
                                 <Text style={styles.contactItem}>•</Text>
                                 <Text style={styles.contactItem}>LinkedIn</Text>
                             </>
                         )}
                     </View>
-                    {(user?.haveLicense || user?.haveCar) && (
+                    {(user.haveLicense || user.haveCar) && (
                         <View style={[styles.contactGrid, { marginTop: 4 }]}>
-                            {user?.haveLicense && (
-                                <Text style={styles.contactItem}>Driver's License: {user?.licenseCode || 'Yes'}</Text>
+                            {user.haveLicense && (
+                                <Text style={styles.contactItem}>Driver's License: {user.licenseCode || 'Yes'}</Text>
                             )}
-                            {user?.haveLicense && user?.haveCar && (
+                            {user.haveLicense && user.haveCar && (
                                 <Text style={styles.contactItem}>•</Text>
                             )}
-                            {user?.haveCar && (
+                            {user.haveCar && (
                                 <Text style={styles.contactItem}>Own Transport: Yes</Text>
                             )}
                         </View>
@@ -203,86 +216,102 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 </View>
 
                 {/* Professional Summary */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Professional Summary</Text>
-                    <Text style={styles.summaryText}>{user?.summary}</Text>
-                </View>
+                {summary && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Professional Summary</Text>
+                        <Text style={styles.summaryText}>{summary}</Text>
+                    </View>
+                )}
 
                 {/* Technical Skills */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Skills & Expertise</Text>
-                    <View style={{ marginTop: 2 }}>
-                        {skills?.map((s: any, idx: number) => (
-                            <View key={idx} style={styles.skillRow}>
-                                <Text style={styles.skillBulletText}>•</Text>
-                                <Text style={styles.skillItemText}>
-                                    {typeof s === 'string' ? s : (s.name || s.skill)}
-                                </Text>
+                {skills.length > 0 && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Skills & Expertise</Text>
+                        <View style={{ marginTop: 2 }}>
+                            {skills.map((s: any, idx: number) => (
+                                <View key={idx} style={styles.skillRow}>
+                                    <Text style={styles.skillBulletText}>•</Text>
+                                    <Text style={styles.skillItemText}>
+                                        {typeof s === 'string' ? s : (s.name || s.skill)}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                )}
+
+                {/* Experience */}
+                {experiences.length > 0 && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Professional Experience</Text>
+                        {experiences.map((exp: any, idx: number) => (
+                            <View key={idx} style={styles.itemContainer}>
+                                <View style={styles.itemHeader}>
+                                    <Text style={styles.itemTitle}>{exp.role || exp.title}</Text>
+                                    <Text style={styles.itemDate}>{exp.duration || exp.dates}</Text>
+                                </View>
+                                <Text style={styles.itemSubtitle}>{exp.company}</Text>
+                                {exp.bulletPoints ? exp.bulletPoints.map((bullet: string, j: number) => (
+                                    <Text key={j} style={styles.bulletPoint}>• {bullet}</Text>
+                                )) : exp.description && (
+                                    <Text style={styles.bulletPoint}>• {exp.description}</Text>
+                                )}
                             </View>
                         ))}
                     </View>
-                </View>
-
-                {/* Experience */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Professional Experience</Text>
-                    {experiences?.map((exp: any, idx: number) => (
-                        <View key={idx} style={styles.itemContainer}>
-                            <View style={styles.itemHeader}>
-                                <Text style={styles.itemTitle}>{exp.role}</Text>
-                                <Text style={styles.itemDate}>{exp.duration}</Text>
-                            </View>
-                            <Text style={styles.itemSubtitle}>{exp.company}</Text>
-                            <Text style={styles.bulletPoint}>• {exp.description}</Text>
-                        </View>
-                    ))}
-                </View>
+                )}
 
                 {/* Projects */}
-                {projectsList && projectsList.length > 0 && (
+                {projectsArr.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Key Projects</Text>
-                        {projectsList.slice(0, 3).map((project: any, idx: number) => (
+                        {projectsArr.slice(0, 3).map((project: any, idx: number) => (
                             <View key={idx} style={styles.itemContainer}>
                                 <Text style={styles.itemTitle}>{project.title}</Text>
                                 <Text style={styles.bulletPoint}>• {project.description}</Text>
-                                <Text style={[styles.itemDate, { marginLeft: 10 }]}>Built with: {project.technologies?.join(", ")}</Text>
+                                {project.technologies && (
+                                    <Text style={[styles.itemDate, { marginLeft: 10, marginTop: 2 }]}>
+                                        Built with: {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
+                                    </Text>
+                                )}
                             </View>
                         ))}
                     </View>
                 )}
 
                 {/* Education */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Education</Text>
-                    {educationList?.map((edu: any, idx: number) => (
-                        <View key={idx} style={styles.itemContainer}>
-                            <View style={styles.itemHeader}>
-                                <Text style={styles.itemTitle}>{edu.title}</Text>
-                                <Text style={styles.itemDate}>{edu.date}</Text>
-                            </View>
-                            <Text style={styles.itemSubtitle}>{edu.issuer}</Text>
-                        </View>
-                    ))}
-                    {matricData && (
-                        <View style={styles.itemContainer}>
-                            <View style={styles.itemHeader}>
-                                <Text style={styles.itemTitle}>Matric</Text>
-                                <Text style={styles.itemDate}>Class of {matricData.completionYear}</Text>
-                            </View>
-                            <Text style={styles.itemSubtitle}>{matricData.schoolName}</Text>
-                        </View>
-                    )}
-                </View>
-
-                {/* Certifications */}
-                {certificationsList && certificationsList.length > 0 && (
+                {(educationArr.length > 0 || matricData) && (
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Certifications & Awards</Text>
-                        {certificationsList.map((cert: any, idx: number) => (
+                        <Text style={styles.sectionTitle}>Education</Text>
+                        {educationArr.map((edu: any, idx: number) => (
                             <View key={idx} style={styles.itemContainer}>
                                 <View style={styles.itemHeader}>
-                                    <Text style={styles.itemTitle}>{cert.title}</Text>
+                                    <Text style={styles.itemTitle}>{edu.degree || edu.title}</Text>
+                                    <Text style={styles.itemDate}>{edu.year || edu.date}</Text>
+                                </View>
+                                <Text style={styles.itemSubtitle}>{edu.school || edu.issuer}</Text>
+                            </View>
+                        ))}
+                        {matricData && (
+                            <View style={styles.itemContainer}>
+                                <View style={styles.itemHeader}>
+                                    <Text style={styles.itemTitle}>Matric</Text>
+                                    <Text style={styles.itemDate}>Class of {matricData.completionYear}</Text>
+                                </View>
+                                <Text style={styles.itemSubtitle}>{matricData.schoolName}</Text>
+                            </View>
+                        )}
+                    </View>
+                )}
+
+                {/* Certifications */}
+                {certs.length > 0 && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Certifications & Awards</Text>
+                        {certs.map((cert: any, idx: number) => (
+                            <View key={idx} style={styles.itemContainer}>
+                                <View style={styles.itemHeader}>
+                                    <Text style={styles.itemTitle}>{cert.title || cert.name}</Text>
                                     <Text style={styles.itemDate}>{cert.date}</Text>
                                 </View>
                                 <Text style={styles.itemSubtitle}>{cert.issuer}</Text>
@@ -292,14 +321,14 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 )}
 
                 {/* Languages */}
-                {languages && languages.length > 0 && (
+                {languagesArr.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Languages</Text>
                         <View style={styles.contactGrid}>
-                            {languages.map((lang: any, idx: number) => (
+                            {languagesArr.map((lang: any, idx: number) => (
                                 <Text key={idx} style={styles.contactItem}>
                                     {typeof lang === 'string' ? lang : `${lang.language || lang.name}${lang.proficiency || lang.level ? ` (${lang.proficiency || lang.level})` : ''}`}
-                                    {idx < languages.length - 1 ? ' • ' : ''}
+                                    {idx < languagesArr.length - 1 ? ' • ' : ''}
                                 </Text>
                             ))}
                         </View>
@@ -307,11 +336,11 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 )}
 
                 {/* References */}
-                {references && references.length > 0 && (
+                {referencesArr.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Professional References</Text>
                         <View style={styles.referenceContainer}>
-                            {references.map((ref: any, idx: number) => (
+                            {referencesArr.map((ref: any, idx: number) => (
                                 <View key={idx} style={styles.referenceItem}>
                                     <Text style={styles.refName}>{ref.name}</Text>
                                     <Text style={styles.refDetail}>{ref.relationship} at {ref.company}</Text>
