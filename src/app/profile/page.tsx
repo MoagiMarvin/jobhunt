@@ -182,6 +182,7 @@ export default function ProfilePage() {
     const [newTargetRole, setNewTargetRole] = useState("");
 
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
+    const [isSkillsExpanded, setIsSkillsExpanded] = useState(false);
 
     // Load everything from unified keys
     useEffect(() => {
@@ -493,7 +494,7 @@ export default function ProfilePage() {
 
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
                                 <div className="flex flex-col space-y-3">
-                                    {[...skills].reverse().map((skill: any, idx) => {
+                                    {[...skills].reverse().slice(0, isSkillsExpanded ? undefined : 2).map((skill: any, idx) => {
                                         const name = typeof skill === "string" ? skill : skill.name;
                                         const minYears = typeof skill === "string" ? undefined : skill.minYears;
                                         const level = typeof skill === "string" ? undefined : skill.level;
@@ -534,6 +535,14 @@ export default function ProfilePage() {
                                             </div>
                                         );
                                     })}
+                                    {skills.length > 2 && (
+                                        <button
+                                            onClick={() => setIsSkillsExpanded(!isSkillsExpanded)}
+                                            className="w-full py-2 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                        >
+                                            {isSkillsExpanded ? "Show Less" : `Show More (${skills.length - 2} more)`}
+                                        </button>
+                                    )}
                                     {skills.length === 0 && (
                                         <div className="text-center py-8 text-slate-600 font-bold uppercase tracking-wider border-2 border-dashed border-slate-100 rounded-xl">
                                             No skills showcased yet.
