@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { X, Save, Sparkles } from "lucide-react";
 
-type SkillLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
+
 
 export type TalentSkill = {
     name: string;
     minYears?: number;
-    level?: SkillLevel;
 };
 
 interface AddSkillModalProps {
@@ -20,7 +19,6 @@ interface AddSkillModalProps {
 export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalProps) {
     const [skillName, setSkillName] = useState("");
     const [minYears, setMinYears] = useState<string>("");
-    const [level, setLevel] = useState<SkillLevel>("Intermediate");
 
     if (!isOpen) return null;
 
@@ -51,7 +49,7 @@ export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalP
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1">
                             <div className="space-y-2">
                                 <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                     Min Experience (years)
@@ -63,23 +61,8 @@ export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalP
                                     value={minYears}
                                     onChange={(e) => setMinYears(e.target.value)}
                                     placeholder="e.g. 1, 2, 5"
-                                    className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                                    className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all"
                                 />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                                    Skill Level
-                                </label>
-                                <select
-                                    value={level}
-                                    onChange={(e) => setLevel(e.target.value as SkillLevel)}
-                                    className="w-full px-3 py-2 rounded-lg border-2 border-slate-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm bg-white"
-                                >
-                                    <option value="Beginner">Beginner</option>
-                                    <option value="Intermediate">Intermediate</option>
-                                    <option value="Advanced">Advanced</option>
-                                    <option value="Expert">Expert</option>
-                                </select>
                             </div>
                         </div>
 
@@ -103,11 +86,9 @@ export default function AddSkillModal({ isOpen, onClose, onAdd }: AddSkillModalP
                                 onAdd({
                                     name: skillName.trim(),
                                     minYears: isNaN(Number(years)) ? undefined : years,
-                                    level,
                                 });
                                 setSkillName("");
                                 setMinYears("");
-                                setLevel("Intermediate");
                             }
                         }}
                         disabled={!skillName.trim()}

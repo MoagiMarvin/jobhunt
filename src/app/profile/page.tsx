@@ -213,8 +213,7 @@ export default function ProfilePage() {
                 if (dbSkills) {
                     setSkills(dbSkills.map(s => ({
                         name: s.name,
-                        minYears: s.min_experience_years || 0,
-                        level: s.proficiency_level || 'Intermediate'
+                        minYears: s.min_experience_years || 0
                     })));
                 }
 
@@ -565,7 +564,6 @@ export default function ProfilePage() {
                                     {[...skills].reverse().slice(0, isSkillsExpanded ? undefined : 2).map((skill: any, idx) => {
                                         const name = typeof skill === "string" ? skill : skill.name;
                                         const minYears = typeof skill === "string" ? undefined : skill.minYears;
-                                        const level = typeof skill === "string" ? undefined : skill.level;
 
                                         // Reverse index for deletion
                                         const originalIdx = skills.length - 1 - idx;
@@ -580,12 +578,10 @@ export default function ProfilePage() {
                                                     <span className="text-sm font-bold text-slate-800 leading-relaxed">
                                                         {name}
                                                     </span>
-                                                    {(minYears || level) && (
+                                                    {(minYears) && (
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold uppercase">
                                                                 {minYears ? `${minYears}+ yrs` : null}
-                                                                {minYears && level ? " • " : ""}
-                                                                {level ? level : null}
                                                             </span>
                                                         </div>
                                                     )}
@@ -828,7 +824,6 @@ export default function ProfilePage() {
                                 .insert({
                                     user_id: currentUserId,
                                     name: typeof newSkill === 'string' ? newSkill : newSkill.name,
-                                    proficiency_level: typeof newSkill === 'string' ? 'Intermediate' : newSkill.level,
                                     min_experience_years: typeof newSkill === 'string' ? 1 : newSkill.minYears,
                                 });
                             if (error) throw error;
