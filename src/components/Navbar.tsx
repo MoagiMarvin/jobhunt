@@ -1,21 +1,65 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Briefcase, FileText, Search, User, FolderOpen, Building2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Briefcase, FileText, Search, User, FolderOpen, Building2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const [role, setRole] = useState<string | null>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    const links = [
+    useEffect(() => {
+        // Simple mock check
+        const checkAuth = () => {
+            const loggedIn = localStorage.getItem("is_logged_in") === "true";
+            const currentRole = localStorage.getItem("mock_role");
+            setIsLoggedIn(loggedIn);
+            setRole(currentRole);
+        };
+
+        checkAuth();
+        // Listen for changes (e.g. from the same tab or other tabs)
+        window.addEventListener("storage", checkAuth);
+        // Interval for quick updates within the same tab since 'storage' event doesn't fire on same window
+        const interval = setInterval(checkAuth, 1000);
+
+        return () => {
+            window.removeEventListener("storage", checkAuth);
+            clearInterval(interval);
+        };
+    }, []);
+
+    const talentLinks = [
         { href: "/profile", label: "Profile", icon: User },
-        { href: "/recruiter/profile", label: "Recruiter Profile", icon: Building2 },
-        { href: "/recruiter/search", label: "Recruiter Portal", icon: Briefcase },
-        { href: "/recruiter/groups", label: "Saved Candidates", icon: FolderOpen },
         { href: "/search", label: "Job Search", icon: Search },
         { href: "/generate", label: "Generate CV", icon: FileText },
     ];
+
+    const recruiterLinks = [
+        { href: "/recruiter/profile", label: "Recruiter Profile", icon: Building2 },
+        { href: "/recruiter/search", label: "Recruiter Portal", icon: Briefcase },
+        { href: "/recruiter/groups", label: "Saved Candidates", icon: FolderOpen },
+    ];
+
+    const links = isLoggedIn
+        ? (role === "talent" ? talentLinks : recruiterLinks)
+        : [];
+
+    const handleLogout = () => {
+        localStorage.removeItem("is_logged_in");
+        localStorage.removeItem("mock_role");
+        setIsLoggedIn(false);
+        setRole(null);
+        router.push("/");
+    };
+
+    // Don't show Navbar on login/register if not logged in
+    const isAuthPage = pathname === "/" || pathname === "/register";
+    if (!isLoggedIn && isAuthPage) return null;
 
     return (
         <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
@@ -49,6 +93,16 @@ export default function Navbar() {
                                 </Link>
                             );
                         })}
+
+                        {isLoggedIn && (
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all ml-2"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>

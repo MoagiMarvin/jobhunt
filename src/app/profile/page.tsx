@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ProfileHeader from "@/components/talent/ProfileHeader";
 import ProjectCard from "@/components/talent/ProjectCard";
 import CredentialCard from "@/components/talent/CredentialCard";
@@ -20,6 +21,7 @@ import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducatio
 import AddExperienceModal from "@/components/talent/AddExperienceModal";
 
 export default function ProfilePage() {
+    const router = useRouter();
 
     const [user, setUser] = useState({
         name: "Moagi Marvin",
@@ -233,9 +235,9 @@ export default function ProfilePage() {
     };
 
     const handleLogout = () => {
-        // Mock logout - in real app this would clear tokens and redirect
-        console.log("Logging out...");
-        alert("Logged out successfully (Mock)");
+        localStorage.removeItem("is_logged_in");
+        localStorage.removeItem("mock_role");
+        router.push("/");
     };
 
     return (
