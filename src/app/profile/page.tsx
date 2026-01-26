@@ -175,6 +175,76 @@ export default function ProfilePage() {
                     })));
                 }
 
+                // Fetch Qualifications (Matric, Uni, Certs) from unified table
+                const { data: qData } = await supabase
+                    .from("qualifications")
+                    .select("*")
+                    .eq("user_id", userId)
+                    .order("year", { ascending: false });
+
+                if (qData) {
+                    setEducationList(qData.filter(q => q.type !== 'certification').map(q => ({
+                        title: q.title,
+                        issuer: q.institution,
+                        date: q.year?.toString() || "",
+                        qualification_level: q.type === 'high_school' ? 'Matric' : 'Tertiary',
+                        document_url: q.document_url || "",
+                        isVerified: q.is_verified,
+                        topSkills: [],
+                        experienceYears: 0,
+                        education: q.type === 'high_school' ? 'Matric' : 'Bachelor\'s Degree'
+                    })));
+
+                    setCertificationsList(qData.filter(q => q.type === 'certification').map(q => ({
+                        title: q.title,
+                        issuer: q.institution,
+                        date: q.year?.toString() || "",
+                        credential_url: "",
+                        document_url: q.document_url || "",
+                        isVerified: q.is_verified
+                    })));
+                }
+
+                // Fetch skills
+                const { data: dbSkills } = await supabase
+                    .from("skills")
+                    .select("*")
+                    .eq("user_id", userId);
+                if (dbSkills) {
+                    setSkills(dbSkills.map(s => ({
+                        name: s.name,
+                        minYears: s.min_experience_years || 0,
+                        level: s.proficiency_level || 'Intermediate'
+                    })));
+                }
+
+                // Fetch languages
+                const { data: dbLangs } = await supabase
+                    .from("languages")
+                    .select("*")
+                    .eq("user_id", userId);
+                if (dbLangs) {
+                    setLanguages(dbLangs.map(l => ({
+                        language: l.language,
+                        proficiency: l.proficiency
+                    })));
+                }
+
+                // Fetch references
+                const { data: dbRefs } = await supabase
+                    .from("references")
+                    .select("*")
+                    .eq("user_id", userId);
+                if (dbRefs) {
+                    setReferences(dbRefs.map(r => ({
+                        name: r.name,
+                        relationship: r.relationship,
+                        company: r.company,
+                        phone: r.phone,
+                        email: r.email
+                    })));
+                }
+
             } catch (error) {
                 console.error("Error loading profile:", error);
             }
@@ -189,25 +259,25 @@ export default function ProfilePage() {
         // ... only load if not already loaded from DB or for local overrides
     }, []);
 
-    const handleSave = async () => {
+    const handleSaveProfile = async (newData: any) => {
         if (!currentUserId) return;
 
         try {
             const { error } = await supabase
                 .from("profiles")
                 .update({
-                    full_name: editedUser.name,
-                    phone: editedUser.phone,
-                    headline: editedUser.headline,
-                    location: editedUser.location,
-                    linkedin_url: editedUser.linkedin,
-                    github_url: editedUser.github,
-                    portfolio_url: editedUser.portfolio,
-                    availability_status: editedUser.availabilityStatus,
-                    target_roles: editedUser.targetRoles,
-                    have_license: editedUser.haveLicense,
-                    license_code: editedUser.licenseCode,
-                    have_car: editedUser.haveCar,
+                    full_name: newData.name,
+                    phone: newData.phone,
+                    headline: newData.headline,
+                    location: newData.location,
+                    linkedin_url: newData.linkedin,
+                    github_url: newData.github,
+                    portfolio_url: newData.portfolio,
+                    availability_status: newData.availabilityStatus,
+                    target_roles: newData.targetRoles,
+                    have_license: newData.haveLicense,
+                    license_code: newData.licenseCode,
+                    have_car: newData.haveCar,
                     updated_at: new Date().toISOString(),
                 })
                 .eq("id", currentUserId);
@@ -215,7 +285,7 @@ export default function ProfilePage() {
             if (error) throw error;
 
             // Update the UI state with the saved data
-            setUser({ ...editedUser });
+            setUser(newData);
             setIsEditing(false);
             alert("Profile updated successfully!");
         } catch (error) {
@@ -744,23 +814,33 @@ export default function ProfilePage() {
                 <EditProfileModal
                     isOpen={isEditing}
                     onClose={() => setIsEditing(false)}
-                    onSave={(newData) => {
-                        setUser(newData);
-                        setIsEditing(false);
-                        // Mock persist
-                        localStorage.setItem("user_basic_info", JSON.stringify(newData));
-                        alert("Profile updated successfully!");
-                    }}
+                    onSave={handleSaveProfile}
                     initialData={user}
                 />
                 <AddSkillModal
                     isOpen={isAddSkillOpen}
                     onClose={() => setIsAddSkillOpen(false)}
-                    onAdd={(newSkill) => {
-                        const updated = [...skills, newSkill];
-                        setSkills(updated);
-                        localStorage.setItem("user_skills_list", JSON.stringify(updated));
-                        setIsAddSkillOpen(false);
+                    onAdd={async (newSkill: any) => {
+                        if (!currentUserId) return;
+                        try {
+                            const { error } = await supabase
+                                .from("skills")
+                                .insert({
+                                    user_id: currentUserId,
+                                    name: typeof newSkill === 'string' ? newSkill : newSkill.name,
+                                    proficiency_level: typeof newSkill === 'string' ? 'Intermediate' : newSkill.level,
+                                    min_experience_years: typeof newSkill === 'string' ? 1 : newSkill.minYears,
+                                });
+                            if (error) throw error;
+
+                            const updated = [...skills, newSkill];
+                            setSkills(updated);
+                            setIsAddSkillOpen(false);
+                            alert("Skill added!");
+                        } catch (error) {
+                            console.error("Error adding skill:", error);
+                            alert("Failed to add skill.");
+                        }
                     }}
                 />
                 <EditSummaryModal
@@ -779,14 +859,8 @@ export default function ProfilePage() {
                             if (error) throw error;
 
                             setUser(prev => ({ ...prev, summary: newSummary }));
-                            // Assuming setEditedUser is defined elsewhere if needed, otherwise remove.
-                            // For this change, we'll keep it as provided in the instruction snippet.
-                            // If `editedUser` state is not present, this line will cause an error.
-                            // Assuming `editedUser` is a state variable similar to `user`.
-                            // If `setEditedUser` is not available, it should be removed.
-                            // For now, I'll include it as per the instruction.
-                            // setEditedUser(prev => ({ ...prev, summary: newSummary }));
-                            localStorage.setItem("user_basic_info", JSON.stringify({ ...user, summary: newSummary }));
+                            alert("Summary updated!");
+                            setIsEditSummaryOpen(false);
                         } catch (error) {
                             console.error("Error saving summary:", error);
                             alert("Failed to save summary.");
@@ -796,7 +870,7 @@ export default function ProfilePage() {
                 {/* Simple Inline Language Modal (For speed) */}
                 {isAddLanguageOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                        <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl animate-in fade-in zoom-in">
+                        <div className="bg-white rounded-2xl w-full max-sm p-6 shadow-xl animate-in fade-in zoom-in">
                             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                                 <Languages className="w-5 h-5 text-blue-600" /> Add Language
                             </h3>
@@ -826,13 +900,27 @@ export default function ProfilePage() {
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            if (newLanguage.language) {
-                                                const updated = [...languages, newLanguage];
-                                                setLanguages(updated);
-                                                localStorage.setItem("user_languages_list", JSON.stringify(updated));
-                                                setNewLanguage({ language: "", proficiency: "Fluent" });
-                                                setIsAddLanguageOpen(false);
+                                        onClick={async () => {
+                                            if (newLanguage.language && currentUserId) {
+                                                try {
+                                                    const { error } = await supabase
+                                                        .from("languages")
+                                                        .insert({
+                                                            user_id: currentUserId,
+                                                            language: newLanguage.language,
+                                                            proficiency: newLanguage.proficiency,
+                                                        });
+                                                    if (error) throw error;
+
+                                                    const updated = [...languages, newLanguage];
+                                                    setLanguages(updated);
+                                                    setNewLanguage({ language: "", proficiency: "Fluent" });
+                                                    setIsAddLanguageOpen(false);
+                                                    alert("Language added!");
+                                                } catch (error) {
+                                                    console.error("Error adding language:", error);
+                                                    alert("Failed to add language.");
+                                                }
                                             }
                                         }}
                                         className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
@@ -849,20 +937,40 @@ export default function ProfilePage() {
                     isOpen={isAddCredentialOpen.open}
                     type={isAddCredentialOpen.type}
                     onClose={() => setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false })}
-                    onAdd={(newCredential: any) => {
-                        if (isAddCredentialOpen.type === "education") {
-                            const updated = [...educationList, newCredential];
-                            setEducationList(updated);
-                            // Save combined credentials to localStorage
-                            const allCredentials = [...updated.map((e: any) => ({ ...e, type: 'education' })), ...certificationsList.map((c: any) => ({ ...c, type: 'certification' }))];
-                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
-                        } else {
-                            const updated = [...certificationsList, newCredential];
-                            setCertificationsList(updated);
-                            // Save combined credentials to localStorage
-                            const allCredentials = [...educationList.map((e: any) => ({ ...e, type: 'education' })), ...updated.map((c: any) => ({ ...c, type: 'certification' }))];
-                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+                    onAdd={async (newCredential: any) => {
+                        if (!currentUserId) return;
+
+                        // Map UI type to Database Type
+                        let dbType: 'high_school' | 'tertiary' | 'certification' = 'certification';
+                        if (isAddCredentialOpen.type === 'education') {
+                            dbType = newCredential.title.toLowerCase().includes('matric') ? 'high_school' : 'tertiary';
                         }
+
+                        try {
+                            const { error } = await supabase
+                                .from("qualifications")
+                                .insert({
+                                    user_id: currentUserId,
+                                    type: dbType,
+                                    title: newCredential.title,
+                                    institution: newCredential.issuer,
+                                    year: parseInt(newCredential.date) || null,
+                                    document_url: newCredential.document_url || null,
+                                });
+
+                            if (error) throw error;
+
+                            if (isAddCredentialOpen.type === "education") {
+                                setEducationList([...educationList, newCredential]);
+                            } else {
+                                setCertificationsList([...certificationsList, newCredential]);
+                            }
+                            alert("Qualification added successfully!");
+                        } catch (error) {
+                            console.error("Error adding qualification:", error);
+                            alert("Failed to add qualification.");
+                        }
+
                         setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
                     }}
                 />
@@ -881,11 +989,12 @@ export default function ProfilePage() {
                                     description: newProject.description,
                                     technologies: newProject.technologies,
                                     link: newProject.github_url || newProject.link_url,
+                                    image_url: newProject.image_url || null,
                                 });
                             if (error) throw error;
-                            const updated = [...projectsList, newProject];
-                            setProjectsList(updated);
-                            localStorage.setItem("user_projects_list", JSON.stringify(updated));
+
+                            // Refresh page data or update local state
+                            setProjectsList([...projectsList, newProject]);
                             setIsAddProjectOpen(false);
                             alert("Project added!");
                         } catch (error) {
@@ -898,21 +1007,55 @@ export default function ProfilePage() {
                 <AddReferenceModal
                     isOpen={isAddReferenceOpen}
                     onClose={() => setIsAddReferenceOpen(false)}
-                    onAdd={(newRef) => {
-                        const updated = [...references, newRef];
-                        setReferences(updated);
-                        localStorage.setItem("user_references_list", JSON.stringify(updated));
-                        setIsAddReferenceOpen(false);
+                    onAdd={async (newRef: any) => {
+                        if (!currentUserId) return;
+                        try {
+                            const { error } = await supabase
+                                .from("references")
+                                .insert({
+                                    user_id: currentUserId,
+                                    name: newRef.name,
+                                    relationship: newRef.relationship,
+                                    company: newRef.company,
+                                    phone: newRef.phone,
+                                    email: newRef.email
+                                });
+                            if (error) throw error;
+
+                            setReferences([...references, newRef]);
+                            setIsAddReferenceOpen(false);
+                            alert("Reference added!");
+                        } catch (error) {
+                            console.error("Error adding reference:", error);
+                            alert("Failed to add reference.");
+                        }
                     }}
                 />
 
                 <AddSecondaryEducationModal
                     isOpen={isAddMatricOpen}
                     onClose={() => setIsAddMatricOpen(false)}
-                    onAdd={(data) => {
-                        setMatricData(data);
-                        localStorage.setItem("user_matric_data", JSON.stringify(data));
-                        setIsAddMatricOpen(false);
+                    onAdd={async (data) => {
+                        if (!currentUserId) return;
+                        try {
+                            const { error } = await supabase
+                                .from("qualifications")
+                                .insert({
+                                    user_id: currentUserId,
+                                    type: 'high_school',
+                                    title: "Matric",
+                                    institution: data.school || "High School",
+                                    year: parseInt(data.year) || null,
+                                });
+                            if (error) throw error;
+
+                            setMatricData(data);
+                            setIsAddMatricOpen(false);
+                            alert("Matric data saved!");
+                        } catch (error) {
+                            console.error("Error saving matric data:", error);
+                            alert("Failed to save matric data.");
+                        }
                     }}
                 />
 
@@ -928,13 +1071,13 @@ export default function ProfilePage() {
                                     user_id: currentUserId,
                                     company: newExp.company,
                                     position: newExp.role,
-                                    start_date: new Date().toISOString().split('T')[0], // Placeholder date
+                                    description: newExp.description,
+                                    start_date: new Date().toISOString().split('T')[0], // Placeholder, ideally should be parsed
                                     is_current: newExp.duration.includes("Present"),
                                 });
                             if (error) throw error;
-                            const updated = [...experiences, newExp];
-                            setExperiences(updated);
-                            localStorage.setItem("user_experience_list", JSON.stringify(updated));
+
+                            setExperiences([...experiences, newExp]);
                             setIsAddExperienceOpen(false);
                             alert("Experience added!");
                         } catch (error) {
