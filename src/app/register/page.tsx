@@ -2,18 +2,64 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Briefcase, Mail, Lock, User, ArrowRight, Building2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { Briefcase, Mail, Lock, User, ArrowRight, Building2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export default function RegisterPage() {
     const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [companyName, setCompanyName] = useState("");
     const [role, setRole] = useState<"talent" | "recruiter">("talent");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Just redirect to login after "registering"
-        router.push("/");
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const { data: { user }, error: authError } = await supabase.auth.signUp({
+                email,
+                password,
+            });
+
+            if (authError) throw authError;
+
+            if (user) {
+                if (role === "talent") {
+                    const { error: profileError } = await supabase
+                        .from("profiles")
+                        .insert({
+                            id: user.id,
+                            full_name: fullName,
+                            email: email,
+                        });
+                    if (profileError) throw profileError;
+                } else {
+                    const { error: profileError } = await supabase
+                        .from("recruiter_profiles")
+                        .insert({
+                            user_id: user.id,
+                            company_name: companyName,
+                            full_name: fullName,
+                            email: email,
+                        });
+                    if (profileError) throw profileError;
+                }
+            }
+
+            alert("Registration successful! Please login.");
+            router.push("/");
+        } catch (err: any) {
+            setError(err.message || "Failed to register. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -57,31 +103,59 @@ export default function RegisterPage() {
                     </div>
 
                     <form onSubmit={handleRegister} className="space-y-4">
+                        {error && (
+                            <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm font-semibold rounded-xl text-center">
+                                {error}
+                            </div>
+                        )}
                         <input
                             type="text"
                             placeholder="Full Name"
                             required
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                        {role === "recruiter" && (
+                            <input
+                                type="text"
+                                placeholder="Company Name"
+                                required
+                                value={companyName}
+                                onChange={(e) => setCompanyName(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        )}
                         <input
                             type="email"
                             placeholder="Email Address"
                             required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <input
                             type="password"
                             placeholder="Password"
                             required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500"
                         />
 
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2"
+                            disabled={isLoading}
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-bold py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2"
                         >
-                            <span>Create Account</span>
-                            <ArrowRight className="w-5 h-5" />
+                            {isLoading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <>
+                                    <span>Create Account</span>
+                                    <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
                         </button>
                     </form>
 

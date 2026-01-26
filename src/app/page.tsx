@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Briefcase, Mail, Lock, Sparkles, Building2, User, ArrowRight } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { Briefcase, Mail, Lock, Sparkles, Building2, User, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -11,18 +12,36 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState<"talent" | "recruiter">("talent");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
+        setError(null);
 
-        // Mock session logic as requested
-        localStorage.setItem("mock_role", role);
-        localStorage.setItem("is_logged_in", "true");
+        try {
+            const { data, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        if (role === "talent") {
-            router.push("/profile");
-        } else {
-            router.push("/recruiter/search");
+            if (authError) throw authError;
+
+            // Optional: Store role in profile if not already there, 
+            // but for now we'll just check if login was successful
+            localStorage.setItem("mock_role", role); // Still using this for UI logic till Phase 2/3
+            localStorage.setItem("is_logged_in", "true");
+
+            if (role === "talent") {
+                router.push("/profile");
+            } else {
+                router.push("/recruiter/search");
+            }
+        } catch (err: any) {
+            setError(err.message || "Failed to login. Please check your credentials.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -69,6 +88,11 @@ export default function LoginPage() {
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-5">
+                        {error && (
+                            <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm font-semibold rounded-xl text-center">
+                                {error}
+                            </div>
+                        )}
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email Address</label>
                             <div className="relative">
@@ -76,6 +100,7 @@ export default function LoginPage() {
                                 <input
                                     type="email"
                                     placeholder="any@email.com"
+                                    required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -84,12 +109,13 @@ export default function LoginPage() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Password (Optional in Mock)</label>
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Password</label>
                             <div className="relative">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <input
                                     type="password"
                                     placeholder="••••••••"
+                                    required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -99,10 +125,17 @@ export default function LoginPage() {
 
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2"
+                            disabled={isLoading}
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-bold py-4 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2"
                         >
-                            <span>Login as {role === "talent" ? "Talent" : "Recruiter"}</span>
-                            <ArrowRight className="w-5 h-5" />
+                            {isLoading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <>
+                                    <span>Login as {role === "talent" ? "Talent" : "Recruiter"}</span>
+                                    <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
                         </button>
                     </form>
 
