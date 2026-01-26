@@ -1,6 +1,4 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText } from "lucide-react";
 
 interface EditProfileModalProps {
@@ -25,6 +23,13 @@ interface EditProfileModalProps {
 
 export default function EditProfileModal({ isOpen, onClose, onSave, initialData }: EditProfileModalProps) {
     const [formData, setFormData] = useState(initialData);
+
+    // Sync state with initialData whenever modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setFormData(initialData);
+        }
+    }, [isOpen, initialData]);
 
     if (!isOpen) return null;
 
