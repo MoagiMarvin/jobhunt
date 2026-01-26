@@ -25,147 +25,36 @@ export default function ProfilePage() {
     const router = useRouter();
 
     const [user, setUser] = useState({
-        name: "Moagi Marvin",
-        email: "moagi@example.com",
-        phone: "+27 61 234 5678",
-        avatar: "MM",
-        headline: "Computer Science Graduate | Full-Stack Developer",
-        location: "Johannesburg, South Africa",
+        name: "",
+        email: "",
+        phone: "",
+        avatar: "",
+        headline: "",
+        location: "",
         availabilityStatus: "Looking for Work" as "Looking for Work" | "Not Looking",
-        targetRoles: ["Full Stack Developer", "AI Engineer", "Software Intern"],
-        github: "https://github.com/moagi",
-        linkedin: "https://linkedin.com/in/moagi",
-        portfolio: "https://moagi.dev",
-        haveLicense: true,
-        licenseCode: "Code 8 / B",
-        haveCar: true,
-        summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
+        targetRoles: [] as string[],
+        github: "",
+        linkedin: "",
+        portfolio: "",
+        haveLicense: false,
+        licenseCode: "",
+        haveCar: false,
+        summary: ""
     });
 
-    const [skills, setSkills] = useState<(string | TalentSkill)[]>([
-        { name: "React", minYears: 1, level: "Advanced" },
-        { name: "TypeScript", minYears: 1, level: "Intermediate" },
-        "Public Speaking",
-        "Agile Methodology"
-    ]);
+    const [skills, setSkills] = useState<(string | TalentSkill)[]>([]);
 
-    const [languages, setLanguages] = useState([
-        { language: "English", proficiency: "Native" },
-        { language: "Zulu", proficiency: "Fluent" },
-        { language: "Afrikaans", proficiency: "Basic" }
-    ]);
+    const [languages, setLanguages] = useState<{ language: string; proficiency: string }[]>([]);
 
-    // Mock Talent Profile Data
-    const [projectsList, setProjectsList] = useState([
-        {
-            title: "AI CV Optimizer",
-            description: "Built with Next.js and Gemini AI to help students optimize their career paths.",
-            technologies: ["Next.js", "Gemini AI", "Tailwind"],
-            github_url: "https://github.com",
-            image_url: "/mock/cv-project.jpg",
-            topSkills: ["React", "Next.js", "Framer Motion", "TailwindCSS"],
-            experienceYears: 2,
-            education: "Bachelor's Degree",
-            isVerified: true,
-        },
-        {
-            title: "Talent Marketplace",
-            description: "A platform for connecting verified graduates with recruiters in South Africa.",
-            technologies: ["React", "Supabase", "TypeScript"],
-            link_url: "https://talent.example.com",
-            image_url: "/mock/talent-project.jpg"
-        },
-        {
-            title: "Portfolio Website",
-            description: "Personal portfolio showcasing modern design and clean animations.",
-            technologies: ["Framer Motion", "React", "PostCSS"],
-            github_url: "https://github.com",
-            topSkills: ["Figma", "Design Systems", "User Research", "Prototyping"],
-            experienceYears: 3,
-            education: "Diploma",
-            isVerified: true,
-        },
-        {
-            title: "E-commerce App",
-            description: "Mobile-first electronics store for local businesses.",
-            technologies: ["ReactNative", "Stripe", "Firebase"],
-            image_url: "/mock/shop.jpg",
-            topSkills: ["React Native", "Flutter", "Firebase", "Redux"],
-            experienceYears: 2,
-            education: "Bachelor's Degree",
-            isVerified: false,
-        }
-    ]);
+    const [projectsList, setProjectsList] = useState<any[]>([]);
 
-    // Mock Experience Data
-    const [experiences, setExperiences] = useState([
-        {
-            role: "Full Stack Intern",
-            company: "Tech StartUp SA",
-            duration: "Jun 2024 - Present",
-            description: "Developed and maintained several React-based dashboards and integrated Supabase for real-time data sync."
-        },
-        {
-            role: "Open Source Contributor",
-            company: "GitHub / Community",
-            duration: "2023 - 2024",
-            description: "Mentored 3 junior developers and improved documentation for a popular UI library used by 2k+ developers."
-        }
-    ]);
+    const [experiences, setExperiences] = useState<any[]>([]);
 
-    const [educationList, setEducationList] = useState([
-        {
-            title: "BSc Computer Science",
-            issuer: "University of Johannesburg",
-            date: "2021 - 2024",
-            qualification_level: "Bachelor's Degree",
-            document_url: "/mock/degree.pdf",
-            isVerified: true,
-            topSkills: ["React", "TypeScript", "Python", "Node.js", "AWS"],
-            experienceYears: 1,
-            education: "Bachelor's Degree",
-        },
-        {
-            title: "MSc Software Engineering",
-            issuer: "University of Cape Town",
-            date: "2019 - 2020",
-            qualification_level: "Master's Degree",
-            document_url: "/mock/masters.pdf",
-            isVerified: false,
-            topSkills: ["Go", "Kubernetes", "PostgreSQL", "Docker", "Microservices"],
-            experienceYears: 4,
-            education: "Bachelor's Degree",
-        }
-    ]);
+    const [educationList, setEducationList] = useState<any[]>([]);
 
-    const [certificationsList, setCertificationsList] = useState([
-        {
-            title: "Google Cloud Professional Developer",
-            issuer: "Google Cloud",
-            date: "January 2024",
-            credential_url: "https://cloud.google.com/certification",
-            document_url: "/mock/google-cert.pdf",
-            isVerified: true
-        },
-        {
-            title: "AWS Certified Solutions Architect",
-            issuer: "Amazon Web Services",
-            date: "November 2023",
-            credential_url: "https://aws.amazon.com/certification",
-            document_url: "/mock/aws-cert.pdf",
-            isVerified: true
-        }
-    ]);
+    const [certificationsList, setCertificationsList] = useState<any[]>([]);
 
-    const [references, setReferences] = useState([
-        {
-            name: "Sarah Jenkins",
-            relationship: "Senior Developer / Manager",
-            company: "Tech StartUp SA",
-            phone: "+27 11 987 6543",
-            email: "sarah@techstartup.co.za"
-        }
-    ]);
+    const [references, setReferences] = useState<any[]>([]);
 
     const [matricData, setMatricData] = useState<any>(null);
 
@@ -194,16 +83,27 @@ export default function ProfilePage() {
     useEffect(() => {
         const loadProfile = async () => {
             setIsLoadingProfile(true);
+
+            // Small delay to ensure session is ready
+            await new Promise(resolve => setTimeout(resolve, 300));
+
             const { data: { session } } = await supabase.auth.getSession();
 
             if (!session) {
+                console.log("No session found, redirecting to login");
+                setIsLoadingProfile(false);
                 router.push("/");
                 return;
             }
 
+            console.log("Session found for user:", session.user.id);
             const userId = session.user.id;
             setCurrentUserId(userId);
+            await fetchProfileData(userId);
+            setIsLoadingProfile(false);
+        };
 
+        const fetchProfileData = async (userId: string) => {
             try {
                 // Fetch basic profile
                 const { data: profile, error: profileError } = await supabase
@@ -222,8 +122,15 @@ export default function ProfilePage() {
                         phone: profile.phone || prev.phone,
                         summary: profile.summary || prev.summary,
                         linkedin: profile.linkedin_url || prev.linkedin,
+                        github: profile.github_url || prev.github,
                         portfolio: profile.portfolio_url || prev.portfolio,
-                        headline: profile.headline || prev.headline, // Assuming you add headline to table or it's in master_cv
+                        headline: profile.headline || prev.headline,
+                        location: profile.location || prev.location,
+                        availabilityStatus: profile.availability_status || prev.availabilityStatus,
+                        targetRoles: profile.target_roles || prev.targetRoles,
+                        haveLicense: profile.have_license,
+                        licenseCode: profile.license_code || prev.licenseCode,
+                        haveCar: profile.have_car,
                     }));
                     setEditedUser(prev => ({
                         ...prev,
@@ -270,8 +177,6 @@ export default function ProfilePage() {
 
             } catch (error) {
                 console.error("Error loading profile:", error);
-            } finally {
-                setIsLoadingProfile(false);
             }
         };
 
@@ -293,16 +198,25 @@ export default function ProfilePage() {
                 .update({
                     full_name: editedUser.name,
                     phone: editedUser.phone,
+                    headline: editedUser.headline,
+                    location: editedUser.location,
                     linkedin_url: editedUser.linkedin,
+                    github_url: editedUser.github,
                     portfolio_url: editedUser.portfolio,
+                    availability_status: editedUser.availabilityStatus,
+                    target_roles: editedUser.targetRoles,
+                    have_license: editedUser.haveLicense,
+                    license_code: editedUser.licenseCode,
+                    have_car: editedUser.haveCar,
+                    updated_at: new Date().toISOString(),
                 })
                 .eq("id", currentUserId);
 
             if (error) throw error;
 
-            setUser(editedUser);
+            // Update the UI state with the saved data
+            setUser({ ...editedUser });
             setIsEditing(false);
-            localStorage.setItem("user_basic_info", JSON.stringify(editedUser));
             alert("Profile updated successfully!");
         } catch (error) {
             console.error("Error saving profile:", error);

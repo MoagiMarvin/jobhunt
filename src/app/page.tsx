@@ -37,11 +37,26 @@ export default function LoginPage() {
                 password,
             });
 
-            if (authError) throw authError;
+            console.log("Login attempt - Data:", data, "Error:", authError);
 
-            // Phase 1: Set mock role for UI filtering until Phase 2 handles real profiles
+            if (authError) {
+                console.error("Auth Error Details:", authError);
+                throw authError;
+            }
+
+            if (!data.session) {
+                throw new Error("No session created. Your email might not be confirmed. Check your inbox!");
+            }
+
+            // Only clear old role-specific data, DON'T clear Supabase session
+            localStorage.removeItem("mock_role");
+            localStorage.removeItem("is_logged_in");
+
+            // Set fresh role
             localStorage.setItem("mock_role", role);
             localStorage.setItem("is_logged_in", "true");
+
+            console.log("Login successful, redirecting to:", role === "talent" ? "/profile" : "/recruiter/search");
 
             if (role === "talent") {
                 router.push("/profile");
@@ -54,6 +69,9 @@ export default function LoginPage() {
             let message = err.message || "Failed to login. Please check your credentials.";
             if (message === "Failed to fetch") {
                 message = "Network error: Failed to connect to Supabase. Please check if your project is active and URL is correct.";
+            }
+            if (message.includes("Email not confirmed")) {
+                message = "Please confirm your email before logging in. Check your inbox for the confirmation link.";
             }
             setError(message);
         } finally {
