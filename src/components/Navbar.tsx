@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Briefcase, FileText, Search, User, FolderOpen, Building2, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 export default function Navbar() {
     const pathname = usePathname();
@@ -13,24 +14,23 @@ export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        // Simple mock check
-        const checkAuth = () => {
-            const loggedIn = localStorage.getItem("is_logged_in") === "true";
-            const currentRole = localStorage.getItem("mock_role");
-            setIsLoggedIn(loggedIn);
-            setRole(currentRole);
+        // Real Supabase session check
+        const getSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setIsLoggedIn(!!session);
+            // In a real app, we'd fetch the role from the profile table.
+            // For now, we still rely on the mock_role in localStorage for UI filtering
+            // but we ONLY show links if there is a real session.
+            setRole(localStorage.getItem("mock_role") || "talent");
         };
 
-        checkAuth();
-        // Listen for changes (e.g. from the same tab or other tabs)
-        window.addEventListener("storage", checkAuth);
-        // Interval for quick updates within the same tab since 'storage' event doesn't fire on same window
-        const interval = setInterval(checkAuth, 1000);
+        getSession();
 
-        return () => {
-            window.removeEventListener("storage", checkAuth);
-            clearInterval(interval);
-        };
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+            setIsLoggedIn(!!session);
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
     const talentLinks = [
@@ -49,9 +49,10 @@ export default function Navbar() {
         ? (role === "talent" ? talentLinks : recruiterLinks)
         : [];
 
-    const handleLogout = () => {
-        localStorage.removeItem("is_logged_in");
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
         localStorage.removeItem("mock_role");
+        localStorage.removeItem("is_logged_in");
         setIsLoggedIn(false);
         setRole(null);
         router.push("/");

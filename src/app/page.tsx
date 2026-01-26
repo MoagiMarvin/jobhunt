@@ -20,6 +20,17 @@ export default function LoginPage() {
         setIsLoading(true);
         setError(null);
 
+        // Debug: Check if variables are loaded (only logs first few chars for safety)
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        console.log("Supabase Client Init - URL:", url?.substring(0, 15), "Key present:", !!key);
+
+        if (!url || !key) {
+            setError("Supabase configuration is missing. Please check your .env.local file.");
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const { data, error: authError } = await supabase.auth.signInWithPassword({
                 email,
@@ -28,9 +39,8 @@ export default function LoginPage() {
 
             if (authError) throw authError;
 
-            // Optional: Store role in profile if not already there, 
-            // but for now we'll just check if login was successful
-            localStorage.setItem("mock_role", role); // Still using this for UI logic till Phase 2/3
+            // Phase 1: Set mock role for UI filtering until Phase 2 handles real profiles
+            localStorage.setItem("mock_role", role);
             localStorage.setItem("is_logged_in", "true");
 
             if (role === "talent") {
@@ -39,7 +49,13 @@ export default function LoginPage() {
                 router.push("/recruiter/search");
             }
         } catch (err: any) {
-            setError(err.message || "Failed to login. Please check your credentials.");
+            console.error("Login catch error:", err);
+
+            let message = err.message || "Failed to login. Please check your credentials.";
+            if (message === "Failed to fetch") {
+                message = "Network error: Failed to connect to Supabase. Please check if your project is active and URL is correct.";
+            }
+            setError(message);
         } finally {
             setIsLoading(false);
         }

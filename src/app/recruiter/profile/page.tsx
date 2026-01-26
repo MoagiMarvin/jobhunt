@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import {
   Building2,
   LinkIcon,
@@ -19,6 +20,7 @@ import RecruiterProfileHeader from "@/components/recruiter/RecruiterProfileHeade
 
 interface RecruiterProfile {
   id: string;
+  user_id?: string;
   company_name: string;
   full_name: string;
   email: string;
@@ -38,6 +40,7 @@ export default function RecruiterProfilePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -64,18 +67,42 @@ export default function RecruiterProfilePage() {
   const [specializationInput, setSpecializationInput] = useState("");
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push("/");
+        return;
+      }
+      setCurrentUserId(session.user.id);
+      fetchProfile(session.user.id);
+    };
+    checkSession();
+  }, [router]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (userId: string) => {
     try {
-      const response = await fetch("/api/recruiter/profile");
-      if (response.ok) {
-        const data = await response.json();
+      const { data, error } = await supabase
+        .from("recruiter_profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+
+      if (data) {
         setProfile(data);
+      } else {
+        // Fallback for new recruiter
+        const { data: { user } } = await supabase.auth.getUser();
+        setProfile(prev => ({
+          ...prev,
+          email: user?.email || "",
+          full_name: user?.user_metadata?.full_name || ""
+        }));
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
+      setMessage({ type: "error", text: "Failed to load profile." });
     } finally {
       setIsLoading(false);
     }
@@ -111,31 +138,37 @@ export default function RecruiterProfilePage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentUserId) return;
+
     setIsSaving(true);
     setMessage(null);
 
     try {
-      const response = await fetch("/api/recruiter/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
-      });
+      const { error } = await supabase
+        .from("recruiter_profiles")
+        .upsert({
+          user_id: currentUserId,
+          company_name: profile.company_name,
+          full_name: profile.full_name,
+          email: profile.email,
+          phone: profile.phone || null,
+          company_website: profile.company_website || null,
+          industry: profile.industry || null,
+          specializations: profile.specializations || [],
+          company_size: profile.company_size || null,
+          years_in_business: profile.years_in_business || null,
+          linkedin_url: profile.linkedin_url || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", currentUserId);
 
-      if (response.ok) {
-        const updated = await response.json();
-        setProfile(updated);
-        setMessage({ type: "success", text: "Profile saved successfully!" });
-      } else {
-        const error = await response.json();
-        setMessage({ type: "error", text: error.error || "Failed to save profile" });
-      }
-    } catch (error) {
-      setMessage({
-        type: "error",
-        text: error instanceof Error ? error.message : "An error occurred",
-      });
+      if (error) throw error;
+      setMessage({ type: "success", text: "Profile saved successfully!" });
+    } catch (error: any) {
+      console.error("Error saving profile:", error);
+      setMessage({ type: "error", text: error.message || "Failed to save profile." });
     } finally {
       setIsSaving(false);
     }
@@ -203,7 +236,7 @@ export default function RecruiterProfilePage() {
         {/* Main Form */}
         <form
           id="recruiter-profile-form"
-          onSubmit={handleSubmit}
+          onSubmit={handleSave}
           className="space-y-8"
         >
           {/* Basic Information */}
