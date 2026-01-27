@@ -185,18 +185,29 @@ export default function ProfilePage() {
                     .order("year", { ascending: false });
 
                 if (qData) {
-                    setEducationList(qData.filter(q => q.type !== 'certification').map(q => ({
+                    // 1. Handle Matric (High School)
+                    const matric = qData.find(q => q.type === 'high_school');
+                    if (matric) {
+                        setMatricData({
+                            schoolName: matric.institution,
+                            completionYear: matric.year
+                        });
+                    }
+
+                    // 2. Handle Tertiary Education (exclude high_school and certification)
+                    setEducationList(qData.filter(q => q.type !== 'certification' && q.type !== 'high_school').map(q => ({
                         title: q.title,
                         issuer: q.institution,
                         date: q.year?.toString() || "",
-                        qualification_level: q.type === 'high_school' ? 'Matric' : 'Tertiary',
+                        qualification_level: 'Tertiary',
                         document_url: q.document_url || "",
                         isVerified: q.is_verified,
                         topSkills: [],
                         experienceYears: 0,
-                        education: q.type === 'high_school' ? 'Matric' : 'Bachelor\'s Degree'
+                        education: 'Bachelor\'s Degree'
                     })));
 
+                    // 3. Handle Certifications
                     setCertificationsList(qData.filter(q => q.type === 'certification').map(q => ({
                         title: q.title,
                         issuer: q.institution,
@@ -965,14 +976,17 @@ export default function ProfilePage() {
                                     title: newCredential.title,
                                     institution: newCredential.issuer,
                                     year: parseInt(newCredential.end_date) || parseInt(newCredential.start_date) || null,
-                                    start_date: newCredential.start_date || null,
-                                    end_date: newCredential.end_date || null,
                                     document_url: newCredential.document_url || null,
                                 });
 
                             if (error) throw error;
 
-                            if (isAddCredentialOpen.type === "education") {
+                            if (dbType === 'high_school') {
+                                setMatricData({
+                                    schoolName: newCredential.issuer,
+                                    completionYear: parseInt(newCredential.end_date) || parseInt(newCredential.start_date) || new Date().getFullYear(),
+                                });
+                            } else if (isAddCredentialOpen.type === "education") {
                                 setEducationList([...educationList, newCredential]);
                             } else {
                                 setCertificationsList([...certificationsList, newCredential]);
@@ -1049,6 +1063,7 @@ export default function ProfilePage() {
                     onClose={() => setIsAddMatricOpen(false)}
                     onAdd={async (data) => {
                         if (!currentUserId) return;
+                        console.log("Adding matric data:", data);
                         try {
                             const { error } = await supabase
                                 .from("qualifications")
@@ -1056,8 +1071,8 @@ export default function ProfilePage() {
                                     user_id: currentUserId,
                                     type: 'high_school',
                                     title: "Matric",
-                                    institution: data.school || "High School",
-                                    year: parseInt(data.year) || null,
+                                    institution: data.schoolName || data.school || "High School (Default)",
+                                    year: data.completionYear || parseInt(data.year) || null,
                                 });
                             if (error) throw error;
 
