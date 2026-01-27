@@ -1,6 +1,7 @@
 "use client";
 
-import { Building2, Calendar, Trash2 } from "lucide-react";
+import { Building2, Calendar, Trash2, MoreVertical, Edit2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 
 interface ExperienceCardProps {
     role: string;
@@ -8,6 +9,7 @@ interface ExperienceCardProps {
     duration: string;
     description: string;
     onDelete?: () => void;
+    onEdit?: () => void;
     isOwner?: boolean;
 }
 
@@ -17,18 +19,63 @@ export default function ExperienceCard({
     duration,
     description,
     onDelete,
+    onEdit,
     isOwner = true
 }: ExperienceCardProps) {
+    const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setShowMenu(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     return (
         <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-5 group relative">
-            {isOwner && onDelete && (
-                <button
-                    onClick={onDelete}
-                    className="absolute top-4 right-4 p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                    title="Delete"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
+            {isOwner && (
+                <div className="absolute top-4 right-4" ref={menuRef}>
+                    <button
+                        onClick={() => setShowMenu(!showMenu)}
+                        className="p-1.5 text-slate-300 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        title="Options"
+                    >
+                        <MoreVertical className="w-4 h-4" />
+                    </button>
+
+                    {showMenu && (
+                        <div className="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-10 animate-in fade-in zoom-in duration-100">
+                            {onEdit && (
+                                <button
+                                    onClick={() => {
+                                        onEdit();
+                                        setShowMenu(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors"
+                                >
+                                    <Edit2 className="w-3.5 h-3.5" />
+                                    Edit
+                                </button>
+                            )}
+                            {onDelete && (
+                                <button
+                                    onClick={() => {
+                                        onDelete();
+                                        setShowMenu(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-xs font-bold text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    Delete
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
             )}
 
             <div className="flex gap-4">

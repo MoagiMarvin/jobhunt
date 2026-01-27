@@ -69,6 +69,7 @@ export default function ProfilePage() {
     const [isAddReferenceOpen, setIsAddReferenceOpen] = useState(false);
     const [isAddMatricOpen, setIsAddMatricOpen] = useState(false);
     const [isAddExperienceOpen, setIsAddExperienceOpen] = useState(false);
+    const [editingExperience, setEditingExperience] = useState<any>(null);
 
     const [editedUser, setEditedUser] = useState(user);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -148,6 +149,7 @@ export default function ProfilePage() {
 
                 if (dbExperiences && dbExperiences.length > 0) {
                     setExperiences(dbExperiences.map(exp => ({
+                        id: exp.id,
                         role: exp.position,
                         company: exp.company,
                         duration: `${exp.start_date}${exp.is_current ? " - Present" : ""}`,
@@ -463,7 +465,20 @@ export default function ProfilePage() {
                                     <ExperienceCard
                                         key={idx}
                                         {...exp}
-                                        onDelete={() => setExperiences(experiences.filter((_: any, i: number) => i !== idx))}
+                                        onDelete={async () => {
+                                            if (currentUserId && exp.id) {
+                                                const { error } = await supabase.from("work_experiences").delete().eq("id", exp.id);
+                                                if (error) {
+                                                    alert("Failed to delete experience.");
+                                                    return;
+                                                }
+                                            }
+                                            setExperiences(experiences.filter((_: any, i: number) => i !== idx));
+                                        }}
+                                        onEdit={() => {
+                                            setEditingExperience(exp);
+                                            setIsAddExperienceOpen(true);
+                                        }}
                                         isOwner={true}
                                     />
                                 ))}
@@ -1056,28 +1071,50 @@ export default function ProfilePage() {
 
                 <AddExperienceModal
                     isOpen={isAddExperienceOpen}
-                    onClose={() => setIsAddExperienceOpen(false)}
+                    initialData={editingExperience}
+                    onClose={() => {
+                        setIsAddExperienceOpen(false);
+                        setEditingExperience(null);
+                    }}
                     onAdd={async (newExp: any) => {
                         if (!currentUserId) return;
                         try {
-                            const { error } = await supabase
-                                .from("work_experiences")
-                                .insert({
-                                    user_id: currentUserId,
-                                    company: newExp.company,
-                                    position: newExp.role,
-                                    description: newExp.description,
-                                    start_date: new Date().toISOString().split('T')[0], // Placeholder, ideally should be parsed
-                                    is_current: newExp.duration.includes("Present"),
-                                });
-                            if (error) throw error;
+                            const experienceData = {
+                                user_id: currentUserId,
+                                company: newExp.company,
+                                position: newExp.role,
+                                description: newExp.description,
+                                start_date: newExp.duration.split(' - ')[0], // Best effort to extract start date
+                                is_current: newExp.duration.includes("Present"),
+                            };
 
-                            setExperiences([...experiences, newExp]);
+                            if (newExp.id) {
+                                // Update existing
+                                const { error } = await supabase
+                                    .from("work_experiences")
+                                    .update(experienceData)
+                                    .eq("id", newExp.id);
+                                if (error) throw error;
+
+                                setExperiences(experiences.map(e => e.id === newExp.id ? newExp : e));
+                                alert("Experience updated!");
+                            } else {
+                                // Insert new
+                                const { data, error } = await supabase
+                                    .from("work_experiences")
+                                    .insert(experienceData)
+                                    .select();
+                                if (error) throw error;
+
+                                setExperiences([...experiences, { ...newExp, id: data[0].id }]);
+                                alert("Experience added!");
+                            }
+
                             setIsAddExperienceOpen(false);
-                            alert("Experience added!");
+                            setEditingExperience(null);
                         } catch (error) {
-                            console.error("Error adding experience:", error);
-                            alert("Failed to add experience.");
+                            console.error("Error saving experience:", error);
+                            alert("Failed to save experience.");
                         }
                     }}
                 />

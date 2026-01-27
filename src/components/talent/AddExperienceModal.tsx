@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Save, Briefcase, Calendar, FileText } from "lucide-react";
 
 interface AddExperienceModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd: (data: any) => void;
+    initialData?: any;
 }
 
-export default function AddExperienceModal({ isOpen, onClose, onAdd }: AddExperienceModalProps) {
+export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData }: AddExperienceModalProps) {
     const [formData, setFormData] = useState({
         role: "",
         company: ""
@@ -20,11 +21,53 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd }: AddExperi
     const [endDate, setEndDate] = useState({ month: "January", year: new Date().getFullYear().toString() });
     const [isCurrent, setIsCurrent] = useState(true);
 
-    if (!isOpen) return null;
-
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 40 }, (_, i) => (currentYear - i).toString());
+
+    useEffect(() => {
+        if (initialData && isOpen) {
+            setFormData({
+                role: initialData.role || "",
+                company: initialData.company || ""
+            });
+            setAchievements(initialData.description ? initialData.description.split('\n') : []);
+            setIsCurrent(initialData.duration?.toLowerCase().includes("present") ?? true);
+
+            // Try to parse duration (e.g., "Jan 2020 - Dec 2022" or "Jan 2020 - Present")
+            if (initialData.duration) {
+                const parts = initialData.duration.split(' - ');
+                if (parts.length > 0) {
+                    const startPart = parts[0].trim();
+                    const startMonthYear = startPart.split(' ');
+                    if (startMonthYear.length === 2) {
+                        const [startMonth, startYear] = startMonthYear;
+                        const fullStartMonth = months.find(m => m.startsWith(startMonth)) || "January";
+                        setStartDate({ month: fullStartMonth, year: startYear });
+                    }
+                }
+                if (parts.length > 1 && !parts[1].toLowerCase().includes("present")) {
+                    const endPart = parts[1].trim();
+                    const endMonthYear = endPart.split(' ');
+                    if (endMonthYear.length === 2) {
+                        const [endMonth, endYear] = endMonthYear;
+                        const fullEndMonth = months.find(m => m.startsWith(endMonth)) || "January";
+                        setEndDate({ month: fullEndMonth, year: endYear });
+                    }
+                }
+            }
+        } else if (!isOpen) {
+            // Reset when closing
+            setFormData({ role: "", company: "" });
+            setAchievements([]);
+            setCurrentAchievement("");
+            setStartDate({ month: "January", year: new Date().getFullYear().toString() });
+            setEndDate({ month: "January", year: new Date().getFullYear().toString() });
+            setIsCurrent(true);
+        }
+    }, [initialData, isOpen]);
+
+    if (!isOpen) return null;
 
     const addAchievement = () => {
         if (currentAchievement.trim()) {
@@ -63,14 +106,17 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd }: AddExperi
 
         onAdd({
             ...formData,
+            id: initialData?.id,
             description: finalAchievements.join('\n'),
             duration: `${startStr} - ${endStr}`
         });
 
-        setFormData({ role: "", company: "" });
-        setAchievements([]);
-        setCurrentAchievement("");
-        setIsCurrent(true);
+        if (!initialData) {
+            setFormData({ role: "", company: "" });
+            setAchievements([]);
+            setCurrentAchievement("");
+            setIsCurrent(true);
+        }
     };
 
     return (
@@ -79,7 +125,7 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd }: AddExperi
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                         <Briefcase className="w-5 h-5 text-blue-600" />
-                        Add Work Experience
+                        {initialData ? "Edit Work Experience" : "Add Work Experience"}
                     </h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
                         <X className="w-6 h-6" />
@@ -234,7 +280,7 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd }: AddExperi
                             className="flex-[2] py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                         >
                             <Save className="w-4 h-4" />
-                            Save Experience
+                            {initialData ? "Update Experience" : "Save Experience"}
                         </button>
                     </div>
                 </form>
