@@ -964,7 +964,9 @@ export default function ProfilePage() {
                                     type: dbType,
                                     title: newCredential.title,
                                     institution: newCredential.issuer,
-                                    year: parseInt(newCredential.date) || null,
+                                    year: parseInt(newCredential.end_date) || parseInt(newCredential.start_date) || null,
+                                    start_date: newCredential.start_date || null,
+                                    end_date: newCredential.end_date || null,
                                     document_url: newCredential.document_url || null,
                                 });
 

@@ -14,7 +14,8 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
     const [formData, setFormData] = useState({
         title: "",
         issuer: "",
-        date: "",
+        start_date: "",
+        end_date: "",
         qualification_level: "",
         credential_url: "",
         document_url: "",
@@ -66,14 +67,24 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Date */}
-                        <div className="space-y-2 col-span-1 md:col-span-2">
-                            <label className="text-sm font-semibold text-slate-700">Date / Period</label>
+                        {/* Dates */}
+                        <div className="space-y-2 col-span-1">
+                            <label className="text-sm font-semibold text-slate-700">Start Date / Year</label>
                             <input
                                 type="text"
-                                value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                placeholder="e.g. 2021 - 2024"
+                                value={formData.start_date}
+                                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                                placeholder="e.g. 2021"
+                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
+                            />
+                        </div>
+                        <div className="space-y-2 col-span-1">
+                            <label className="text-sm font-semibold text-slate-700">End Date / Year</label>
+                            <input
+                                type="text"
+                                value={formData.end_date}
+                                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                                placeholder="e.g. 2024"
                                 className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
                             />
                         </div>
@@ -88,7 +99,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                                     className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium text-slate-700 bg-white"
                                 >
                                     <option value="">Select Level</option>
-                                    <option value="Matric">Matric</option>
+                                    {/* Removed Matric for tertiary education */}
                                     <option value="Higher Certificate">Higher Certificate</option>
                                     <option value="Diploma">Diploma</option>
                                     <option value="Bachelor's Degree">Bachelor's Degree</option>
