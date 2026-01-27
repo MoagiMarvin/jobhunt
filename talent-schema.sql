@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS public.qualifications (
   title TEXT NOT NULL,
   institution TEXT NOT NULL,
   year INTEGER,
+  start_date DATE,
+  end_date DATE,
   document_url TEXT,
   is_verified BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL

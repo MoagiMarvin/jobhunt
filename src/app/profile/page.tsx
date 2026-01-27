@@ -1063,7 +1063,8 @@ export default function ProfilePage() {
                     onClose={() => setIsAddMatricOpen(false)}
                     onAdd={async (data) => {
                         if (!currentUserId) return;
-                        console.log("Adding matric data:", data);
+                        console.log("Adding matric data KEYS:", Object.keys(data));
+                        console.log("Adding matric data VALUES:", data);
                         try {
                             const { error } = await supabase
                                 .from("qualifications")
@@ -1071,7 +1072,7 @@ export default function ProfilePage() {
                                     user_id: currentUserId,
                                     type: 'high_school',
                                     title: "Matric",
-                                    institution: data.schoolName || data.school || "High School (Default)",
+                                    institution: data.schoolName || data.school || "High School (FALLBACK)",
                                     year: data.completionYear || parseInt(data.year) || null,
                                 });
                             if (error) throw error;
