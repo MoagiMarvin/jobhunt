@@ -72,7 +72,6 @@ export default function ProfilePage() {
 
     const [editedUser, setEditedUser] = useState(user);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [newTargetRole, setNewTargetRole] = useState("");
 
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
     const [isSkillsExpanded, setIsSkillsExpanded] = useState(false);

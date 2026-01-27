@@ -27,14 +27,17 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
             setMode(initialMode);
         }
     }, [isOpen, initialMode]);
+
     const [category, setCategory] = useState("");
 
-    // Technical Skills Inventory (the "shopping list")
+    // Technical Skills Inventory
     const [tempSkills, setTempSkills] = useState<{ name: string; years: string }[]>([]);
     const [currentSkillName, setCurrentSkillName] = useState("");
     const [currentSkillYears, setCurrentSkillYears] = useState("");
 
-    const [softSkillSentence, setSoftSkillSentence] = useState("");
+    // Soft Skills Inventory
+    const [tempSoftSkills, setTempSoftSkills] = useState<string[]>([]);
+    const [currentSoftSkill, setCurrentSoftSkill] = useState("");
 
     if (!isOpen) return null;
 
@@ -45,8 +48,18 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
         setCurrentSkillYears("");
     };
 
+    const addSoftSkillToTempList = () => {
+        if (!currentSoftSkill.trim()) return;
+        setTempSoftSkills([...tempSoftSkills, currentSoftSkill.trim()]);
+        setCurrentSoftSkill("");
+    };
+
     const removeSkillFromTempList = (index: number) => {
         setTempSkills(tempSkills.filter((_, i) => i !== index));
+    };
+
+    const removeSoftSkillFromTempList = (index: number) => {
+        setTempSoftSkills(tempSoftSkills.filter((_, i) => i !== index));
     };
 
     const handleFinalAdd = () => {
@@ -70,16 +83,21 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
 
             onAdd(newSkills);
         } else {
-            if (!softSkillSentence.trim()) return;
+            if (tempSoftSkills.length === 0 && !currentSoftSkill.trim()) return;
 
-            const newSkill: TalentSkill = {
-                name: softSkillSentence.trim(),
-                description: softSkillSentence.trim(),
+            let finalSoftSkillsToSubmit = [...tempSoftSkills];
+            if (currentSoftSkill.trim()) {
+                finalSoftSkillsToSubmit.push(currentSoftSkill.trim());
+            }
+
+            const newSkills: TalentSkill[] = finalSoftSkillsToSubmit.map(s => ({
+                name: s,
+                description: s,
                 isSoftSkill: true,
                 category: "Soft Skills"
-            };
+            }));
 
-            onAdd([newSkill]);
+            onAdd(newSkills);
         }
 
         // Reset and close
@@ -87,7 +105,8 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
         setTempSkills([]);
         setCurrentSkillName("");
         setCurrentSkillYears("");
-        setSoftSkillSentence("");
+        setTempSoftSkills([]);
+        setCurrentSoftSkill("");
         onClose();
     };
 
@@ -198,17 +217,44 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
                             </div>
                         </div>
                     ) : (
-                        <div className="space-y-4 animate-in fade-in slide-in-from-right-2 duration-300">
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Soft Skill / Professional Narrative</label>
-                                <textarea
-                                    value={softSkillSentence}
-                                    onChange={(e) => setSoftSkillSentence(e.target.value)}
-                                    placeholder="e.g. I am a proactive team leader who excels at Agile workflows and clear communication."
-                                    rows={5}
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium resize-none"
-                                />
-                                <p className="text-[10px] text-slate-400 font-medium italic leading-relaxed">Describe your methodology or approach. This adds a huge "human touch" to your profile.</p>
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-2 duration-300">
+                            <div className="space-y-3">
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Soft Skill / Personal Strength</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={currentSoftSkill}
+                                        onChange={(e) => setCurrentSoftSkill(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && addSoftSkillToTempList()}
+                                        placeholder="e.g. I am a leader"
+                                        className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all font-medium"
+                                    />
+                                    <button
+                                        onClick={addSoftSkillToTempList}
+                                        disabled={!currentSoftSkill.trim()}
+                                        className="p-3 rounded-xl bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors disabled:opacity-50"
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                    </button>
+                                </div>
+                                <p className="text-[10px] text-slate-400 font-medium italic leading-relaxed pl-1">Press Enter to add multiple soft skills.</p>
+
+                                {/* Temp Soft Skills List */}
+                                {tempSoftSkills.length > 0 && (
+                                    <div className="bg-slate-50 rounded-xl p-3 space-y-2 border border-slate-100 mt-4">
+                                        {tempSoftSkills.map((s, i) => (
+                                            <div key={i} className="flex items-center justify-between px-3 py-2 bg-white rounded-lg border border-slate-200 shadow-sm animate-in slide-in-from-top-1">
+                                                <span className="text-sm font-bold text-slate-700">{s}</span>
+                                                <button
+                                                    onClick={() => removeSoftSkillFromTempList(i)}
+                                                    className="text-slate-300 hover:text-red-500 transition-colors p-1"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -223,7 +269,7 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
                     </button>
                     <button
                         onClick={handleFinalAdd}
-                        disabled={mode === "technical" ? (tempSkills.length === 0 && !currentSkillName.trim()) : !softSkillSentence.trim()}
+                        disabled={mode === "technical" ? (tempSkills.length === 0 && !currentSkillName.trim()) : (tempSoftSkills.length === 0 && !currentSoftSkill.trim())}
                         className="flex-[2] py-3 px-8 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-400/20 transition-all flex items-center justify-center gap-2 disabled:bg-slate-300 disabled:shadow-none"
                     >
                         <Save className="w-5 h-5" />
