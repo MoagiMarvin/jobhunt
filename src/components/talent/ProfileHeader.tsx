@@ -20,6 +20,7 @@ interface ProfileHeaderProps {
     onEdit?: () => void;
     onDownloadResume?: () => void;
     downloadAction?: React.ReactNode;
+    targetRoles?: string[];
     isOwner?: boolean;
 }
 
@@ -40,6 +41,7 @@ export default function ProfileHeader({
     onEdit,
     onDownloadResume,
     downloadAction,
+    targetRoles = [],
     isOwner = true
 }: ProfileHeaderProps) {
     const [isMounted, setIsMounted] = useState(false);
@@ -83,7 +85,20 @@ export default function ProfileHeader({
                         <div className="flex items-start justify-between gap-4 mb-3">
                             <div>
                                 <h1 className="text-xl font-extrabold text-slate-900 mb-0.5 tracking-tight">{name}</h1>
-                                <p className="text-sm text-slate-500 font-semibold leading-relaxed">{headline}</p>
+                                <p className="text-sm text-slate-500 font-semibold leading-relaxed mb-3">{headline}</p>
+
+                                {targetRoles.length > 0 && (
+                                    <div className="flex flex-wrap gap-2">
+                                        {targetRoles.map((role, idx) => (
+                                            <span
+                                                key={idx}
+                                                className="px-2.5 py-1 bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-wider rounded-lg border border-blue-100 shadow-sm"
+                                            >
+                                                Seeking {role}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div className="flex flex-col gap-2">
                                 {isOwner && onEdit && (

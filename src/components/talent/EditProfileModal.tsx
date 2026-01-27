@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText } from "lucide-react";
+import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText, Sparkles } from "lucide-react";
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -18,6 +18,7 @@ interface EditProfileModalProps {
         github?: string;
         linkedin?: string;
         portfolio?: string;
+        targetRoles?: string[];
     };
 }
 
@@ -180,6 +181,79 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                             </div>
                         </div>
 
+
+                        {/* Career Intent Section */}
+                        <div className="col-span-2 pt-4 border-t border-slate-100 mt-2">
+                            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-blue-600" />
+                                Career Intent & Target Roles
+                            </h3>
+                            <p className="text-xs text-slate-500 mb-4 font-medium italic">What roles are you looking for next? (Max: 3)</p>
+
+                            {/* Current Roles */}
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                {(formData.targetRoles || []).map((role: string, idx: number) => (
+                                    <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-xs font-bold transition-all group">
+                                        <span>{role}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const updated = (formData.targetRoles || []).filter((_: any, i: number) => i !== idx);
+                                                setFormData({ ...formData, targetRoles: updated });
+                                            }}
+                                            className="text-blue-300 hover:text-red-500"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                ))}
+                                {(formData.targetRoles || []).length === 0 && (
+                                    <p className="text-xs text-slate-400">No target roles added yet.</p>
+                                )}
+                            </div>
+
+                            {/* Add Role Input */}
+                            {(formData.targetRoles || []).length < 3 && (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        id="new-role-input"
+                                        placeholder="e.g. Junior Web Developer"
+                                        className="flex-1 px-4 py-2 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-blue-500 focus:bg-white outline-none text-sm font-medium transition-all"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+                                                const val = (e.target as HTMLInputElement).value.trim();
+                                                if (val) {
+                                                    setFormData({
+                                                        ...formData,
+                                                        targetRoles: [...(formData.targetRoles || []), val]
+                                                    });
+                                                    (e.target as HTMLInputElement).value = '';
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const input = document.getElementById('new-role-input') as HTMLInputElement;
+                                            const val = input.value.trim();
+                                            if (val) {
+                                                setFormData({
+                                                    ...formData,
+                                                    targetRoles: [...(formData.targetRoles || []), val]
+                                                });
+                                                input.value = '';
+                                            }
+                                        }}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 transition-all shadow-sm"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Logistics Section */}
                         <div className="col-span-2 space-y-4 pt-4 border-t border-slate-100">

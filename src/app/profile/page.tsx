@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School } from "lucide-react";
+import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School, MessageSquare, Layers } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -42,7 +42,7 @@ export default function ProfilePage() {
         summary: ""
     });
 
-    const [skills, setSkills] = useState<(string | TalentSkill)[]>([]);
+    const [skills, setSkills] = useState<TalentSkill[]>([]);
 
     const [languages, setLanguages] = useState<{ language: string; proficiency: string }[]>([]);
 
@@ -61,6 +61,7 @@ export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
     const [isEditSummaryOpen, setIsEditSummaryOpen] = useState(false);
     const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
+    const [addSkillMode, setAddSkillMode] = useState<"technical" | "soft">("technical");
     const [isAddLanguageOpen, setIsAddLanguageOpen] = useState(false); // New Language Modal State
     const [newLanguage, setNewLanguage] = useState({ language: "", proficiency: "Fluent" });
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
@@ -213,7 +214,9 @@ export default function ProfilePage() {
                 if (dbSkills) {
                     setSkills(dbSkills.map(s => ({
                         name: s.name,
-                        minYears: s.min_experience_years || 0
+                        minYears: s.min_experience_years || 0,
+                        category: s.category || (s.is_soft_skill ? "Soft Skills" : "Other Skills"),
+                        isSoftSkill: s.is_soft_skill || s.category === "Soft Skills"
                     })));
                 }
 
@@ -336,6 +339,7 @@ export default function ProfilePage() {
                             references,
                             matricData
                         }} />}
+                        targetRoles={user.targetRoles}
                         isOwner={true}
                     />
                 </div>
@@ -388,82 +392,6 @@ export default function ProfilePage() {
                     ) : (
                         <div className="text-center py-8 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
                             <p className="text-slate-400 text-sm italic">No professional summary added yet. Click 'Add Summary' above to get started.</p>
-                        </div>
-                    )}
-                </div>
-
-                {/* Target Roles Section */}
-                <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg">
-                            <Sparkles className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <h2 className="text-lg font-bold text-primary">Targeting Roles</h2>
-                            <p className="text-xs text-slate-500 font-medium">What I'm looking for next (Max: 3)</p>
-                        </div>
-                    </div>
-
-                    {/* Current Roles with Delete */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        {(user.targetRoles || []).map((role: string, idx: number) => (
-                            <div
-                                key={idx}
-                                className="px-4 py-2 bg-blue-50 rounded-xl border border-blue-200 text-blue-600 text-sm font-bold shadow-sm flex items-center gap-2 group"
-                            >
-                                <span>{role}</span>
-                                <button
-                                    onClick={() => {
-                                        const updatedRoles = user.targetRoles.filter((_: string, i: number) => i !== idx);
-                                        const updatedUser = { ...user, targetRoles: updatedRoles };
-                                        setUser(updatedUser);
-                                        localStorage.setItem("user_basic_info", JSON.stringify(updatedUser));
-                                    }}
-                                    className="text-blue-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                        ))}
-                        {(!user.targetRoles || user.targetRoles.length === 0) && (
-                            <p className="text-slate-600 font-bold uppercase tracking-wider">No target roles added yet</p>
-                        )}
-                    </div>
-
-                    {/* Add New Role */}
-                    {(user.targetRoles || []).length < 3 && (
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                placeholder="e.g. Full Stack Developer"
-                                value={newTargetRole}
-                                onChange={(e) => setNewTargetRole(e.target.value)}
-                                onKeyPress={(e) => {
-                                    if (e.key === "Enter" && newTargetRole.trim()) {
-                                        const updatedRoles = [...(user.targetRoles || []), newTargetRole.trim()];
-                                        const updatedUser = { ...user, targetRoles: updatedRoles };
-                                        setUser(updatedUser);
-                                        localStorage.setItem("user_basic_info", JSON.stringify(updatedUser));
-                                        setNewTargetRole("");
-                                    }
-                                }}
-                                className="flex-1 px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
-                            />
-                            <button
-                                onClick={() => {
-                                    if (newTargetRole.trim()) {
-                                        const updatedRoles = [...(user.targetRoles || []), newTargetRole.trim()];
-                                        const updatedUser = { ...user, targetRoles: updatedRoles };
-                                        setUser(updatedUser);
-                                        localStorage.setItem("user_basic_info", JSON.stringify(updatedUser));
-                                        setNewTargetRole("");
-                                    }
-                                }}
-                                disabled={!newTargetRole.trim()}
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold rounded-lg transition-all text-sm"
-                            >
-                                <Plus className="w-4 h-4" />
-                            </button>
                         </div>
                     )}
                 </div>
@@ -543,77 +471,131 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* Skills Section (Simplified) */}
-                        <div className="space-y-4">
+                        {/* 1. Technical Skills Section */}
+                        <div className="space-y-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Skills</h2>
+                                    <Layers className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Technical Skills</h2>
                                 </div>
                                 <button
-                                    onClick={() => setIsAddSkillOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                    onClick={() => {
+                                        setAddSkillMode("technical");
+                                        setIsAddSkillOpen(true);
+                                    }}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
                                 >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Skill
+                                    <Plus className="w-4 h-4" />
+                                    Add Technical Skill
                                 </button>
                             </div>
 
-                            <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
-                                <div className="flex flex-col space-y-3">
-                                    {[...skills].reverse().slice(0, isSkillsExpanded ? undefined : 2).map((skill: any, idx) => {
-                                        const name = typeof skill === "string" ? skill : skill.name;
-                                        const minYears = typeof skill === "string" ? undefined : skill.minYears;
+                            {skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").length === 0 ? (
+                                <div className="text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
+                                    <Layers className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                                    <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No technical skills added yet.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-8">
+                                    {(() => {
+                                        const technicalGrouped = skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, any[]>, skill: any) => {
+                                            const cat = skill.category || "Other Skills";
+                                            if (!acc[cat]) acc[cat] = [];
+                                            acc[cat].push(skill);
+                                            return acc;
+                                        }, {} as Record<string, any[]>);
 
-                                        // Reverse index for deletion
-                                        const originalIdx = skills.length - 1 - idx;
-
-                                        return (
-                                            <div
-                                                key={idx}
-                                                className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-xl transition-all group/skill border border-slate-100 hover:border-blue-100"
-                                            >
-                                                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0 shadow-sm shadow-blue-200" />
-                                                <div className="flex-1 flex flex-col gap-1">
-                                                    <span className="text-sm font-bold text-slate-800 leading-relaxed">
-                                                        {name}
-                                                    </span>
-                                                    {(minYears) && (
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-bold uppercase">
-                                                                {minYears ? `${minYears}+ yrs` : null}
-                                                            </span>
-                                                        </div>
-                                                    )}
+                                        return Object.entries(technicalGrouped).map(([category, categorySkills], catIdx) => (
+                                            <div key={catIdx} className="space-y-3">
+                                                <h4 className="text-xs font-bold text-slate-500 pl-1 uppercase tracking-wider">{category}</h4>
+                                                <div className="flex flex-wrap gap-2 p-6 bg-white rounded-2xl border-2 border-slate-100 shadow-sm">
+                                                    {categorySkills.map((skill, idx) => {
+                                                        const originalIdx = skills.indexOf(skill);
+                                                        return (
+                                                            <div
+                                                                key={idx}
+                                                                className="group flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all"
+                                                            >
+                                                                <span className="text-sm font-bold text-slate-700">{skill.name}</span>
+                                                                {(skill.minYears ?? 0) > 0 && (
+                                                                    <span className="text-[10px] text-blue-600 font-black bg-blue-100/50 px-1.5 rounded tracking-tighter">
+                                                                        {skill.minYears}Y
+                                                                    </span>
+                                                                )}
+                                                                <button
+                                                                    onClick={async () => {
+                                                                        if (currentUserId) {
+                                                                            await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                        }
+                                                                        const updated = skills.filter((_, i) => i !== originalIdx);
+                                                                        setSkills(updated);
+                                                                    }}
+                                                                    className="text-slate-300 hover:text-red-500 transition-colors"
+                                                                >
+                                                                    <X className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
+                                            </div>
+                                        ));
+                                    })()}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 2. Soft Skills Section */}
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <MessageSquare className="w-5 h-5 text-blue-600" />
+                                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Soft Skills</h2>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setAddSkillMode("soft");
+                                        setIsAddSkillOpen(true);
+                                    }}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    Add Soft Skill
+                                </button>
+                            </div>
+
+                            {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length === 0 ? (
+                                <div className="text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
+                                    <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                                    <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No soft skills added yet.</p>
+                                </div>
+                            ) : (
+                                <div className="grid gap-3">
+                                    {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").map((skill, idx) => {
+                                        const originalIdx = skills.indexOf(skill);
+                                        return (
+                                            <div key={idx} className="group relative p-4 bg-white rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-md transition-all flex items-start gap-3">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                                                <p className="text-sm text-slate-700 leading-relaxed font-medium flex-1">
+                                                    {skill.name}
+                                                </p>
                                                 <button
-                                                    onClick={() => {
+                                                    onClick={async () => {
+                                                        if (currentUserId) {
+                                                            await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                        }
                                                         const updated = skills.filter((_, i) => i !== originalIdx);
                                                         setSkills(updated);
-                                                        localStorage.setItem("user_skills_list", JSON.stringify(updated));
                                                     }}
-                                                    className="text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover/skill:opacity-100 p-1 hover:bg-red-50 rounded-lg"
+                                                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all"
                                                 >
                                                     <X className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         );
                                     })}
-                                    {skills.length > 2 && (
-                                        <button
-                                            onClick={() => setIsSkillsExpanded(!isSkillsExpanded)}
-                                            className="w-full py-2 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
-                                        >
-                                            {isSkillsExpanded ? "Show Less" : `Show More (${skills.length - 2} more)`}
-                                        </button>
-                                    )}
-                                    {skills.length === 0 && (
-                                        <div className="text-center py-8 text-slate-600 font-bold uppercase tracking-wider border-2 border-dashed border-slate-100 rounded-xl">
-                                            No skills showcased yet.
-                                        </div>
-                                    )}
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Languages Section (New) */}
@@ -815,26 +797,45 @@ export default function ProfilePage() {
                 />
                 <AddSkillModal
                     isOpen={isAddSkillOpen}
+                    initialMode={addSkillMode}
                     onClose={() => setIsAddSkillOpen(false)}
-                    onAdd={async (newSkill: any) => {
+                    onAdd={async (newSkills: any[]) => {
                         if (!currentUserId) return;
                         try {
+                            const insertData = newSkills.map(s => ({
+                                user_id: currentUserId,
+                                name: s.name,
+                                min_experience_years: s.minYears || 0,
+                                category: s.category || "Other Skills",
+                                is_soft_skill: s.isSoftSkill || false
+                            }));
+
+                            console.log("Attempting to insert skills:", insertData);
+
                             const { error } = await supabase
                                 .from("skills")
-                                .insert({
-                                    user_id: currentUserId,
-                                    name: typeof newSkill === 'string' ? newSkill : newSkill.name,
-                                    min_experience_years: typeof newSkill === 'string' ? 1 : newSkill.minYears,
-                                });
-                            if (error) throw error;
+                                .insert(insertData);
 
-                            const updated = [...skills, newSkill];
+                            if (error) {
+                                console.error("Supabase Error:", error);
+                                throw error;
+                            }
+
+                            // Format the new skills for the local state to match the DB-fetched structure
+                            const formattedNewSkills = newSkills.map(s => ({
+                                name: s.name,
+                                minYears: s.minYears || 0,
+                                category: s.category || (s.isSoftSkill ? "Soft Skills" : "Other Skills"),
+                                isSoftSkill: s.isSoftSkill || false
+                            }));
+
+                            const updated = [...skills, ...formattedNewSkills];
                             setSkills(updated);
                             setIsAddSkillOpen(false);
-                            alert("Skill added!");
-                        } catch (error) {
-                            console.error("Error adding skill:", error);
-                            alert("Failed to add skill.");
+                            alert(`${newSkills.length > 1 ? newSkills.length + " skills" : "Skill"} added successfully!`);
+                        } catch (error: any) {
+                            console.error("Error adding skills:", error);
+                            alert(`Failed to add skills. ${error.message || "Please check your database schema."}`);
                         }
                     }}
                 />
@@ -1125,6 +1126,6 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-        </main>
+        </main >
     );
 }
