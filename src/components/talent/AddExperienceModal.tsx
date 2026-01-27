@@ -104,11 +104,20 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
         const startStr = `${startDate.month.slice(0, 3)} ${startDate.year}`;
         const endStr = isCurrent ? "Present" : `${endDate.month.slice(0, 3)} ${endDate.year}`;
 
+        const startMonthIndex = months.indexOf(startDate.month) + 1;
+        const formattedStartDate = `${startDate.year}-${startMonthIndex.toString().padStart(2, '0')}-01`;
+
+        const endMonthIndex = months.indexOf(endDate.month) + 1;
+        const formattedEndDate = isCurrent ? null : `${endDate.year}-${endMonthIndex.toString().padStart(2, '0')}-01`;
+
         onAdd({
             ...formData,
             id: initialData?.id,
             description: finalAchievements.join('\n'),
-            duration: `${startStr} - ${endStr}`
+            duration: `${startStr} - ${endStr}`,
+            start_date: formattedStartDate,
+            end_date: formattedEndDate,
+            is_current: isCurrent
         });
 
         if (!initialData) {

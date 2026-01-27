@@ -1086,8 +1086,9 @@ export default function ProfilePage() {
                                 company: newExp.company,
                                 position: newExp.role,
                                 description: newExp.description,
-                                start_date: newExp.duration.split(' - ')[0], // Best effort to extract start date
-                                is_current: newExp.duration.includes("Present"),
+                                start_date: newExp.start_date,
+                                end_date: newExp.end_date,
+                                is_current: newExp.is_current,
                             };
 
                             if (newExp.id) {
@@ -1114,9 +1115,9 @@ export default function ProfilePage() {
 
                             setIsAddExperienceOpen(false);
                             setEditingExperience(null);
-                        } catch (error) {
-                            console.error("Error saving experience:", error);
-                            alert("Failed to save experience.");
+                        } catch (error: any) {
+                            console.error("Error saving experience:", JSON.stringify(error, null, 2));
+                            alert(`Failed to save experience: ${error.message || 'Check console for details'}`);
                         }
                     }}
                 />

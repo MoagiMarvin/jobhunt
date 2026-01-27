@@ -23,7 +23,13 @@ export default function ExperienceCard({
     isOwner = true
 }: ExperienceCardProps) {
     const [showMenu, setShowMenu] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const achievements = description.split('\n').filter(line => line.trim());
+    const initialShown = 3;
+    const hasMore = achievements.length > initialShown;
+    const displayedAchievements = isExpanded ? achievements : achievements.slice(0, initialShown);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -106,14 +112,23 @@ export default function ExperienceCard({
 
                     <div className="pt-1 space-y-1.5">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Key Impact & Responsibilities</span>
-                        {description.split('\n').filter(line => line.trim()).map((line, idx) => (
-                            <div key={idx} className="flex gap-2 text-xs text-slate-600 leading-relaxed italic">
+                        {displayedAchievements.map((line, idx) => (
+                            <div key={idx} className="flex gap-2 text-xs text-slate-600 leading-relaxed italic animate-in fade-in slide-in-from-top-1 duration-200">
                                 <div className="w-1 h-1 rounded-full bg-blue-300 mt-1.5 shrink-0" />
                                 <p>
                                     {line}
                                 </p>
                             </div>
                         ))}
+
+                        {hasMore && (
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="text-[10px] font-bold text-blue-600 hover:text-blue-700 mt-1 flex items-center gap-1 transition-colors uppercase tracking-tight w-fit"
+                            >
+                                {isExpanded ? 'Show Less' : `Show ${achievements.length - initialShown} More...`}
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
