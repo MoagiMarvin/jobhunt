@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Save, Sparkles, Layers, MessageSquare, Plus, Trash2 } from "lucide-react";
+import { X, Save, Layers, MessageSquare, Plus } from "lucide-react";
 
 export type TalentSkill = {
     name: string;
@@ -115,8 +115,12 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
             <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-blue-600" />
-                        Add Skills
+                        {mode === "technical" ? (
+                            <Layers className="w-5 h-5 text-blue-600" />
+                        ) : (
+                            <MessageSquare className="w-5 h-5 text-blue-600" />
+                        )}
+                        {mode === "technical" ? "Add Technical Skills" : "Add Soft Skills"}
                     </h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
                         <X className="w-6 h-6" />
@@ -124,29 +128,6 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
                 </div>
 
                 <div className="p-6">
-                    {/* Mode Toggle */}
-                    <div className="flex p-1 bg-slate-100 rounded-xl mb-6">
-                        <button
-                            onClick={() => setMode("technical")}
-                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${mode === "technical"
-                                ? "bg-white text-blue-600 shadow-sm"
-                                : "text-slate-500 hover:text-slate-700"
-                                }`}
-                        >
-                            <Layers className="w-4 h-4" />
-                            Technical Skill
-                        </button>
-                        <button
-                            onClick={() => setMode("soft")}
-                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all ${mode === "soft"
-                                ? "bg-white text-blue-600 shadow-sm"
-                                : "text-slate-500 hover:text-slate-700"
-                                }`}
-                        >
-                            <MessageSquare className="w-4 h-4" />
-                            Soft Skill
-                        </button>
-                    </div>
 
                     {mode === "technical" ? (
                         <div className="space-y-6 animate-in fade-in slide-in-from-left-2 duration-300">
