@@ -55,9 +55,17 @@ export default function ExperienceCard({
                         {company}
                     </div>
 
-                    <p className="text-xs text-slate-600 leading-relaxed pt-1 italic">
-                        <span className="font-bold text-slate-800 not-italic">Key Impact:</span> {description}
-                    </p>
+                    <div className="pt-1 space-y-1.5">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Key Impact & Responsibilities</span>
+                        {description.split('\n').filter(line => line.trim()).map((line, idx) => (
+                            <div key={idx} className="flex gap-2 text-xs text-slate-600 leading-relaxed italic">
+                                <div className="w-1 h-1 rounded-full bg-blue-300 mt-1.5 shrink-0" />
+                                <p>
+                                    {line}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
