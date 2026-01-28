@@ -75,6 +75,7 @@ export default function ProfilePage() {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
+    const [isSoftSkillsExpanded, setIsSoftSkillsExpanded] = useState(false);
     const [isSkillsExpanded, setIsSkillsExpanded] = useState(false);
 
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
@@ -521,51 +522,56 @@ export default function ProfilePage() {
                                     <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No technical skills added yet.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-8">
-                                    {(() => {
-                                        const technicalGrouped = skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, any[]>, skill: any) => {
-                                            const cat = skill.category || "Other Skills";
-                                            if (!acc[cat]) acc[cat] = [];
-                                            acc[cat].push(skill);
-                                            return acc;
-                                        }, {} as Record<string, any[]>);
+                                <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="space-y-6">
+                                        {(() => {
+                                            const technicalGrouped = skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, any[]>, skill: any) => {
+                                                const cat = skill.category || "Other Skills";
+                                                if (!acc[cat]) acc[cat] = [];
+                                                acc[cat].push(skill);
+                                                return acc;
+                                            }, {} as Record<string, any[]>);
 
-                                        return Object.entries(technicalGrouped).map(([category, categorySkills], catIdx) => (
-                                            <div key={catIdx} className="space-y-3">
-                                                <h4 className="text-xs font-bold text-slate-500 pl-1 uppercase tracking-wider">{category}</h4>
-                                                <div className="flex flex-wrap gap-2 p-6 bg-white rounded-2xl border-2 border-slate-100 shadow-sm">
-                                                    {categorySkills.map((skill, idx) => {
-                                                        const originalIdx = skills.indexOf(skill);
-                                                        return (
-                                                            <div
-                                                                key={idx}
-                                                                className="group flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all"
-                                                            >
-                                                                <span className="text-sm font-bold text-slate-700">{skill.name}</span>
-                                                                {(skill.minYears ?? 0) > 0 && (
-                                                                    <span className="text-[10px] text-blue-600 font-black bg-blue-100/50 px-1.5 rounded tracking-tighter">
-                                                                        {skill.minYears}Y
-                                                                    </span>
-                                                                )}
-                                                                <button
-                                                                    onClick={async () => {
-                                                                        if (currentUserId) {
-                                                                            await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                                        }
-                                                                        const updated = skills.filter((_, i) => i !== originalIdx);
-                                                                        setSkills(updated);
-                                                                    }}
-                                                                    className="text-slate-300 hover:text-red-500 transition-colors"
+                                            return Object.entries(technicalGrouped).map(([category, categorySkills], catIdx) => (
+                                                <div key={catIdx} className={catIdx > 0 ? "pt-6 border-t border-slate-50" : ""}>
+                                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                        {category}
+                                                    </h4>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {categorySkills.map((skill, idx) => {
+                                                            const originalIdx = skills.indexOf(skill);
+                                                            return (
+                                                                <div
+                                                                    key={idx}
+                                                                    className="group flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all font-medium"
                                                                 >
-                                                                    <X className="w-3.5 h-3.5" />
-                                                                </button>
-                                                            </div>
-                                                        );
-                                                    })}
+                                                                    <span className="text-sm text-slate-700">{skill.name}</span>
+                                                                    {(skill.minYears ?? 0) > 0 && (
+                                                                        <span className="text-[10px] text-blue-600 font-black bg-blue-100/50 px-1.5 rounded tracking-tighter">
+                                                                            {skill.minYears}Y
+                                                                        </span>
+                                                                    )}
+                                                                    <button
+                                                                        onClick={async () => {
+                                                                            if (currentUserId) {
+                                                                                await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                            }
+                                                                            const updated = skills.filter((_, i) => i !== originalIdx);
+                                                                            setSkills(updated);
+                                                                        }}
+                                                                        className="text-slate-300 hover:text-red-500 transition-colors ml-1"
+                                                                    >
+                                                                        <X className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ));
-                                    })()}
+                                            ));
+                                        })()}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -595,30 +601,44 @@ export default function ProfilePage() {
                                     <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No soft skills added yet.</p>
                                 </div>
                             ) : (
-                                <div className="grid gap-3">
-                                    {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").map((skill, idx) => {
-                                        const originalIdx = skills.indexOf(skill);
-                                        return (
-                                            <div key={idx} className="group relative p-4 bg-white rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-md transition-all flex items-start gap-3">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
-                                                <p className="text-sm text-slate-700 leading-relaxed font-medium flex-1">
-                                                    {skill.name}
-                                                </p>
-                                                <button
-                                                    onClick={async () => {
-                                                        if (currentUserId) {
-                                                            await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                        }
-                                                        const updated = skills.filter((_, i) => i !== originalIdx);
-                                                        setSkills(updated);
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
+                                <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition-all">
+                                    <div className="space-y-3">
+                                        {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills")
+                                            .slice(0, isSoftSkillsExpanded ? undefined : 3)
+                                            .map((skill, idx) => {
+                                                const originalIdx = skills.indexOf(skill);
+                                                return (
+                                                    <div key={idx} className="group flex items-start -ml-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                                                        <div className="mt-2 mr-3 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                                                        <p className="text-sm text-slate-700 leading-relaxed font-medium flex-1">
+                                                            {skill.name}
+                                                        </p>
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (currentUserId) {
+                                                                    await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                }
+                                                                const updated = skills.filter((_, i) => i !== originalIdx);
+                                                                setSkills(updated);
+                                                            }}
+                                                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded transition-all"
+                                                        >
+                                                            <X className="w-3.5 h-3.5" />
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                    {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length > 3 && (
+                                        <div className="mt-4 pt-4 border-t border-slate-50">
+                                            <button
+                                                onClick={() => setIsSoftSkillsExpanded(!isSoftSkillsExpanded)}
+                                                className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                                            >
+                                                {isSoftSkillsExpanded ? "Show Less" : `Show ${skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length - 3} More`}
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
