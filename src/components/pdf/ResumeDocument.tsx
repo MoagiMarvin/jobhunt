@@ -303,9 +303,9 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                             <View key={idx} style={styles.itemContainer}>
                                 <Text style={styles.itemTitle}>{project.title}</Text>
                                 <Text style={styles.bulletPoint}>• {project.description}</Text>
-                                {project.technologies && (
+                                {project.technologies && project.technologies.length > 0 && (
                                     <Text style={[styles.itemDate, { marginLeft: 10, marginTop: 2 }]}>
-                                        Built with: {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
+                                        Tools Used: {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
                                     </Text>
                                 )}
                             </View>

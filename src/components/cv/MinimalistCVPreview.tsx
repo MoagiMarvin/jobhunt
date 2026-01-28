@@ -167,9 +167,9 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                                 <span>•</span>
                                 <span className="flex-1">{project.description}</span>
                             </p>
-                            {project.technologies && (
+                            {project.technologies && project.technologies.length > 0 && (
                                 <p className="text-xs font-bold text-black ml-4 mt-0.5">
-                                    Built with: {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
+                                    Tools Used: {Array.isArray(project.technologies) ? project.technologies.join(", ") : project.technologies}
                                 </p>
                             )}
                         </div>
