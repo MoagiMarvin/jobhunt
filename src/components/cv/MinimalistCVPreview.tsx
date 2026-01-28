@@ -23,6 +23,28 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
     const projectsArr = info.projectsList || info.projects || [];
     const matricData = info.matricData || info.matric;
 
+    // Helper to format raw dates (e.g., 2024-01-01) to MMM YYYY (e.g., Jan 2024)
+    const formatDate = (dateStr: string) => {
+        if (!dateStr || dateStr.toLowerCase().includes("present")) return dateStr;
+        // Check if it's already in MMM YYYY format
+        if (/^[a-zA-Z]{3} \d{4}$/.test(dateStr)) return dateStr;
+
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
+            return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        } catch (e) {
+            return dateStr;
+        }
+    };
+
+    // Helper to format a duration string (e.g., "2024-01-01 - 2024-06-01")
+    const formatDuration = (duration: string) => {
+        if (!duration) return "";
+        const parts = duration.split(" - ");
+        return parts.map(p => formatDate(p.trim())).join(" - ");
+    };
+
     return (
         <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm border border-slate-300 p-10 space-y-4 text-left">
             {/* Header */}
@@ -136,7 +158,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                             <div key={i} className="mb-3">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="font-bold text-xs text-black">{exp.role || exp.title}</h3>
-                                    <span className="text-xs font-bold text-black">{exp.duration || exp.dates}</span>
+                                    <span className="text-xs font-bold text-black">{formatDuration(exp.duration || exp.dates)}</span>
                                 </div>
                                 <p className="text-xs text-black mb-1">{exp.company}</p>
                                 <ul className="list-none space-y-1">

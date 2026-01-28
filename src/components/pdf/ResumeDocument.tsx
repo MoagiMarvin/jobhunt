@@ -178,6 +178,28 @@ export const ResumeDocument = ({ data }: { data: any }) => {
     const template = info.template || 'modern';
     const styles = getStyles(template);
 
+    // Helper to format raw dates (e.g., 2024-01-01) to MMM YYYY (e.g., Jan 2024)
+    const formatDate = (dateStr: string) => {
+        if (!dateStr || dateStr.toLowerCase().includes("present")) return dateStr;
+        // Check if it's already in MMM YYYY format
+        if (/^[a-zA-Z]{3} \d{4}$/.test(dateStr)) return dateStr;
+
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
+            return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        } catch (e) {
+            return dateStr;
+        }
+    };
+
+    // Helper to format a duration string (e.g., "2024-01-01 - 2024-06-01")
+    const formatDuration = (duration: string) => {
+        if (!duration) return "";
+        const parts = duration.split(" - ");
+        return parts.map(p => formatDate(p.trim())).join(" - ");
+    };
+
     return (
         <Document title={`${user?.name || 'Resume'} - Resume`}>
             <Page size="A4" style={styles.page}>
@@ -283,7 +305,7 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                                 <View key={idx} style={styles.itemContainer}>
                                     <View style={styles.itemHeader}>
                                         <Text style={styles.itemTitle}>{exp.role || exp.title}</Text>
-                                        <Text style={styles.itemDate}>{exp.duration || exp.dates}</Text>
+                                        <Text style={styles.itemDate}>{formatDuration(exp.duration || exp.dates)}</Text>
                                     </View>
                                     <Text style={styles.itemSubtitle}>{exp.company}</Text>
                                     {bullets.map((bullet: string, j: number) => (
