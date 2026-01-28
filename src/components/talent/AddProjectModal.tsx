@@ -102,7 +102,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                         <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
                             <Sparkles className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                             <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-                                <span className="font-bold text-blue-600">Pro Tip:</span> Upload a <span className="underline italic">GIF</span> of your app in action to show "Proof of Life". It catches recruiter eyes 3x faster!
+                                <span className="font-bold text-blue-600">Pro Tip:</span> Upload a photo of your work, a screenshot of a document, or a relevant image. Visuals capture attention 3x faster!
                             </p>
                         </div>
                     </div>
@@ -110,25 +110,25 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                     <div className="grid md:grid-cols-2 gap-6">
                         {/* Title */}
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700">Project Title</label>
+                            <label className="text-sm font-bold text-slate-700">Project / Achievement Title</label>
                             <input
                                 required
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                placeholder="e.g. AI Content Generator"
+                                placeholder="e.g. Marketing Campaign, Community Event, Sales Report"
                                 className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-medium"
                             />
                         </div>
 
-                        {/* Tech Stack */}
+                        {/* Tech Stack -> Key Skills/Tools */}
                         <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700">Tech Stack (comma separated)</label>
+                            <label className="text-sm font-bold text-slate-700">Key Skills / Tools Used</label>
                             <input
                                 type="text"
                                 value={formData.technologies}
                                 onChange={(e) => setFormData({ ...formData, technologies: e.target.value })}
-                                placeholder="React, Node.js, Tailwind"
+                                placeholder="e.g. Excel, Public Speaking, Canva, React"
                                 className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-medium"
                             />
                         </div>
@@ -142,17 +142,17 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                             rows={2}
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            placeholder="What did you build and why?"
+                            placeholder="Briefly describe what you did and the impact it had."
                             className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none text-sm leading-relaxed font-medium"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-6">
-                        {/* Live Link */}
+                        {/* Live Link -> Main Link */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                 <LinkIcon className="w-4 h-4 text-blue-600" />
-                                Live Demo Hub
+                                Project Link
                             </label>
                             <input
                                 type="url"
@@ -163,17 +163,17 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                             />
                         </div>
 
-                        {/* Github Link */}
+                        {/* Github Link -> Additional Resource */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                <Github className="w-4 h-4 text-slate-600" />
-                                Source Code
+                                <LinkIcon className="w-4 h-4 text-slate-600" />
+                                Additional Resource
                             </label>
                             <input
                                 type="url"
                                 value={formData.github_url}
                                 onChange={(e) => setFormData({ ...formData, github_url: e.target.value })}
-                                placeholder="https://github.com/..."
+                                placeholder="https://..."
                                 className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-medium"
                             />
                         </div>
