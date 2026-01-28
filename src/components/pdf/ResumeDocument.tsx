@@ -224,28 +224,46 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 )}
 
                 {/* Technical Skills */}
-                {skills.length > 0 && (
+                {skills.filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills')).length > 0 && (
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Skills & Expertise</Text>
+                        <Text style={styles.sectionTitle}>Technical Skills</Text>
                         <View style={{ marginTop: 2 }}>
-                            {Object.entries(skills.reduce((acc: any, skill: any) => {
-                                // Normalize skill object
-                                const skillObj = typeof skill === 'string'
-                                    ? { name: skill, category: "Other" }
-                                    : skill;
+                            {Object.entries(skills
+                                .filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills'))
+                                .reduce((acc: any, skill: any) => {
+                                    // Normalize skill object
+                                    const skillObj = typeof skill === 'string'
+                                        ? { name: skill, category: "Other" }
+                                        : skill;
 
-                                const category = skillObj.category || "Other";
-                                if (!acc[category]) acc[category] = [];
-                                acc[category].push(skillObj.name || skillObj.skill);
-                                return acc;
-                            }, {})).map(([category, categorySkills]: [string, any], idx: number) => (
-                                <View key={idx} style={styles.skillRow}>
-                                    <Text style={[styles.skillBulletText, { width: 'auto', marginRight: 4, fontWeight: 'bold' }]}>{category}:</Text>
-                                    <Text style={styles.skillItemText}>
-                                        {categorySkills.join(", ")}
-                                    </Text>
-                                </View>
-                            ))}
+                                    const category = skillObj.category || "Other";
+                                    if (!acc[category]) acc[category] = [];
+                                    acc[category].push(skillObj.name || skillObj.skill);
+                                    return acc;
+                                }, {})).map(([category, categorySkills]: [string, any], idx: number) => (
+                                    <View key={idx} style={styles.skillRow}>
+                                        <Text style={[styles.skillBulletText, { width: 'auto', marginRight: 4, fontWeight: 'bold' }]}>{category}:</Text>
+                                        <Text style={styles.skillItemText}>
+                                            {categorySkills.join(", ")}
+                                        </Text>
+                                    </View>
+                                ))}
+                        </View>
+                    </View>
+                )}
+
+                {/* Soft Skills */}
+                {skills.filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills').length > 0 && (
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Soft Skills</Text>
+                        <View style={{ marginTop: 2, flexDirection: 'row', flexWrap: 'wrap' }}>
+                            <Text style={styles.skillItemText}>
+                                {skills
+                                    .filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills')
+                                    .map((s: any) => typeof s === 'string' ? s : (s.name || s.skill))
+                                    .join(", ")
+                                }
+                            </Text>
                         </View>
                     </View>
                 )}

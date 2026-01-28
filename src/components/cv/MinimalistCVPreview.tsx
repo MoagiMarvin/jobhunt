@@ -70,29 +70,47 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             )}
 
 
-            {/* Skills */}
-            {skills.length > 0 && (
+            {/* Technical Skills - Grouped by Category */}
+            {skills.filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills')).length > 0 && (
                 <div>
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
-                        Skills &amp; Expertise
+                        Technical Skills
                     </h2>
                     <div className="space-y-1">
-                        {Object.entries(skills.reduce((acc: any, skill: any) => {
-                            // Normalize skill object
-                            const skillObj = typeof skill === 'string'
-                                ? { name: skill, category: "Other" }
-                                : skill;
+                        {Object.entries(skills
+                            .filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills'))
+                            .reduce((acc: any, skill: any) => {
+                                // Normalize skill object
+                                const skillObj = typeof skill === 'string'
+                                    ? { name: skill, category: "Other" }
+                                    : skill;
 
-                            const category = skillObj.category || "Other";
-                            if (!acc[category]) acc[category] = [];
-                            acc[category].push(skillObj.name || skillObj.skill);
-                            return acc;
-                        }, {})).map(([category, categorySkills]: [string, any], i: number) => (
-                            <div key={i} className="text-xs text-black">
-                                <span className="font-bold">{category}: </span>
-                                <span>{categorySkills.join(", ")}</span>
-                            </div>
-                        ))}
+                                const category = skillObj.category || "Other";
+                                if (!acc[category]) acc[category] = [];
+                                acc[category].push(skillObj.name || skillObj.skill);
+                                return acc;
+                            }, {})).map(([category, categorySkills]: [string, any], i: number) => (
+                                <div key={i} className="text-xs text-black">
+                                    <span className="font-bold">{category}: </span>
+                                    <span>{categorySkills.join(", ")}</span>
+                                </div>
+                            ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Soft Skills - Separated */}
+            {skills.filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills').length > 0 && (
+                <div>
+                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                        Soft Skills
+                    </h2>
+                    <div className="text-xs text-black">
+                        {skills
+                            .filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills')
+                            .map((s: any) => typeof s === 'string' ? s : (s.name || s.skill))
+                            .join(", ")
+                        }
                     </div>
                 </div>
             )}
