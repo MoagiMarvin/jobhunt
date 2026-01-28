@@ -228,11 +228,21 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Skills & Expertise</Text>
                         <View style={{ marginTop: 2 }}>
-                            {skills.map((s: any, idx: number) => (
+                            {Object.entries(skills.reduce((acc: any, skill: any) => {
+                                // Normalize skill object
+                                const skillObj = typeof skill === 'string'
+                                    ? { name: skill, category: "Other" }
+                                    : skill;
+
+                                const category = skillObj.category || "Other";
+                                if (!acc[category]) acc[category] = [];
+                                acc[category].push(skillObj.name || skillObj.skill);
+                                return acc;
+                            }, {})).map(([category, categorySkills]: [string, any], idx: number) => (
                                 <View key={idx} style={styles.skillRow}>
-                                    <Text style={styles.skillBulletText}>•</Text>
+                                    <Text style={[styles.skillBulletText, { width: 'auto', marginRight: 4, fontWeight: 'bold' }]}>{category}:</Text>
                                     <Text style={styles.skillItemText}>
-                                        {typeof s === 'string' ? s : (s.name || s.skill)}
+                                        {categorySkills.join(", ")}
                                     </Text>
                                 </View>
                             ))}
@@ -244,20 +254,24 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 {experiences.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Professional Experience</Text>
-                        {experiences.map((exp: any, idx: number) => (
-                            <View key={idx} style={styles.itemContainer}>
-                                <View style={styles.itemHeader}>
-                                    <Text style={styles.itemTitle}>{exp.role || exp.title}</Text>
-                                    <Text style={styles.itemDate}>{exp.duration || exp.dates}</Text>
+                        {experiences.map((exp: any, idx: number) => {
+                            const bullets = (exp.bulletPoints && exp.bulletPoints.length > 0)
+                                ? exp.bulletPoints
+                                : (exp.description ? exp.description.split('\n').filter((line: string) => line.trim().length > 0) : []);
+
+                            return (
+                                <View key={idx} style={styles.itemContainer}>
+                                    <View style={styles.itemHeader}>
+                                        <Text style={styles.itemTitle}>{exp.role || exp.title}</Text>
+                                        <Text style={styles.itemDate}>{exp.duration || exp.dates}</Text>
+                                    </View>
+                                    <Text style={styles.itemSubtitle}>{exp.company}</Text>
+                                    {bullets.map((bullet: string, j: number) => (
+                                        <Text key={j} style={styles.bulletPoint}>• {bullet}</Text>
+                                    ))}
                                 </View>
-                                <Text style={styles.itemSubtitle}>{exp.company}</Text>
-                                {exp.bulletPoints ? exp.bulletPoints.map((bullet: string, j: number) => (
-                                    <Text key={j} style={styles.bulletPoint}>• {bullet}</Text>
-                                )) : exp.description && (
-                                    <Text style={styles.bulletPoint}>• {exp.description}</Text>
-                                )}
-                            </View>
-                        ))}
+                            );
+                        })}
                     </View>
                 )}
 

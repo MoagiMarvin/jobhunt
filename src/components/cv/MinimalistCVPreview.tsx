@@ -77,12 +77,20 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                         Skills &amp; Expertise
                     </h2>
                     <div className="space-y-1">
-                        {skills.map((skill: any, i: number) => (
-                            <div key={i} className="flex items-start gap-2">
-                                <span className="text-xs text-black w-2">•</span>
-                                <span className="text-xs text-black flex-1">
-                                    {typeof skill === 'string' ? skill : (skill.name || skill.skill)}
-                                </span>
+                        {Object.entries(skills.reduce((acc: any, skill: any) => {
+                            // Normalize skill object
+                            const skillObj = typeof skill === 'string'
+                                ? { name: skill, category: "Other" }
+                                : skill;
+
+                            const category = skillObj.category || "Other";
+                            if (!acc[category]) acc[category] = [];
+                            acc[category].push(skillObj.name || skillObj.skill);
+                            return acc;
+                        }, {})).map(([category, categorySkills]: [string, any], i: number) => (
+                            <div key={i} className="text-xs text-black">
+                                <span className="font-bold">{category}: </span>
+                                <span>{categorySkills.join(", ")}</span>
                             </div>
                         ))}
                     </div>
@@ -96,28 +104,30 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Professional Experience
                     </h2>
-                    {experiences.map((exp: any, i: number) => (
-                        <div key={i} className="mb-3">
-                            <div className="flex justify-between items-baseline">
-                                <h3 className="font-bold text-xs text-black">{exp.role || exp.title}</h3>
-                                <span className="text-xs font-bold text-black">{exp.duration || exp.dates}</span>
+                    {experiences.map((exp: any, i: number) => {
+                        // Determine bullets: prefer bulletPoints array, fallback to description split by newline
+                        const bullets = (exp.bulletPoints && exp.bulletPoints.length > 0)
+                            ? exp.bulletPoints
+                            : (exp.description ? exp.description.split('\n').filter((line: string) => line.trim().length > 0) : []);
+
+                        return (
+                            <div key={i} className="mb-3">
+                                <div className="flex justify-between items-baseline">
+                                    <h3 className="font-bold text-xs text-black">{exp.role || exp.title}</h3>
+                                    <span className="text-xs font-bold text-black">{exp.duration || exp.dates}</span>
+                                </div>
+                                <p className="text-xs text-black mb-1">{exp.company}</p>
+                                <ul className="list-none space-y-1">
+                                    {bullets.map((bullet: string, j: number) => (
+                                        <li key={j} className="text-xs text-black leading-normal flex items-start gap-2 ml-2">
+                                            <span>•</span>
+                                            <span className="flex-1">{bullet}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <p className="text-xs text-black mb-1">{exp.company}</p>
-                            <ul className="list-none space-y-1">
-                                {exp.bulletPoints ? exp.bulletPoints.map((bullet: string, j: number) => (
-                                    <li key={j} className="text-xs text-black leading-normal flex items-start gap-2 ml-2">
-                                        <span>•</span>
-                                        <span className="flex-1">{bullet}</span>
-                                    </li>
-                                )) : exp.description && (
-                                    <li className="text-xs text-black leading-normal flex items-start gap-2 ml-2">
-                                        <span>•</span>
-                                        <span className="flex-1">{exp.description}</span>
-                                    </li>
-                                )}
-                            </ul>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
