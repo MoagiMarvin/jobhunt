@@ -153,7 +153,9 @@ export default function ProfilePage() {
                         id: exp.id,
                         role: exp.position,
                         company: exp.company,
-                        duration: `${exp.start_date}${exp.is_current ? " - Present" : ""}`,
+                        duration: exp.is_current
+                            ? `${formatDate(exp.start_date)} - Present`
+                            : `${formatDate(exp.start_date)} - ${formatDate(exp.end_date)}`,
                         description: exp.description || ""
                     })));
                 }
@@ -267,6 +269,18 @@ export default function ProfilePage() {
 
         loadProfile();
     }, [router]);
+
+    // Helper to format DB date (YYYY-MM-DD) to "MMM YYYY"
+    const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return "";
+        try {
+            const [year, month] = dateStr.split('-');
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${months[parseInt(month) - 1]} ${year}`;
+        } catch (e) {
+            return dateStr || "";
+        }
+    };
 
     // Sync all profile data to LocalStorage for CV Generator
     useEffect(() => {
