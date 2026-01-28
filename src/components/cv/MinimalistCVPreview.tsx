@@ -62,7 +62,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* Professional Summary */}
             {summary && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Professional Summary
                     </h2>
                     <p className="text-xs leading-relaxed text-black">{summary}</p>
@@ -73,7 +73,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* Technical Skills - Grouped by Category */}
             {skills.filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills')).length > 0 && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Technical Skills
                     </h2>
                     <div className="space-y-1">
@@ -102,7 +102,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* Soft Skills - Separated */}
             {skills.filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills').length > 0 && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Soft Skills
                     </h2>
                     <div className="space-y-1">
@@ -123,7 +123,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* Experience */}
             {experiences.length > 0 && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Professional Experience
                     </h2>
                     {experiences.map((exp: any, i: number) => {
@@ -157,7 +157,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* Projects */}
             {projectsArr.length > 0 && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Key Projects
                     </h2>
                     {projectsArr.slice(0, 3).map((project: any, i: number) => (
@@ -180,7 +180,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
 
             {/* Education */}
             <div>
-                <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                     Education
                 </h2>
                 {educationArr.map((edu: any, i: number) => (
@@ -209,7 +209,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* Certifications */}
             {certs.length > 0 && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Certifications &amp; Awards
                     </h2>
                     {certs.map((cert: any, i: number) => (
@@ -228,7 +228,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* Languages */}
             {languagesArr.length > 0 && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Languages
                     </h2>
                     <div className="flex flex-wrap gap-2 text-xs text-black">
@@ -247,7 +247,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
             {/* References */}
             {referencesArr.length > 0 && (
                 <div>
-                    <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
+                    <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Professional References
                     </h2>
                     <div className="grid grid-cols-2 gap-4">

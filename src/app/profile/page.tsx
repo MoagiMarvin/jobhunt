@@ -268,11 +268,27 @@ export default function ProfilePage() {
         loadProfile();
     }, [router]);
 
-    // Legacy localStorage loading (keeping for backward compatibility/temp fallback)
+    // Sync all profile data to LocalStorage for CV Generator
     useEffect(() => {
-        const savedBasic = localStorage.getItem("user_basic_info");
-        // ... only load if not already loaded from DB or for local overrides
-    }, []);
+        if (isLoadingProfile) return;
+
+        localStorage.setItem("user_basic_info", JSON.stringify(user));
+        localStorage.setItem("user_skills_list", JSON.stringify(skills));
+        localStorage.setItem("user_experience_list", JSON.stringify(experiences));
+        localStorage.setItem("user_projects_list", JSON.stringify(projectsList));
+        localStorage.setItem("user_languages_list", JSON.stringify(languages));
+        localStorage.setItem("user_references_list", JSON.stringify(references));
+        localStorage.setItem("user_matric_data", JSON.stringify(matricData));
+
+        // Combine education and certifications into credentials list
+        const allCredentials = [
+            ...educationList.map((e: any) => ({ ...e, type: 'education' })),
+            ...certificationsList.map((c: any) => ({ ...c, type: 'certification' }))
+        ];
+        localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+
+        console.log("Profile Synced to LocalStorage");
+    }, [user, skills, experiences, projectsList, languages, references, matricData, educationList, certificationsList, isLoadingProfile]);
 
     const handleSaveProfile = async (newData: any) => {
         if (!currentUserId) return;
