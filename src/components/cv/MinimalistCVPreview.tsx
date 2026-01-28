@@ -24,7 +24,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
     const matricData = info.matricData || info.matric;
 
     return (
-        <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm overflow-hidden border border-slate-300 p-10 space-y-4 text-left">
+        <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm border border-slate-300 p-10 space-y-4 text-left">
             {/* Header */}
             <div className="border-b border-slate-300 pb-4">
                 <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
