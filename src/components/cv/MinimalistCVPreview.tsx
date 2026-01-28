@@ -105,11 +105,15 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                     <h2 className="text-sm font-bold uppercase bg-slate-50 px-2 py-1 border-l-[3px] border-black text-black tracking-wide mb-2">
                         Soft Skills
                     </h2>
-                    <div className="text-xs text-black">
+                    <div className="space-y-1">
                         {skills
                             .filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills')
-                            .map((s: any) => typeof s === 'string' ? s : (s.name || s.skill))
-                            .join(", ")
+                            .map((s: any, i: number) => (
+                                <div key={i} className="flex items-start gap-2 text-xs text-black">
+                                    <span className="w-2">•</span>
+                                    <span className="flex-1">{typeof s === 'string' ? s : (s.name || s.skill)}</span>
+                                </div>
+                            ))
                         }
                     </div>
                 </div>

@@ -256,14 +256,18 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 {skills.filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills').length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Soft Skills</Text>
-                        <View style={{ marginTop: 2, flexDirection: 'row', flexWrap: 'wrap' }}>
-                            <Text style={styles.skillItemText}>
-                                {skills
-                                    .filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills')
-                                    .map((s: any) => typeof s === 'string' ? s : (s.name || s.skill))
-                                    .join(", ")
-                                }
-                            </Text>
+                        <View style={{ marginTop: 2 }}>
+                            {skills
+                                .filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills')
+                                .map((s: any, idx: number) => (
+                                    <View key={idx} style={styles.skillRow}>
+                                        <Text style={styles.skillBulletText}>•</Text>
+                                        <Text style={styles.skillItemText}>
+                                            {typeof s === 'string' ? s : (s.name || s.skill)}
+                                        </Text>
+                                    </View>
+                                ))
+                            }
                         </View>
                     </View>
                 )}
