@@ -68,26 +68,41 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Dates */}
-                        <div className="space-y-2 col-span-1">
-                            <label className="text-sm font-semibold text-slate-700">Start Date / Year</label>
-                            <input
-                                type="text"
-                                value={formData.start_date}
-                                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                                placeholder="e.g. 2021"
-                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
-                            />
-                        </div>
-                        <div className="space-y-2 col-span-1">
-                            <label className="text-sm font-semibold text-slate-700">End Date / Year</label>
-                            <input
-                                type="text"
-                                value={formData.end_date}
-                                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                                placeholder="e.g. 2024"
-                                className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
-                            />
-                        </div>
+                        {type === "education" ? (
+                            <>
+                                <div className="space-y-2 col-span-1">
+                                    <label className="text-sm font-semibold text-slate-700">Start Date / Year</label>
+                                    <input
+                                        type="text"
+                                        value={formData.start_date}
+                                        onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                                        placeholder="e.g. 2021"
+                                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
+                                    />
+                                </div>
+                                <div className="space-y-2 col-span-1">
+                                    <label className="text-sm font-semibold text-slate-700">End Date / Year</label>
+                                    <input
+                                        type="text"
+                                        value={formData.end_date}
+                                        onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                                        placeholder="e.g. 2024"
+                                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <div className="space-y-2 col-span-1 md:col-span-2">
+                                <label className="text-sm font-semibold text-slate-700">Completion Date / Year</label>
+                                <input
+                                    type="text"
+                                    value={formData.end_date}
+                                    onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                                    placeholder="e.g. 2024"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium"
+                                />
+                            </div>
+                        )}
 
                         {/* Qualification Level (Only for Education) */}
                         {type === "education" && (
