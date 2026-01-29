@@ -1,13 +1,22 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export const dynamic = "force-dynamic";
+
+const getSupabase = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url || !key) {
+    throw new Error("Supabase environment variables are missing");
+  }
+
+  return createClient(url, key);
+};
 
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabase();
     const authHeader = request.headers.get("authorization");
     if (!authHeader) {
       return NextResponse.json(
@@ -71,6 +80,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabase();
     const authHeader = request.headers.get("authorization");
     if (!authHeader) {
       return NextResponse.json(

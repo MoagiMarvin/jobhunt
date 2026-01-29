@@ -1,10 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+export const dynamic = "force-dynamic";
+
+const getSupabase = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error("Supabase environment variables are missing");
+  }
+  return createClient(url, key);
+};
 
 interface ApplicationPayload {
   syncedJobId: string;
@@ -49,6 +55,7 @@ async function sendWebhookToRecruiter(
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabase();
     const authHeader = request.headers.get("authorization");
     if (!authHeader) {
       return NextResponse.json(
@@ -130,8 +137,6 @@ export async function POST(request: NextRequest) {
     if (appError) throw appError;
 
     // Determine webhook URL
-    // For now, we'll use a default webhook URL format based on recruiter's job_board_url
-    // In production, you'd store a specific webhook URL in the recruiter profile
     const webhookUrl = `${recruiterProfile.job_board_url}/webhooks/application`;
 
     // Send application to recruiter's system
@@ -165,9 +170,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET endpoint to check application status
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabase();
     const authHeader = request.headers.get("authorization");
     if (!authHeader) {
       return NextResponse.json(
