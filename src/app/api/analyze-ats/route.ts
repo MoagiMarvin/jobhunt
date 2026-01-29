@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Heuristic analysis for when AI is unavailable
 function basicAnalyze(cvText: string, jobRequirements: string[]) {
@@ -105,7 +105,7 @@ function basicAnalyze(cvText: string, jobRequirements: string[]) {
     };
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     console.log("ATS Analysis: Request Received");
 
     // DEBUG: Check Environment Variable

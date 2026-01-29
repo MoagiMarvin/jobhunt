@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Basic optimization for when AI is unavailable
 function basicOptimize(cvText: string, profileDataObj: any) {
@@ -37,7 +37,7 @@ function basicOptimize(cvText: string, profileDataObj: any) {
   };
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   console.log("CV Optimization: Request received");
   try {
     const { profileData, jobRequirements } = await req.json();

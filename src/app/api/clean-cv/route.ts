@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // Basic cleaning function for when AI is unavailable
 function basicClean(text: string) {
@@ -22,7 +22,7 @@ function basicClean(text: string) {
     return cleaned;
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     console.log("CV Cleaning: Request received");
     try {
         const { cvText } = await req.json();

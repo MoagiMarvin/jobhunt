@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 
 // Search API for JobHunt (v3.0 - Integrated with User Reference Logic)
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query');
     const source = searchParams.get('source');

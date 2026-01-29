@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 // Mock storage for saved candidates
 const savedCandidates: Record<string, any[]> = {};
 
+/**
+ * Next.js 16+ Route Handler for dynamic groups.
+ * Must use NextRequest and Promise<params> to satisfy RouteModule constraints.
+ */
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ groupId: string }> }
