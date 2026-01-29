@@ -200,6 +200,18 @@ export const ResumeDocument = ({ data }: { data: any }) => {
         return parts.map(p => formatDate(p.trim())).join(" - ");
     };
 
+    // Helper to format only years for education (e.g., "2021 - 2024")
+    const formatYearsOnly = (duration: string) => {
+        if (!duration) return "";
+        const parts = duration.split(" - ");
+        return parts.map(p => {
+            const trimmed = p.trim();
+            if (/^\d{4}/.test(trimmed)) return trimmed.substring(0, 4);
+            const date = new Date(trimmed);
+            return isNaN(date.getTime()) ? trimmed : date.getFullYear().toString();
+        }).join(" - ");
+    };
+
     return (
         <Document title={`${user?.name || 'Resume'} - Resume`}>
             <Page size="A4" style={styles.page}>
@@ -342,8 +354,13 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                         {educationArr.map((edu: any, idx: number) => (
                             <View key={idx} style={styles.itemContainer}>
                                 <View style={styles.itemHeader}>
-                                    <Text style={styles.itemTitle}>{edu.degree || edu.title}</Text>
-                                    <Text style={styles.itemDate}>{edu.year || edu.date}</Text>
+                                    <Text style={styles.itemTitle}>
+                                        {edu.degree || edu.title}
+                                        {edu.qualification_level && edu.qualification_level !== 'Tertiary' ? ` (${edu.qualification_level})` : ''}
+                                    </Text>
+                                    <Text style={styles.itemDate}>
+                                        {formatYearsOnly(edu.duration || edu.date || edu.year?.toString())}
+                                    </Text>
                                 </View>
                                 <Text style={styles.itemSubtitle}>{edu.school || edu.issuer}</Text>
                             </View>

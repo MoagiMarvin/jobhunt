@@ -45,6 +45,18 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
         return parts.map(p => formatDate(p.trim())).join(" - ");
     };
 
+    // Helper to format only years for education (e.g., "2021 - 2024")
+    const formatYearsOnly = (duration: string) => {
+        if (!duration) return "";
+        const parts = duration.split(" - ");
+        return parts.map(p => {
+            const trimmed = p.trim();
+            if (/^\d{4}/.test(trimmed)) return trimmed.substring(0, 4);
+            const date = new Date(trimmed);
+            return isNaN(date.getTime()) ? trimmed : date.getFullYear().toString();
+        }).join(" - ");
+    };
+
     return (
         <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm border border-slate-300 p-10 space-y-4 text-left">
             {/* Header */}
@@ -208,8 +220,17 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                 {educationArr.map((edu: any, i: number) => (
                     <div key={i} className="mb-2">
                         <div className="flex justify-between items-baseline">
-                            <h3 className="font-bold text-xs text-black">{edu.degree || edu.title}</h3>
-                            <span className="text-xs font-bold text-black">{edu.year || edu.date}</span>
+                            <h3 className="font-bold text-xs text-black">
+                                {edu.degree || edu.title}
+                                {edu.qualification_level && edu.qualification_level !== 'Tertiary' && (
+                                    <span className="font-normal text-slate-500 ml-1">
+                                        • {edu.qualification_level}
+                                    </span>
+                                )}
+                            </h3>
+                            <span className="text-xs font-bold text-black">
+                                {formatYearsOnly(edu.duration || edu.date || edu.year?.toString())}
+                            </span>
                         </div>
                         <p className="text-xs text-black">{edu.school || edu.issuer}</p>
                     </div>

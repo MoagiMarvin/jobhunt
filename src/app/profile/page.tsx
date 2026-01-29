@@ -199,12 +199,12 @@ export default function ProfilePage() {
 
                     // 2. Handle Tertiary Education (exclude high_school and certification)
                     setEducationList(qData.filter(q => q.type !== 'certification' && q.type !== 'high_school').map(q => {
-                        // Create a display date range
+                        // Create a display date range (prefer full range for CV formatter)
                         let displayDate = q.year?.toString() || "";
                         if (q.start_date && q.end_date) {
-                            const startYear = new Date(q.start_date).getFullYear();
-                            const endYear = new Date(q.end_date).getFullYear();
-                            displayDate = `${startYear} - ${endYear}`;
+                            displayDate = `${q.start_date} - ${q.end_date}`;
+                        } else if (q.start_date) {
+                            displayDate = q.start_date;
                         }
 
                         return {
