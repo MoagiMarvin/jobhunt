@@ -22,6 +22,90 @@ import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
 import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
 import AddExperienceModal from "@/components/talent/AddExperienceModal";
 
+interface WorkExperience {
+    id: string;
+    company: string;
+    position: string;
+    description: string;
+    start_date: string;
+    end_date: string | null;
+    is_current: boolean;
+}
+
+interface Project {
+    id: string;
+    title: string;
+    description: string;
+    technologies: string[];
+    link: string;
+    image_url: string | null;
+}
+
+interface Qualification {
+    id: string;
+    type: 'high_school' | 'tertiary' | 'certification' | string;
+    title: string;
+    institution: string;
+    year: number | null;
+    start_date: string | null;
+    end_date: string | null;
+    qualification_level: string | null;
+    is_verified: boolean;
+    document_url: string | null;
+}
+
+interface Language {
+    id: string;
+    language: string;
+    proficiency: string;
+}
+
+interface Reference {
+    id: string;
+    name: string;
+    relationship: string;
+    company: string;
+    phone: string;
+    email: string;
+}
+
+interface UIExperience {
+    id: string;
+    role: string;
+    company: string;
+    duration: string;
+    description: string;
+    start_date?: string;
+    end_date?: string | null;
+    is_current?: boolean;
+}
+
+interface UIProject {
+    id: string;
+    title: string;
+    description: string;
+    technologies: string[];
+    github_url: string;
+    image_url: string;
+    topSkills: string[];
+    experienceYears: number;
+    education: string;
+    isVerified: boolean;
+}
+
+interface UIQualification {
+    id: string;
+    title: string;
+    issuer: string;
+    date: string;
+    start_date: string | null;
+    end_date: string | null;
+    qualification_level: string | null;
+    document_url: string | null;
+    isVerified: boolean;
+    credential_url?: string;
+}
+
 export default function ProfilePage() {
     const router = useRouter();
 
@@ -45,17 +129,17 @@ export default function ProfilePage() {
 
     const [skills, setSkills] = useState<TalentSkill[]>([]);
 
-    const [languages, setLanguages] = useState<{ id?: string; language: string; proficiency: string }[]>([]);
+    const [languages, setLanguages] = useState<Language[]>([]);
 
-    const [projectsList, setProjectsList] = useState<any[]>([]);
+    const [projectsList, setProjectsList] = useState<UIProject[]>([]);
 
-    const [experiences, setExperiences] = useState<any[]>([]);
+    const [experiences, setExperiences] = useState<UIExperience[]>([]);
 
-    const [educationList, setEducationList] = useState<any[]>([]);
+    const [educationList, setEducationList] = useState<UIQualification[]>([]);
 
-    const [certificationsList, setCertificationsList] = useState<any[]>([]);
+    const [certificationsList, setCertificationsList] = useState<UIQualification[]>([]);
 
-    const [references, setReferences] = useState<any[]>([]);
+    const [references, setReferences] = useState<Reference[]>([]);
 
     const [matricData, setMatricData] = useState<any>(null);
 
@@ -156,7 +240,7 @@ export default function ProfilePage() {
                     .order("start_date", { ascending: false });
 
                 if (dbExperiences && dbExperiences.length > 0) {
-                    setExperiences(dbExperiences.map(exp => ({
+                    setExperiences((dbExperiences as WorkExperience[]).map((exp: WorkExperience) => ({
                         id: exp.id,
                         role: exp.position,
                         company: exp.company,
@@ -174,7 +258,7 @@ export default function ProfilePage() {
                     .eq("user_id", userId);
 
                 if (dbProjects && dbProjects.length > 0) {
-                    setProjectsList(dbProjects.map(proj => ({
+                    setProjectsList((dbProjects as Project[]).map((proj: Project) => ({
                         id: proj.id,
                         title: proj.title,
                         description: proj.description || "",
@@ -196,8 +280,9 @@ export default function ProfilePage() {
                     .order("year", { ascending: false });
 
                 if (qData) {
+                    const typedQData = qData as Qualification[];
                     // 1. Handle Matric (High School)
-                    const matric = qData.find(q => q.type === 'high_school');
+                    const matric = typedQData.find((q: Qualification) => q.type === 'high_school');
                     if (matric) {
                         setMatricData({
                             id: matric.id,
@@ -207,7 +292,7 @@ export default function ProfilePage() {
                     }
 
                     // 2. Handle Tertiary Education (exclude high_school and certification)
-                    setEducationList(qData.filter(q => q.type !== 'certification' && q.type !== 'high_school').map(q => {
+                    setEducationList(typedQData.filter((q: Qualification) => q.type !== 'certification' && q.type !== 'high_school').map((q: Qualification) => {
                         // Create a display date range (prefer only years for profile display)
                         let displayDate = q.year?.toString() || "";
                         if (q.start_date && q.end_date) {
@@ -232,7 +317,7 @@ export default function ProfilePage() {
                     }));
 
                     // 3. Handle Certifications
-                    setCertificationsList(qData.filter(q => q.type === 'certification').map(q => {
+                    setCertificationsList(typedQData.filter((q: Qualification) => q.type === 'certification').map((q: Qualification) => {
                         let displayDate = q.year?.toString() || "";
                         if (q.end_date) {
                             displayDate = q.end_date.split("-")[0];
@@ -259,7 +344,7 @@ export default function ProfilePage() {
                     .select("*")
                     .eq("user_id", userId);
                 if (dbSkills) {
-                    setSkills(dbSkills.map(s => ({
+                    setSkills((dbSkills as any[]).map((s: any) => ({
                         id: s.id,
                         name: s.name,
                         minYears: s.min_experience_years || 0,
@@ -274,7 +359,7 @@ export default function ProfilePage() {
                     .select("*")
                     .eq("user_id", userId);
                 if (dbLangs) {
-                    setLanguages(dbLangs.map(l => ({
+                    setLanguages((dbLangs as Language[]).map((l: Language) => ({
                         id: l.id,
                         language: l.language,
                         proficiency: l.proficiency
@@ -287,7 +372,7 @@ export default function ProfilePage() {
                     .select("*")
                     .eq("user_id", userId);
                 if (dbRefs) {
-                    setReferences(dbRefs.map(r => ({
+                    setReferences((dbRefs as Reference[]).map((r: Reference) => ({
                         id: r.id,
                         name: r.name,
                         relationship: r.relationship,
@@ -331,8 +416,8 @@ export default function ProfilePage() {
 
         // Combine education and certifications into credentials list
         const allCredentials = [
-            ...educationList.map((e: any) => ({ ...e, type: 'education' })),
-            ...certificationsList.map((c: any) => ({ ...c, type: 'certification' }))
+            ...educationList.map((e: UIQualification) => ({ ...e, type: 'education' })),
+            ...certificationsList.map((c: UIQualification) => ({ ...c, type: 'certification' }))
         ];
         localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
 
@@ -503,7 +588,7 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
-                                {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project: any, idx: number) => (
+                                {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project: UIProject, idx: number) => (
                                     <ProjectCard
                                         key={idx}
                                         {...project}
@@ -515,7 +600,7 @@ export default function ProfilePage() {
                                                     return;
                                                 }
                                             }
-                                            setProjectsList(projectsList.filter((_: any, i: number) => i !== idx));
+                                            setProjectsList(projectsList.filter((_: UIProject, i: number) => i !== idx));
                                         }}
                                         onEdit={() => {
                                             setEditingProject(project);
@@ -551,7 +636,7 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="space-y-4">
-                                {experiences.map((exp: any, idx: number) => (
+                                {experiences.map((exp: UIExperience, idx: number) => (
                                     <ExperienceCard
                                         key={idx}
                                         {...exp}
@@ -563,7 +648,7 @@ export default function ProfilePage() {
                                                     return;
                                                 }
                                             }
-                                            setExperiences(experiences.filter((_: any, i: number) => i !== idx));
+                                            setExperiences(experiences.filter((_: UIExperience, i: number) => i !== idx));
                                         }}
                                         onEdit={() => {
                                             setEditingExperience(exp);
@@ -603,12 +688,12 @@ export default function ProfilePage() {
                                 <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
                                     <div className="space-y-6">
                                         {(() => {
-                                            const technicalGrouped = skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, any[]>, skill: any) => {
+                                            const technicalGrouped = skills.filter((s: TalentSkill) => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, TalentSkill[]>, skill: TalentSkill) => {
                                                 const cat = skill.category || "Other Skills";
                                                 if (!acc[cat]) acc[cat] = [];
                                                 acc[cat].push(skill);
                                                 return acc;
-                                            }, {} as Record<string, any[]>);
+                                            }, {} as Record<string, TalentSkill[]>);
 
                                             return Object.entries(technicalGrouped).map(([category, categorySkills], catIdx) => (
                                                 <div key={catIdx} className={catIdx > 0 ? "pt-6 border-t border-slate-50" : ""}>
@@ -617,7 +702,7 @@ export default function ProfilePage() {
                                                         {category}
                                                     </h4>
                                                     <div className="flex flex-wrap gap-2">
-                                                        {categorySkills.map((skill, idx) => {
+                                                        {categorySkills.map((skill: TalentSkill, idx: number) => {
                                                             const originalIdx = skills.indexOf(skill);
                                                             return (
                                                                 <div
@@ -643,7 +728,7 @@ export default function ProfilePage() {
                                                                                 } else if (currentUserId) {
                                                                                     await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
                                                                                 }
-                                                                                const updated = skills.filter((_, i) => i !== originalIdx);
+                                                                                const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
                                                                                 setSkills(updated);
                                                                             }}
                                                                         />
@@ -687,9 +772,9 @@ export default function ProfilePage() {
                             ) : (
                                 <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition-all">
                                     <div className="space-y-3">
-                                        {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills")
+                                        {skills.filter((s: TalentSkill) => s.isSoftSkill || s.category === "Soft Skills")
                                             .slice(0, isSoftSkillsExpanded ? undefined : 3)
-                                            .map((skill, idx) => {
+                                            .map((skill: TalentSkill, idx: number) => {
                                                 const originalIdx = skills.indexOf(skill);
                                                 return (
                                                     <div key={idx} className="group relative flex items-center gap-3 -ml-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
@@ -710,7 +795,7 @@ export default function ProfilePage() {
                                                                     } else if (currentUserId) {
                                                                         await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
                                                                     }
-                                                                    const updated = skills.filter((_, i) => i !== originalIdx);
+                                                                    const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
                                                                     setSkills(updated);
                                                                 }}
                                                             />
@@ -750,7 +835,7 @@ export default function ProfilePage() {
                             </div>
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
                                 <div className="grid md:grid-cols-3 gap-4">
-                                    {languages.map((lang, idx) => (
+                                    {languages.map((lang: Language, idx: number) => (
                                         <div key={idx} className="group relative flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-200 transition-all">
                                             <div>
                                                 <p className="font-semibold text-slate-800 text-sm">{lang.language}</p>
@@ -767,7 +852,7 @@ export default function ProfilePage() {
                                                         if (currentUserId && lang.id) {
                                                             await supabase.from("languages").delete().eq("id", lang.id);
                                                         }
-                                                        const updated = languages.filter((_, i) => i !== idx);
+                                                        const updated = languages.filter((_: Language, i: number) => i !== idx);
                                                         setLanguages(updated);
                                                         localStorage.setItem("user_languages_list", JSON.stringify(updated));
                                                     }}
@@ -795,15 +880,15 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="space-y-4">
-                                {educationList.map((edu: any, idx: number) => (
+                                {educationList.map((edu: UIQualification, idx: number) => (
                                     <CredentialCard
                                         key={idx}
                                         type="education"
                                         title={edu.title}
                                         issuer={edu.issuer}
                                         date={edu.date}
-                                        qualification_level={edu.qualification_level}
-                                        document_url={edu.document_url}
+                                        qualification_level={edu.qualification_level || undefined}
+                                        document_url={edu.document_url || undefined}
                                         viewerRole="owner"
                                         onDelete={async () => {
                                             if (currentUserId && edu.id) {
@@ -813,10 +898,10 @@ export default function ProfilePage() {
                                                     return;
                                                 }
                                             }
-                                            const updated = educationList.filter((_: any, i: number) => i !== idx);
+                                            const updated = educationList.filter((_: UIQualification, i: number) => i !== idx);
                                             setEducationList(updated);
                                             // Save combined credentials to localStorage
-                                            const allCredentials = [...updated.map((e: any) => ({ ...e, type: 'education' })), ...certificationsList.map((c: any) => ({ ...c, type: 'certification' }))];
+                                            const allCredentials = [...updated.map((e: UIQualification) => ({ ...e, type: 'education' })), ...certificationsList.map((c: UIQualification) => ({ ...c, type: 'certification' }))];
                                             localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
                                         }}
                                         onEdit={() => {
@@ -889,14 +974,14 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="space-y-4">
-                                {certificationsList.map((cert: any, idx: number) => (
+                                {certificationsList.map((cert: UIQualification, idx: number) => (
                                     <CredentialCard
                                         key={idx}
                                         type="certification"
                                         title={cert.title}
                                         issuer={cert.issuer}
                                         date={cert.date}
-                                        document_url={cert.document_url}
+                                        document_url={cert.document_url || undefined}
                                         viewerRole="owner"
                                         onDelete={async () => {
                                             if (currentUserId && cert.id) {
@@ -906,10 +991,10 @@ export default function ProfilePage() {
                                                     return;
                                                 }
                                             }
-                                            const updated = certificationsList.filter((_: any, i: number) => i !== idx);
+                                            const updated = certificationsList.filter((_: UIQualification, i: number) => i !== idx);
                                             setCertificationsList(updated);
                                             // Save combined credentials to localStorage
-                                            const allCredentials = [...educationList.map((e: any) => ({ ...e, type: 'education' })), ...updated.map((c: any) => ({ ...c, type: 'certification' }))];
+                                            const allCredentials = [...educationList.map((e: UIQualification) => ({ ...e, type: 'education' })), ...updated.map((c: UIQualification) => ({ ...c, type: 'certification' }))];
                                             localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
                                         }}
                                         onEdit={() => {
@@ -938,7 +1023,7 @@ export default function ProfilePage() {
                                 </button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
-                                {references.map((ref: any, idx: number) => (
+                                {references.map((ref: Reference, idx: number) => (
                                     <ReferenceCard
                                         key={idx}
                                         {...ref}
@@ -950,7 +1035,7 @@ export default function ProfilePage() {
                                                     return;
                                                 }
                                             }
-                                            const updated = references.filter((_, i) => i !== idx);
+                                            const updated = references.filter((_: Reference, i: number) => i !== idx);
                                             setReferences(updated);
                                             localStorage.setItem("user_references_list", JSON.stringify(updated));
                                         }}
@@ -1004,11 +1089,11 @@ export default function ProfilePage() {
 
                                 if (error) throw error;
 
-                                setSkills(skills.map(skill => skill.id === editingSkill.id ? { ...s, id: editingSkill.id } : skill));
+                                setSkills(skills.map((skill: TalentSkill) => skill.id === editingSkill.id ? { ...s, id: editingSkill.id } : skill));
                                 alert("Skill updated!");
                             } else {
                                 // Insert new
-                                const insertData = newSkills.map(s => ({
+                                const insertData = newSkills.map((s: TalentSkill) => ({
                                     user_id: currentUserId,
                                     name: s.name,
                                     min_experience_years: s.minYears || 0,
@@ -1023,7 +1108,7 @@ export default function ProfilePage() {
 
                                 if (error) throw error;
 
-                                const formattedNewSkills = data.map(s => ({
+                                const formattedNewSkills = (data || []).map((s: any) => ({
                                     id: s.id,
                                     name: s.name,
                                     minYears: s.min_experience_years || 0,
@@ -1115,7 +1200,7 @@ export default function ProfilePage() {
                                                             .eq("id", editingLanguage.id);
                                                         if (error) throw error;
 
-                                                        const updated = languages.map((l, i) => i === editingLanguage.idx ? { ...l, ...langData } : l);
+                                                        const updated = languages.map((l: Language, i: number) => i === editingLanguage.idx ? { ...l, ...langData } : l);
                                                         setLanguages(updated);
                                                         alert("Language updated!");
                                                     } else {
@@ -1190,9 +1275,9 @@ export default function ProfilePage() {
                                 if (dbType === 'high_school') {
                                     setMatricData({ ...newCredential, id: newCredential.id, schoolName: newCredential.issuer, completionYear: parseInt(newCredential.year) });
                                 } else if (isAddCredentialOpen.type === "education") {
-                                    setEducationList(educationList.map(e => e.id === newCredential.id ? newCredential : e));
+                                    setEducationList(educationList.map((e: UIQualification) => e.id === newCredential.id ? newCredential : e));
                                 } else {
-                                    setCertificationsList(certificationsList.map(c => c.id === newCredential.id ? newCredential : c));
+                                    setCertificationsList(certificationsList.map((c: UIQualification) => c.id === newCredential.id ? newCredential : c));
                                 }
                                 alert("Qualification updated!");
                             } else {
@@ -1249,7 +1334,7 @@ export default function ProfilePage() {
                                     .update(projectData)
                                     .eq("id", newProject.id);
                                 if (error) throw error;
-                                setProjectsList(projectsList.map(p => p.id === newProject.id ? newProject : p));
+                                setProjectsList(projectsList.map((p: UIProject) => p.id === newProject.id ? newProject : p));
                                 alert("Project updated!");
                             } else {
                                 const { data, error } = await supabase
@@ -1295,7 +1380,7 @@ export default function ProfilePage() {
                                     .update(refData)
                                     .eq("id", newRef.id);
                                 if (error) throw error;
-                                setReferences(references.map(r => r.id === newRef.id ? newRef : r));
+                                setReferences(references.map((r: Reference) => r.id === newRef.id ? newRef : r));
                                 alert("Reference updated!");
                             } else {
                                 const { data, error } = await supabase
@@ -1387,7 +1472,7 @@ export default function ProfilePage() {
                                     .eq("id", newExp.id);
                                 if (error) throw error;
 
-                                setExperiences(experiences.map(e => e.id === newExp.id ? newExp : e));
+                                setExperiences(experiences.map((e: UIExperience) => e.id === newExp.id ? newExp : e));
                                 alert("Experience updated!");
                             } else {
                                 // Insert new
