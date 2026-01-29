@@ -108,6 +108,8 @@ interface UIQualification {
 
 export default function ProfilePage() {
     const router = useRouter();
+    // Force git sync
+
 
     const [user, setUser] = useState({
         name: "",
