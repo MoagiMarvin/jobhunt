@@ -41,20 +41,19 @@ export default function ProjectCard({
 
             {/* Content */}
             <div className={`p-4 sm:p-5 flex-1 flex flex-col justify-between relative ${!image_url ? "w-full" : ""}`}>
-                {isOwner && (
-                    <div className="absolute top-4 right-4 z-10">
-                        <ItemActionMenu
-                            onEdit={onEdit}
-                            onDelete={onDelete}
-                        />
-                    </div>
-                )}
                 <div className="space-y-1.5">
                     <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
                             <h3 className="text-sm font-bold text-primary group-hover:text-blue-600 transition-colors line-clamp-1">{title}</h3>
                         </div>
-
+                        {isOwner && (
+                            <div className="shrink-0 -mt-1 -mr-1">
+                                <ItemActionMenu
+                                    onEdit={onEdit}
+                                    onDelete={onDelete}
+                                />
+                            </div>
+                        )}
                     </div>
                     <p className="text-[11px] text-slate-600 line-clamp-2 leading-tight">{description}</p>
                 </div>
