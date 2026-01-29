@@ -208,12 +208,14 @@ export default function ProfilePage() {
 
                     // 2. Handle Tertiary Education (exclude high_school and certification)
                     setEducationList(qData.filter(q => q.type !== 'certification' && q.type !== 'high_school').map(q => {
-                        // Create a display date range (prefer full range for CV formatter)
+                        // Create a display date range (prefer only years for profile display)
                         let displayDate = q.year?.toString() || "";
                         if (q.start_date && q.end_date) {
-                            displayDate = `${q.start_date} - ${q.end_date}`;
+                            const startYear = q.start_date.split("-")[0];
+                            const endYear = q.end_date.split("-")[0];
+                            displayDate = `${startYear} - ${endYear}`;
                         } else if (q.start_date) {
-                            displayDate = q.start_date;
+                            displayDate = q.start_date.split("-")[0];
                         }
 
                         return {
@@ -230,18 +232,25 @@ export default function ProfilePage() {
                     }));
 
                     // 3. Handle Certifications
-                    setCertificationsList(qData.filter(q => q.type === 'certification').map(q => ({
-                        id: q.id,
-                        title: q.title,
-                        issuer: q.institution,
-                        date: q.year?.toString() || "",
-                        start_date: q.start_date,
-                        end_date: q.end_date,
-                        qualification_level: q.qualification_level,
-                        credential_url: "",
-                        document_url: q.document_url || "",
-                        isVerified: q.is_verified
-                    })));
+                    setCertificationsList(qData.filter(q => q.type === 'certification').map(q => {
+                        let displayDate = q.year?.toString() || "";
+                        if (q.end_date) {
+                            displayDate = q.end_date.split("-")[0];
+                        }
+
+                        return {
+                            id: q.id,
+                            title: q.title,
+                            issuer: q.institution,
+                            date: displayDate,
+                            start_date: q.start_date,
+                            end_date: q.end_date,
+                            qualification_level: q.qualification_level,
+                            credential_url: "",
+                            document_url: q.document_url || "",
+                            isVerified: q.is_verified
+                        };
+                    }));
                 }
 
                 // Fetch skills
@@ -795,7 +804,6 @@ export default function ProfilePage() {
                                         date={edu.date}
                                         qualification_level={edu.qualification_level}
                                         document_url={edu.document_url}
-                                        isVerified={edu.isVerified}
                                         viewerRole="owner"
                                         onDelete={async () => {
                                             if (currentUserId && edu.id) {
@@ -888,9 +896,7 @@ export default function ProfilePage() {
                                         title={cert.title}
                                         issuer={cert.issuer}
                                         date={cert.date}
-                                        credential_url={cert.credential_url}
                                         document_url={cert.document_url}
-                                        isVerified={cert.isVerified}
                                         viewerRole="owner"
                                         onDelete={async () => {
                                             if (currentUserId && cert.id) {
