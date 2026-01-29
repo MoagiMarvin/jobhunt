@@ -156,7 +156,7 @@ export default function CreateCVPage() {
         localStorage.setItem("user_skills_list", JSON.stringify(skills));
 
         // 3. Save Experience
-        const mappedExperience = experiences.map(exp => ({
+        const mappedExperience = experiences.map((exp: Experience) => ({
             role: exp.title,
             company: exp.company,
             duration: `${exp.startDate} - ${exp.current ? "Present" : exp.endDate}`,
@@ -166,14 +166,14 @@ export default function CreateCVPage() {
 
         // 4. Save Credentials (Education + Certifications)
         const mappedCredentials = [
-            ...educations.map(edu => ({
+            ...educations.map((edu: Education) => ({
                 type: "education",
                 title: edu.degree,
                 issuer: edu.school,
                 date: edu.year,
                 isVerified: false
             })),
-            ...certifications.map(cert => ({
+            ...certifications.map((cert: Certification) => ({
                 type: "certification",
                 title: cert.name,
                 issuer: cert.issuer,
@@ -184,7 +184,7 @@ export default function CreateCVPage() {
         localStorage.setItem("user_credentials_list", JSON.stringify(mappedCredentials));
 
         // 5. Save Projects
-        const mappedProjects = projects.map(proj => ({
+        const mappedProjects = projects.map((proj: Project) => ({
             title: proj.title,
             description: proj.description,
             technologies: [], // Can be extracted or left empty
@@ -202,28 +202,28 @@ export default function CreateCVPage() {
 
     // Experience
     const addExperience = () => setExperiences([...experiences, { id: Date.now(), title: "", company: "", startDate: "", endDate: "", current: false, description: "" }]);
-    const removeExperience = (id: number) => setExperiences(experiences.filter(exp => exp.id !== id));
-    const updateExperience = (id: number, field: keyof Experience, value: any) => setExperiences(experiences.map(exp => exp.id === id ? { ...exp, [field]: value } : exp));
+    const removeExperience = (id: number) => setExperiences(experiences.filter((exp: Experience) => exp.id !== id));
+    const updateExperience = (id: number, field: keyof Experience, value: any) => setExperiences(experiences.map((exp: Experience) => exp.id === id ? { ...exp, [field]: value } : exp));
 
     // Education
     const addEducation = () => setEducations([...educations, { id: Date.now(), degree: "", school: "", year: "" }]);
-    const removeEducation = (id: number) => setEducations(educations.filter(edu => edu.id !== id));
-    const updateEducation = (id: number, field: keyof Education, value: any) => setEducations(educations.map(edu => edu.id === id ? { ...edu, [field]: value } : edu));
+    const removeEducation = (id: number) => setEducations(educations.filter((edu: Education) => edu.id !== id));
+    const updateEducation = (id: number, field: keyof Education, value: any) => setEducations(educations.map((edu: Education) => edu.id === id ? { ...edu, [field]: value } : edu));
 
     // Projects
     const addProject = () => setProjects([...projects, { id: Date.now(), title: "", role: "", date: "", description: "" }]);
-    const removeProject = (id: number) => setProjects(projects.filter(proj => proj.id !== id));
-    const updateProject = (id: number, field: keyof Project, value: any) => setProjects(projects.map(proj => proj.id === id ? { ...proj, [field]: value } : proj));
+    const removeProject = (id: number) => setProjects(projects.filter((proj: Project) => proj.id !== id));
+    const updateProject = (id: number, field: keyof Project, value: any) => setProjects(projects.map((proj: Project) => proj.id === id ? { ...proj, [field]: value } : proj));
 
     // Certifications
     const addCertification = () => setCertifications([...certifications, { id: Date.now(), name: "", issuer: "", date: "" }]);
-    const removeCertification = (id: number) => setCertifications(certifications.filter(cert => cert.id !== id));
-    const updateCertification = (id: number, field: keyof Certification, value: any) => setCertifications(certifications.map(cert => cert.id === id ? { ...cert, [field]: value } : cert));
+    const removeCertification = (id: number) => setCertifications(certifications.filter((cert: Certification) => cert.id !== id));
+    const updateCertification = (id: number, field: keyof Certification, value: any) => setCertifications(certifications.map((cert: Certification) => cert.id === id ? { ...cert, [field]: value } : cert));
 
     // Languages
     const addLanguage = () => setLanguages([...languages, { id: Date.now(), language: "", proficiency: "" }]);
-    const removeLanguage = (id: number) => setLanguages(languages.filter(lang => lang.id !== id));
-    const updateLanguage = (id: number, field: keyof Language, value: any) => setLanguages(languages.map(lang => lang.id === id ? { ...lang, [field]: value } : lang));
+    const removeLanguage = (id: number) => setLanguages(languages.filter((lang: Language) => lang.id !== id));
+    const updateLanguage = (id: number, field: keyof Language, value: any) => setLanguages(languages.map((lang: Language) => lang.id === id ? { ...lang, [field]: value } : lang));
 
 
     return (
