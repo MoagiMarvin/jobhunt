@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS public.qualifications (
   type qualification_type NOT NULL,
   title TEXT NOT NULL,
   institution TEXT NOT NULL,
+  qualification_level TEXT,
   year INTEGER,
   start_date DATE,
   end_date DATE,

@@ -198,23 +198,37 @@ export default function ProfilePage() {
                     }
 
                     // 2. Handle Tertiary Education (exclude high_school and certification)
-                    setEducationList(qData.filter(q => q.type !== 'certification' && q.type !== 'high_school').map(q => ({
-                        title: q.title,
-                        issuer: q.institution,
-                        date: q.year?.toString() || "",
-                        qualification_level: 'Tertiary',
-                        document_url: q.document_url || "",
-                        isVerified: q.is_verified,
-                        topSkills: [],
-                        experienceYears: 0,
-                        education: 'Bachelor\'s Degree'
-                    })));
+                    setEducationList(qData.filter(q => q.type !== 'certification' && q.type !== 'high_school').map(q => {
+                        // Create a display date range
+                        let displayDate = q.year?.toString() || "";
+                        if (q.start_date && q.end_date) {
+                            const startYear = new Date(q.start_date).getFullYear();
+                            const endYear = new Date(q.end_date).getFullYear();
+                            displayDate = `${startYear} - ${endYear}`;
+                        }
+
+                        return {
+                            id: q.id,
+                            title: q.title,
+                            issuer: q.institution,
+                            date: displayDate,
+                            start_date: q.start_date,
+                            end_date: q.end_date,
+                            qualification_level: q.qualification_level || 'Tertiary',
+                            document_url: q.document_url || "",
+                            isVerified: q.is_verified
+                        };
+                    }));
 
                     // 3. Handle Certifications
                     setCertificationsList(qData.filter(q => q.type === 'certification').map(q => ({
+                        id: q.id,
                         title: q.title,
                         issuer: q.institution,
                         date: q.year?.toString() || "",
+                        start_date: q.start_date,
+                        end_date: q.end_date,
+                        qualification_level: q.qualification_level,
                         credential_url: "",
                         document_url: q.document_url || "",
                         isVerified: q.is_verified
@@ -1025,16 +1039,27 @@ export default function ProfilePage() {
                                     type: dbType,
                                     title: newCredential.title,
                                     institution: newCredential.issuer,
-                                    year: parseInt(newCredential.end_date) || parseInt(newCredential.start_date) || null,
+                                    qualification_level: newCredential.qualification_level,
+                                    year: parseInt(newCredential.year) || null,
+                                    start_date: newCredential.start_date || null,
+                                    end_date: newCredential.end_date || null,
                                     document_url: newCredential.document_url || null,
                                 });
 
-                            if (error) throw error;
+                            if (error) {
+                                console.error("Supabase Error adding qualification:", {
+                                    message: error.message,
+                                    code: error.code,
+                                    hint: error.hint,
+                                    details: error.details
+                                });
+                                throw error;
+                            }
 
                             if (dbType === 'high_school') {
                                 setMatricData({
                                     schoolName: newCredential.issuer,
-                                    completionYear: parseInt(newCredential.end_date) || parseInt(newCredential.start_date) || new Date().getFullYear(),
+                                    completionYear: parseInt(newCredential.year) || new Date().getFullYear(),
                                 });
                             } else if (isAddCredentialOpen.type === "education") {
                                 setEducationList([...educationList, newCredential]);
@@ -1042,9 +1067,9 @@ export default function ProfilePage() {
                                 setCertificationsList([...certificationsList, newCredential]);
                             }
                             alert("Qualification added successfully!");
-                        } catch (error) {
-                            console.error("Error adding qualification:", error);
-                            alert("Failed to add qualification.");
+                        } catch (error: any) {
+                            console.error("Detailed Error adding qualification:", error);
+                            alert(`Failed to add qualification. ${error.message || "Please check your database console."}`);
                         }
 
                         setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });

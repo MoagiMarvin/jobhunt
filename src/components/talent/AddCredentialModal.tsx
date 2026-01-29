@@ -170,8 +170,22 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                     <button
                         onClick={() => {
                             if (formData.title && formData.issuer) {
+                                // Extract year from end_date for DB compatibility
+                                const issueYear = parseInt(formData.end_date) || parseInt(formData.start_date) || new Date().getFullYear();
+
+                                // Format dates as YYYY-MM-DD for database
+                                // If user only provides a year (e.g. "2024"), we convert it to "2024-01-01"
+                                const formatYearToDate = (yearStr: string) => {
+                                    if (!yearStr) return null;
+                                    if (/^\d{4}$/.test(yearStr)) return `${yearStr}-01-01`;
+                                    return yearStr; // Assume it's already a date or invalid (handled by DB)
+                                };
+
                                 onAdd({
                                     ...formData,
+                                    year: issueYear,
+                                    start_date: formatYearToDate(formData.start_date),
+                                    end_date: formatYearToDate(formData.end_date),
                                     isVerified: !!selectedFile,
                                     document_url: selectedFile ? formData.document_url || "/mock/new-doc.pdf" : ""
                                 });

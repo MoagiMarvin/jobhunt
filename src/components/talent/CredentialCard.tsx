@@ -51,7 +51,14 @@ export default function CredentialCard({
                 <div className="flex-1 space-y-1.5">
                     <div className="flex items-start justify-between gap-4 pr-8">
                         <div>
-                            <h3 className="text-sm font-bold text-primary leading-tight">{title}</h3>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-sm font-bold text-primary leading-tight">{title}</h3>
+                                {qualification_level && (
+                                    <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md font-bold text-[9px] border border-blue-100 whitespace-nowrap">
+                                        {qualification_level}
+                                    </span>
+                                )}
+                            </div>
                             <p className="text-[11px] text-slate-600 font-medium">{issuer}</p>
                         </div>
                         {/* Removed Verified Badge */}
@@ -59,11 +66,6 @@ export default function CredentialCard({
 
                     <div className="flex items-center gap-3 text-[10px] text-slate-900 font-bold">
                         <span>{date}</span>
-                        {qualification_level && (
-                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md font-bold text-[9px]">
-                                {qualification_level}
-                            </span>
-                        )}
                     </div>
 
                     {/* Action Links */}
