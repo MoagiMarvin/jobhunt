@@ -222,11 +222,6 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                         <div className="flex justify-between items-baseline">
                             <h3 className="font-bold text-xs text-black">
                                 {edu.degree || edu.title}
-                                {edu.qualification_level && edu.qualification_level !== 'Tertiary' && (
-                                    <span className="font-normal text-slate-500 ml-1">
-                                        • {edu.qualification_level}
-                                    </span>
-                                )}
                             </h3>
                             <span className="text-xs font-bold text-black">
                                 {formatYearsOnly(edu.duration || edu.date || edu.year?.toString())}

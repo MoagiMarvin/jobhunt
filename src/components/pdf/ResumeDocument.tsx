@@ -356,7 +356,6 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                                 <View style={styles.itemHeader}>
                                     <Text style={styles.itemTitle}>
                                         {edu.degree || edu.title}
-                                        {edu.qualification_level && edu.qualification_level !== 'Tertiary' ? ` (${edu.qualification_level})` : ''}
                                     </Text>
                                     <Text style={styles.itemDate}>
                                         {formatYearsOnly(edu.duration || edu.date || edu.year?.toString())}
