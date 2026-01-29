@@ -3,11 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 // Mock storage for saved candidates
 const savedCandidates: Record<string, any[]> = {};
 
-export async function POST(req: NextRequest, { params }: { params: { groupId: string } }) {
+export async function POST(
+    request: NextRequest,
+    { params }: { params: Promise<{ groupId: string }> }
+): Promise<Response> {
     try {
         const { groupId } = await params;
-        const { talent_id, talent_name, talent_headline, talent_sector, notes } =
-            await req.json();
+        const body = await request.json();
+        const { talent_id, talent_name, talent_headline, talent_sector, notes } = body;
 
         if (!talent_id || !talent_name) {
             return NextResponse.json(
@@ -44,9 +47,9 @@ export async function POST(req: NextRequest, { params }: { params: { groupId: st
 }
 
 export async function GET(
-    req: NextRequest,
-    { params }: { params: { groupId: string } }
-) {
+    request: NextRequest,
+    { params }: { params: Promise<{ groupId: string }> }
+): Promise<Response> {
     try {
         const { groupId } = await params;
         const candidates = savedCandidates[groupId] || [];
