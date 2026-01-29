@@ -11,7 +11,7 @@ interface EditProfileModalProps {
         email: string;
         phone: string;
         location: string;
-        availabilityStatus: "Looking for Work" | "Not Looking";
+        availabilityStatus: "Looking for Work" | "Not Looking" | "Open to Offers" | "Unavailable";
         haveLicense?: boolean;
         licenseCode?: string;
         haveCar?: boolean;
@@ -132,6 +132,8 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                             >
                                 <option value="Looking for Work">Looking for Work</option>
                                 <option value="Not Looking">Not Looking</option>
+                                <option value="Open to Offers">Open to Offers</option>
+                                <option value="Unavailable">Unavailable</option>
                             </select>
                         </div>
 

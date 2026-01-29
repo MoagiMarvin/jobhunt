@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { X, Save, FolderKanban, Link as LinkIcon, Github, Image as ImageIcon, Upload, Sparkles } from "lucide-react";
 
 interface AddProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd: (data: any) => void;
+    initialData?: any;
 }
 
-export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectModalProps) {
+export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }: AddProjectModalProps) {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -18,6 +19,22 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
         github_url: ""
     });
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (initialData && isOpen) {
+            setFormData({
+                title: initialData.title || "",
+                description: initialData.description || "",
+                technologies: Array.isArray(initialData.technologies) ? initialData.technologies.join(", ") : "",
+                link_url: initialData.link_url || "",
+                github_url: initialData.github_url || ""
+            });
+            setPreviewImage(initialData.image_url || null);
+        } else if (!isOpen) {
+            setFormData({ title: "", description: "", technologies: "", link_url: "", github_url: "" });
+            setPreviewImage(null);
+        }
+    }, [initialData, isOpen]);
 
     if (!isOpen) return null;
 
@@ -33,6 +50,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
         e.preventDefault();
         onAdd({
             ...formData,
+            id: initialData?.id,
             technologies: formData.technologies.split(",").map((s: string) => s.trim()).filter(Boolean),
             image_url: previewImage // In production, this would be the Supabase URL
         });
@@ -50,7 +68,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                             <FolderKanban className="w-6 h-6" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-slate-900">Add Project</h2>
+                            <h2 className="text-xl font-bold text-slate-900">{initialData ? "Edit Project" : "Add Project"}</h2>
                             <p className="text-xs text-slate-500">Showcase your best work to recruiters</p>
                         </div>
                     </div>
@@ -194,7 +212,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd }: AddProjectMo
                         className="flex-2 py-3.5 px-10 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2"
                     >
                         <Save className="w-5 h-5" />
-                        Save Project
+                        {initialData ? "Update Project" : "Save Project"}
                     </button>
                 </div>
             </div>

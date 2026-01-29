@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Save, GraduationCap, Award, FileUp, Link as LinkIcon } from "lucide-react";
 
 interface AddCredentialModalProps {
@@ -8,9 +8,10 @@ interface AddCredentialModalProps {
     type: "education" | "certification";
     onClose: () => void;
     onAdd: (data: any) => void;
+    initialData?: any;
 }
 
-export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: AddCredentialModalProps) {
+export default function AddCredentialModal({ isOpen, type, onClose, onAdd, initialData }: AddCredentialModalProps) {
     const [formData, setFormData] = useState({
         title: "",
         issuer: "",
@@ -22,6 +23,37 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
         isVerified: false
     });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    useEffect(() => {
+        if (initialData && isOpen) {
+            setFormData({
+                title: initialData.title || "",
+                issuer: initialData.issuer || "",
+                start_date: initialData.start_date ? initialData.start_date.split("-")[0] : "",
+                end_date: initialData.end_date ? initialData.end_date.split("-")[0] : "",
+                qualification_level: initialData.qualification_level || "",
+                credential_url: initialData.credential_url || "",
+                document_url: initialData.document_url || "",
+                isVerified: initialData.isVerified || false
+            });
+            if (initialData.document_url) {
+                // We can't easily recreate a File object from a URL here without fetching it,
+                // but we can set the document_url in formData to show it exists.
+            }
+        } else if (!isOpen) {
+            setFormData({
+                title: "",
+                issuer: "",
+                start_date: "",
+                end_date: "",
+                qualification_level: "",
+                credential_url: "",
+                document_url: "",
+                isVerified: false
+            });
+            setSelectedFile(null);
+        }
+    }, [initialData, isOpen]);
 
     if (!isOpen) return null;
 
@@ -35,7 +67,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                         <Icon className={`w-5 h-5 text-blue-600`} />
-                        Add {type === "education" ? "Education" : "Certification"}
+                        {initialData ? "Edit" : "Add"} {type === "education" ? "Education" : "Certification"}
                     </h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
                         <X className="w-6 h-6" />
@@ -198,11 +230,12 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
 
                                 onAdd({
                                     ...formData,
+                                    id: initialData?.id,
                                     year: issueYear,
                                     start_date: formatYearToDate(formData.start_date),
                                     end_date: formatYearToDate(formData.end_date),
-                                    isVerified: !!selectedFile,
-                                    document_url: selectedFile ? formData.document_url || "/mock/new-doc.pdf" : ""
+                                    isVerified: !!selectedFile || !!formData.document_url,
+                                    document_url: selectedFile ? formData.document_url || "/mock/new-doc.pdf" : formData.document_url
                                 });
                             }
                         }}
@@ -210,7 +243,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd }: Add
                         className="flex-2 py-3 px-8 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 bg-blue-600 hover:bg-blue-700"
                     >
                         <Save className="w-5 h-5" />
-                        Save {type === "education" ? "Education" : "Certification"}
+                        {initialData ? "Update" : "Save"} {type === "education" ? "Education" : "Certification"}
                     </button>
                 </div>
             </div>

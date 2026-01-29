@@ -1,9 +1,11 @@
-import { School, Trash2 } from "lucide-react";
+import { School } from "lucide-react";
+import ItemActionMenu from "./ItemActionMenu";
 
 interface SecondaryEducationCardProps {
     schoolName: string;
     completionYear: number;
     onDelete?: () => void;
+    onEdit?: () => void;
     isOwner?: boolean;
 }
 
@@ -11,20 +13,20 @@ export default function SecondaryEducationCard({
     schoolName,
     completionYear,
     onDelete,
+    onEdit,
     isOwner = true
 }: SecondaryEducationCardProps) {
     return (
-        <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-5 group relative">
-            {isOwner && onDelete && (
-                <button
-                    onClick={onDelete}
-                    className="absolute top-4 right-4 p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                    title="Delete"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
+        <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm group relative hover:border-blue-200 transition-all">
+            {isOwner && (
+                <div className="absolute top-4 right-4 z-10">
+                    <ItemActionMenu
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                    />
+                </div>
             )}
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-4">
                 <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-white shrink-0 shadow-lg">
                     <School className="w-5 h-5" />
                 </div>

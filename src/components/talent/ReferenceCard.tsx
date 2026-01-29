@@ -1,4 +1,5 @@
-import { User, Building2, Phone, Mail, Trash2 } from "lucide-react";
+import { User, Building2, Phone, Mail } from "lucide-react";
+import ItemActionMenu from "./ItemActionMenu";
 
 interface ReferenceCardProps {
     name: string;
@@ -7,6 +8,7 @@ interface ReferenceCardProps {
     phone?: string;
     email?: string;
     onDelete?: () => void;
+    onEdit?: () => void;
     isOwner?: boolean;
 }
 
@@ -17,20 +19,20 @@ export default function ReferenceCard({
     phone,
     email,
     onDelete,
+    onEdit,
     isOwner = true
 }: ReferenceCardProps) {
     return (
-        <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-5 group relative">
-            {isOwner && onDelete && (
-                <button
-                    onClick={onDelete}
-                    className="absolute top-4 right-4 p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                    title="Delete"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
+        <div className="group relative bg-white rounded-xl border border-slate-100 p-5 hover:border-blue-200 hover:shadow-md transition-all">
+            {isOwner && (
+                <div className="absolute top-4 right-4 z-10">
+                    <ItemActionMenu
+                        onEdit={onEdit}
+                        onDelete={onDelete}
+                    />
+                </div>
             )}
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-4">
                 <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                     <User className="w-5 h-5" />
                 </div>

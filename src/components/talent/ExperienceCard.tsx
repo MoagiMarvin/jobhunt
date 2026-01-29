@@ -1,6 +1,7 @@
 "use client";
 
-import { Building2, Calendar, Trash2, MoreVertical, Edit2 } from "lucide-react";
+import { Building2, Calendar, MapPin, ChevronDown, ChevronUp, Briefcase } from "lucide-react";
+import ItemActionMenu from "./ItemActionMenu";
 import { useState, useRef, useEffect } from "react";
 
 interface ExperienceCardProps {
@@ -42,8 +43,15 @@ export default function ExperienceCard({
     }, []);
 
     return (
-        <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-5 group relative">
-            <div className="flex gap-4">
+        <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm group relative hover:border-blue-200 transition-all">
+            {isOwner && (
+                <ItemActionMenu
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    className="absolute top-4 right-4 z-10"
+                />
+            )}
+            <div className={`flex gap-4 items-start mt-4 ${isExpanded ? '' : 'max-h-32 overflow-hidden'}`}>
                 {/* Visual Marker */}
                 <div className="flex flex-col items-center">
                     <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 italic font-bold text-lg">
@@ -61,47 +69,6 @@ export default function ExperienceCard({
                                 <Calendar className="w-3.5 h-3.5" />
                                 {duration}
                             </div>
-
-                            {isOwner && (
-                                <div className="relative" ref={menuRef}>
-                                    <button
-                                        onClick={() => setShowMenu(!showMenu)}
-                                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                                        title="Options"
-                                    >
-                                        <MoreVertical className="w-4 h-4" />
-                                    </button>
-
-                                    {showMenu && (
-                                        <div className="absolute right-0 mt-1 w-32 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-10 animate-in fade-in zoom-in duration-100">
-                                            {onEdit && (
-                                                <button
-                                                    onClick={() => {
-                                                        onEdit();
-                                                        setShowMenu(false);
-                                                    }}
-                                                    className="w-full px-4 py-2 text-left text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-colors"
-                                                >
-                                                    <Edit2 className="w-3.5 h-3.5" />
-                                                    Edit
-                                                </button>
-                                            )}
-                                            {onDelete && (
-                                                <button
-                                                    onClick={() => {
-                                                        onDelete();
-                                                        setShowMenu(false);
-                                                    }}
-                                                    className="w-full px-4 py-2 text-left text-xs font-bold text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors"
-                                                >
-                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                    Delete
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
                         </div>
                     </div>
 

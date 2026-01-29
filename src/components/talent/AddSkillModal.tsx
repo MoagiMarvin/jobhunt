@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { X, Save, Layers, MessageSquare, Plus } from "lucide-react";
 
 export type TalentSkill = {
+    id?: string;
     name: string;
     minYears?: number;
     category?: string;
@@ -16,17 +17,29 @@ interface AddSkillModalProps {
     initialMode?: "technical" | "soft";
     onClose: () => void;
     onAdd: (skills: TalentSkill[]) => void;
+    initialData?: TalentSkill;
 }
 
-export default function AddSkillModal({ isOpen, initialMode = "technical", onClose, onAdd }: AddSkillModalProps) {
+export default function AddSkillModal({ isOpen, initialMode = "technical", onClose, onAdd, initialData }: AddSkillModalProps) {
     const [mode, setMode] = useState<"technical" | "soft">(initialMode);
 
     // Synchronize mode when initialMode changes (e.g. when modal is reopened with a different button)
     useEffect(() => {
         if (isOpen) {
             setMode(initialMode);
+            if (initialData) {
+                setCategory(initialData.category || "");
+                if (initialData.isSoftSkill) {
+                    setTempSoftSkills([]);
+                    setCurrentSoftSkill(initialData.name || "");
+                } else {
+                    setTempSkills([]);
+                    setCurrentSkillName(initialData.name || "");
+                    setCurrentSkillYears(initialData.minYears?.toString() || "");
+                }
+            }
         }
-    }, [isOpen, initialMode]);
+    }, [isOpen, initialMode, initialData]);
 
     const [category, setCategory] = useState("");
 
@@ -74,6 +87,7 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
             const newSkills: TalentSkill[] = finalSkillsToSubmit.map(s => {
                 const yrs = s.years ? Number(s.years) : 0;
                 return {
+                    id: initialData?.id,
                     name: s.name,
                     minYears: isNaN(yrs) ? 0 : yrs,
                     category: category.trim() || "Other Skills",
@@ -91,6 +105,7 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
             }
 
             const newSkills: TalentSkill[] = finalSoftSkillsToSubmit.map(s => ({
+                id: initialData?.id,
                 name: s,
                 description: s,
                 isSoftSkill: true,
@@ -120,7 +135,7 @@ export default function AddSkillModal({ isOpen, initialMode = "technical", onClo
                         ) : (
                             <MessageSquare className="w-5 h-5 text-blue-600" />
                         )}
-                        {mode === "technical" ? "Add Technical Skills" : "Add Soft Skills"}
+                        {initialData ? "Edit" : "Add"} {mode === "technical" ? "Technical Skills" : "Soft Skills"}
                     </h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
                         <X className="w-6 h-6" />

@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Save, User, Building2, Phone, Mail, Briefcase } from "lucide-react";
 
 interface AddReferenceModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd: (reference: any) => void;
+    initialData?: any;
 }
 
-export default function AddReferenceModal({ isOpen, onClose, onAdd }: AddReferenceModalProps) {
+export default function AddReferenceModal({ isOpen, onClose, onAdd, initialData }: AddReferenceModalProps) {
     const [formData, setFormData] = useState({
         name: "",
         relationship: "",
@@ -18,19 +19,38 @@ export default function AddReferenceModal({ isOpen, onClose, onAdd }: AddReferen
         email: ""
     });
 
+    useEffect(() => {
+        if (initialData && isOpen) {
+            setFormData({
+                name: initialData.name || "",
+                relationship: initialData.relationship || "",
+                company: initialData.company || "",
+                phone: initialData.phone || "",
+                email: initialData.email || ""
+            });
+        } else if (!isOpen) {
+            setFormData({ name: "", relationship: "", company: "", phone: "", email: "" });
+        }
+    }, [initialData, isOpen]);
+
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onAdd(formData);
-        setFormData({ name: "", relationship: "", company: "", phone: "", email: "" });
+        onAdd({
+            ...formData,
+            id: initialData?.id
+        });
+        if (!initialData) {
+            setFormData({ name: "", relationship: "", company: "", phone: "", email: "" });
+        }
     };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-slate-900">Add Professional Reference</h2>
+                    <h2 className="text-lg font-bold text-slate-900">{initialData ? "Edit" : "Add"} Professional Reference</h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
                         <X className="w-6 h-6" />
                     </button>
@@ -119,7 +139,7 @@ export default function AddReferenceModal({ isOpen, onClose, onAdd }: AddReferen
                             className="flex-1 py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                         >
                             <Save className="w-4 h-4" />
-                            Save Reference
+                            {initialData ? "Update Reference" : "Save Reference"}
                         </button>
                     </div>
                 </form>

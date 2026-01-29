@@ -1,5 +1,6 @@
-import { ExternalLink, Github, Trash2 } from "lucide-react";
+import { ExternalLink, Github } from "lucide-react";
 import Image from "next/image";
+import ItemActionMenu from "./ItemActionMenu";
 
 interface ProjectCardProps {
     title: string;
@@ -9,6 +10,7 @@ interface ProjectCardProps {
     github_url?: string;
     image_url?: string;
     onDelete?: () => void;
+    onEdit?: () => void;
     isOwner?: boolean;
 }
 
@@ -20,6 +22,7 @@ export default function ProjectCard({
     github_url,
     image_url,
     onDelete,
+    onEdit,
     isOwner = true
 }: ProjectCardProps) {
     return (
@@ -37,19 +40,21 @@ export default function ProjectCard({
             )}
 
             {/* Content */}
-            <div className={`p-4 sm:p-5 flex-1 flex flex-col justify-between ${!image_url ? "w-full" : ""}`}>
+            <div className={`p-4 sm:p-5 flex-1 flex flex-col justify-between relative ${!image_url ? "w-full" : ""}`}>
+                {isOwner && (
+                    <div className="absolute top-4 right-4 z-10">
+                        <ItemActionMenu
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                        />
+                    </div>
+                )}
                 <div className="space-y-1.5">
                     <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-sm font-bold text-primary group-hover:text-blue-600 transition-colors line-clamp-1">{title}</h3>
-                        {isOwner && onDelete && (
-                            <button
-                                onClick={onDelete}
-                                className="p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                title="Delete Project"
-                            >
-                                <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                        )}
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-primary group-hover:text-blue-600 transition-colors line-clamp-1">{title}</h3>
+                        </div>
+
                     </div>
                     <p className="text-[11px] text-slate-600 line-clamp-2 leading-tight">{description}</p>
                 </div>

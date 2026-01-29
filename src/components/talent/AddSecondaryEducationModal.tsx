@@ -1,25 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Save, School } from "lucide-react";
 
 interface AddSecondaryEducationModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd: (data: any) => void;
+    initialData?: any;
 }
 
-export default function AddSecondaryEducationModal({ isOpen, onClose, onAdd }: AddSecondaryEducationModalProps) {
+export default function AddSecondaryEducationModal({ isOpen, onClose, onAdd, initialData }: AddSecondaryEducationModalProps) {
     const [schoolName, setSchoolName] = useState("");
     const [completionYear, setCompletionYear] = useState(new Date().getFullYear());
+
+    useEffect(() => {
+        if (initialData && isOpen) {
+            setSchoolName(initialData.schoolName || "");
+            setCompletionYear(initialData.completionYear || new Date().getFullYear());
+        } else if (!isOpen) {
+            setSchoolName("");
+            setCompletionYear(new Date().getFullYear());
+        }
+    }, [initialData, isOpen]);
 
     if (!isOpen) return null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onAdd({
+            ...initialData,
             schoolName,
-            completionYear
+            completionYear,
+            id: initialData?.id
         });
         setSchoolName("");
     };
@@ -28,7 +41,7 @@ export default function AddSecondaryEducationModal({ isOpen, onClose, onAdd }: A
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-slate-900">Add Matric Details</h2>
+                    <h2 className="text-lg font-bold text-slate-900">{initialData ? "Edit" : "Add"} Matric Details</h2>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
                         <X className="w-6 h-6" />
                     </button>
@@ -75,7 +88,7 @@ export default function AddSecondaryEducationModal({ isOpen, onClose, onAdd }: A
                             className="flex-1 py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                         >
                             <Save className="w-4 h-4" />
-                            Save
+                            {initialData ? "Update" : "Save"}
                         </button>
                     </div>
                 </form>

@@ -1,4 +1,5 @@
-import { Award, GraduationCap, FileCheck, ExternalLink, Trash2 } from "lucide-react";
+import { Award, GraduationCap, FileCheck, ExternalLink } from "lucide-react";
+import ItemActionMenu from "./ItemActionMenu";
 
 interface CredentialCardProps {
     type: "education" | "certification";
@@ -11,6 +12,7 @@ interface CredentialCardProps {
     isVerified?: boolean;
     viewerRole?: "public" | "recruiter" | "owner";
     onDelete?: () => void;
+    onEdit?: () => void;
     isOwner?: boolean;
 }
 
@@ -25,6 +27,7 @@ export default function CredentialCard({
     isVerified = false,
     viewerRole = "owner",
     onDelete,
+    onEdit,
     isOwner = true
 }: CredentialCardProps) {
     const Icon = type === "education" ? GraduationCap : Award;
@@ -32,16 +35,14 @@ export default function CredentialCard({
 
     return (
         <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-5 group relative">
-            {isOwner && onDelete && (
-                <button
-                    onClick={onDelete}
-                    className="absolute top-4 right-4 p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-                    title="Delete"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </button>
+            {isOwner && (
+                <ItemActionMenu
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    className="absolute top-4 right-4 z-10"
+                />
             )}
-            <div className="flex gap-3">
+            <div className="flex gap-3 mt-4">
                 {/* Icon */}
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-gradient-to-br from-blue-500 to-blue-700`}>
                     <Icon className="w-4 h-4 text-white" />

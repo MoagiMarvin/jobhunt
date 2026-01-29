@@ -9,6 +9,7 @@ import ProfileHeader from "@/components/talent/ProfileHeader";
 import ProjectCard from "@/components/talent/ProjectCard";
 import CredentialCard from "@/components/talent/CredentialCard";
 import ExperienceCard from "@/components/talent/ExperienceCard";
+import ItemActionMenu from "@/components/talent/ItemActionMenu";
 import EditProfileModal from "@/components/talent/EditProfileModal";
 import AddSkillModal, { TalentSkill } from "@/components/talent/AddSkillModal";
 import AddCredentialModal from "@/components/talent/AddCredentialModal";
@@ -31,7 +32,7 @@ export default function ProfilePage() {
         avatar: "",
         headline: "",
         location: "",
-        availabilityStatus: "Looking for Work" as "Looking for Work" | "Not Looking",
+        availabilityStatus: "Looking for Work" as "Looking for Work" | "Not Looking" | "Open to Offers" | "Unavailable",
         targetRoles: [] as string[],
         github: "",
         linkedin: "",
@@ -44,7 +45,7 @@ export default function ProfilePage() {
 
     const [skills, setSkills] = useState<TalentSkill[]>([]);
 
-    const [languages, setLanguages] = useState<{ language: string; proficiency: string }[]>([]);
+    const [languages, setLanguages] = useState<{ id?: string; language: string; proficiency: string }[]>([]);
 
     const [projectsList, setProjectsList] = useState<any[]>([]);
 
@@ -70,6 +71,12 @@ export default function ProfilePage() {
     const [isAddMatricOpen, setIsAddMatricOpen] = useState(false);
     const [isAddExperienceOpen, setIsAddExperienceOpen] = useState(false);
     const [editingExperience, setEditingExperience] = useState<any>(null);
+    const [editingProject, setEditingProject] = useState<any>(null);
+    const [editingCredential, setEditingCredential] = useState<any>(null);
+    const [editingReference, setEditingReference] = useState<any>(null);
+    const [editingMatric, setEditingMatric] = useState<any>(null);
+    const [editingSkill, setEditingSkill] = useState<TalentSkill | null>(null);
+    const [editingLanguage, setEditingLanguage] = useState<any>(null);
 
     const [editedUser, setEditedUser] = useState(user);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -168,6 +175,7 @@ export default function ProfilePage() {
 
                 if (dbProjects && dbProjects.length > 0) {
                     setProjectsList(dbProjects.map(proj => ({
+                        id: proj.id,
                         title: proj.title,
                         description: proj.description || "",
                         technologies: proj.technologies || [],
@@ -192,6 +200,7 @@ export default function ProfilePage() {
                     const matric = qData.find(q => q.type === 'high_school');
                     if (matric) {
                         setMatricData({
+                            id: matric.id,
                             schoolName: matric.institution,
                             completionYear: matric.year
                         });
@@ -242,6 +251,7 @@ export default function ProfilePage() {
                     .eq("user_id", userId);
                 if (dbSkills) {
                     setSkills(dbSkills.map(s => ({
+                        id: s.id,
                         name: s.name,
                         minYears: s.min_experience_years || 0,
                         category: s.category || (s.is_soft_skill ? "Soft Skills" : "Other Skills"),
@@ -256,6 +266,7 @@ export default function ProfilePage() {
                     .eq("user_id", userId);
                 if (dbLangs) {
                     setLanguages(dbLangs.map(l => ({
+                        id: l.id,
                         language: l.language,
                         proficiency: l.proficiency
                     })));
@@ -268,6 +279,7 @@ export default function ProfilePage() {
                     .eq("user_id", userId);
                 if (dbRefs) {
                     setReferences(dbRefs.map(r => ({
+                        id: r.id,
                         name: r.name,
                         relationship: r.relationship,
                         company: r.company,
@@ -486,7 +498,20 @@ export default function ProfilePage() {
                                     <ProjectCard
                                         key={idx}
                                         {...project}
-                                        onDelete={() => setProjectsList(projectsList.filter((_: any, i: number) => i !== idx))}
+                                        onDelete={async () => {
+                                            if (currentUserId && project.id) {
+                                                const { error } = await supabase.from("projects").delete().eq("id", project.id);
+                                                if (error) {
+                                                    alert("Failed to delete project.");
+                                                    return;
+                                                }
+                                            }
+                                            setProjectsList(projectsList.filter((_: any, i: number) => i !== idx));
+                                        }}
+                                        onEdit={() => {
+                                            setEditingProject(project);
+                                            setIsAddProjectOpen(true);
+                                        }}
                                         isOwner={true}
                                     />
                                 ))}
@@ -588,7 +613,7 @@ export default function ProfilePage() {
                                                             return (
                                                                 <div
                                                                     key={idx}
-                                                                    className="group flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all font-medium"
+                                                                    className="group relative flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all font-medium"
                                                                 >
                                                                     <span className="text-sm text-slate-700">{skill.name}</span>
                                                                     {(skill.minYears ?? 0) > 0 && (
@@ -596,18 +621,24 @@ export default function ProfilePage() {
                                                                             {skill.minYears}Y
                                                                         </span>
                                                                     )}
-                                                                    <button
-                                                                        onClick={async () => {
-                                                                            if (currentUserId) {
-                                                                                await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                                            }
-                                                                            const updated = skills.filter((_, i) => i !== originalIdx);
-                                                                            setSkills(updated);
-                                                                        }}
-                                                                        className="text-slate-300 hover:text-red-500 transition-colors ml-1"
-                                                                    >
-                                                                        <X className="w-3.5 h-3.5" />
-                                                                    </button>
+                                                                    <div>
+                                                                        <ItemActionMenu
+                                                                            onEdit={() => {
+                                                                                setEditingSkill(skill);
+                                                                                setAddSkillMode("technical");
+                                                                                setIsAddSkillOpen(true);
+                                                                            }}
+                                                                            onDelete={async () => {
+                                                                                if (currentUserId && skill.id) {
+                                                                                    await supabase.from("skills").delete().eq("id", skill.id);
+                                                                                } else if (currentUserId) {
+                                                                                    await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                                }
+                                                                                const updated = skills.filter((_, i) => i !== originalIdx);
+                                                                                setSkills(updated);
+                                                                            }}
+                                                                        />
+                                                                    </div>
                                                                 </div>
                                                             );
                                                         })}
@@ -652,23 +683,29 @@ export default function ProfilePage() {
                                             .map((skill, idx) => {
                                                 const originalIdx = skills.indexOf(skill);
                                                 return (
-                                                    <div key={idx} className="group flex items-start -ml-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                                                        <div className="mt-2 mr-3 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                                                    <div key={idx} className="group relative flex items-center gap-3 -ml-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                                                        <div className="mt-2 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                                                         <p className="text-sm text-slate-700 leading-relaxed font-medium flex-1">
                                                             {skill.name}
                                                         </p>
-                                                        <button
-                                                            onClick={async () => {
-                                                                if (currentUserId) {
-                                                                    await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                                }
-                                                                const updated = skills.filter((_, i) => i !== originalIdx);
-                                                                setSkills(updated);
-                                                            }}
-                                                            className="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded transition-all"
-                                                        >
-                                                            <X className="w-3.5 h-3.5" />
-                                                        </button>
+                                                        <div>
+                                                            <ItemActionMenu
+                                                                onEdit={() => {
+                                                                    setEditingSkill(skill);
+                                                                    setAddSkillMode("soft");
+                                                                    setIsAddSkillOpen(true);
+                                                                }}
+                                                                onDelete={async () => {
+                                                                    if (currentUserId && skill.id) {
+                                                                        await supabase.from("skills").delete().eq("id", skill.id);
+                                                                    } else if (currentUserId) {
+                                                                        await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                    }
+                                                                    const updated = skills.filter((_, i) => i !== originalIdx);
+                                                                    setSkills(updated);
+                                                                }}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 );
                                             })}
@@ -705,21 +742,28 @@ export default function ProfilePage() {
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
                                 <div className="grid md:grid-cols-3 gap-4">
                                     {languages.map((lang, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200">
+                                        <div key={idx} className="group relative flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-200 transition-all">
                                             <div>
                                                 <p className="font-semibold text-slate-800 text-sm">{lang.language}</p>
                                                 <p className="text-[10px] text-slate-500">{lang.proficiency}</p>
                                             </div>
-                                            <button
-                                                onClick={() => {
-                                                    const updated = languages.filter((_, i) => i !== idx);
-                                                    setLanguages(updated);
-                                                    localStorage.setItem("user_languages_list", JSON.stringify(updated));
-                                                }}
-                                                className="text-slate-400 hover:text-red-500"
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </button>
+                                            <div>
+                                                <ItemActionMenu
+                                                    onEdit={() => {
+                                                        setEditingLanguage({ ...lang, idx });
+                                                        setNewLanguage({ language: lang.language, proficiency: lang.proficiency });
+                                                        setIsAddLanguageOpen(true);
+                                                    }}
+                                                    onDelete={async () => {
+                                                        if (currentUserId && lang.id) {
+                                                            await supabase.from("languages").delete().eq("id", lang.id);
+                                                        }
+                                                        const updated = languages.filter((_, i) => i !== idx);
+                                                        setLanguages(updated);
+                                                        localStorage.setItem("user_languages_list", JSON.stringify(updated));
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -753,12 +797,23 @@ export default function ProfilePage() {
                                         document_url={edu.document_url}
                                         isVerified={edu.isVerified}
                                         viewerRole="owner"
-                                        onDelete={() => {
+                                        onDelete={async () => {
+                                            if (currentUserId && edu.id) {
+                                                const { error } = await supabase.from("qualifications").delete().eq("id", edu.id);
+                                                if (error) {
+                                                    alert("Failed to delete education.");
+                                                    return;
+                                                }
+                                            }
                                             const updated = educationList.filter((_: any, i: number) => i !== idx);
                                             setEducationList(updated);
                                             // Save combined credentials to localStorage
                                             const allCredentials = [...updated.map((e: any) => ({ ...e, type: 'education' })), ...certificationsList.map((c: any) => ({ ...c, type: 'certification' }))];
                                             localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+                                        }}
+                                        onEdit={() => {
+                                            setEditingCredential(edu);
+                                            setIsAddCredentialOpen({ open: true, type: "education" });
                                         }}
                                         isOwner={true}
                                     />
@@ -786,9 +841,20 @@ export default function ProfilePage() {
                             {matricData ? (
                                 <SecondaryEducationCard
                                     {...matricData}
-                                    onDelete={() => {
+                                    onDelete={async () => {
+                                        if (currentUserId && matricData.id) {
+                                            const { error } = await supabase.from("qualifications").delete().eq("id", matricData.id);
+                                            if (error) {
+                                                alert("Failed to delete matric data.");
+                                                return;
+                                            }
+                                        }
                                         setMatricData(null);
                                         localStorage.removeItem("user_matric_data");
+                                    }}
+                                    onEdit={() => {
+                                        setEditingMatric(matricData);
+                                        setIsAddMatricOpen(true);
                                     }}
                                     isOwner={true}
                                 />
@@ -826,12 +892,23 @@ export default function ProfilePage() {
                                         document_url={cert.document_url}
                                         isVerified={cert.isVerified}
                                         viewerRole="owner"
-                                        onDelete={() => {
+                                        onDelete={async () => {
+                                            if (currentUserId && cert.id) {
+                                                const { error } = await supabase.from("qualifications").delete().eq("id", cert.id);
+                                                if (error) {
+                                                    alert("Failed to delete certification.");
+                                                    return;
+                                                }
+                                            }
                                             const updated = certificationsList.filter((_: any, i: number) => i !== idx);
                                             setCertificationsList(updated);
                                             // Save combined credentials to localStorage
                                             const allCredentials = [...educationList.map((e: any) => ({ ...e, type: 'education' })), ...updated.map((c: any) => ({ ...c, type: 'certification' }))];
                                             localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+                                        }}
+                                        onEdit={() => {
+                                            setEditingCredential(cert);
+                                            setIsAddCredentialOpen({ open: true, type: "certification" });
                                         }}
                                         isOwner={true}
                                     />
@@ -859,10 +936,21 @@ export default function ProfilePage() {
                                     <ReferenceCard
                                         key={idx}
                                         {...ref}
-                                        onDelete={() => {
+                                        onDelete={async () => {
+                                            if (currentUserId && ref.id) {
+                                                const { error } = await supabase.from("references").delete().eq("id", ref.id);
+                                                if (error) {
+                                                    alert("Failed to delete reference.");
+                                                    return;
+                                                }
+                                            }
                                             const updated = references.filter((_, i) => i !== idx);
                                             setReferences(updated);
                                             localStorage.setItem("user_references_list", JSON.stringify(updated));
+                                        }}
+                                        onEdit={() => {
+                                            setEditingReference(ref);
+                                            setIsAddReferenceOpen(true);
                                         }}
                                         isOwner={true}
                                     />
@@ -887,44 +975,64 @@ export default function ProfilePage() {
                 <AddSkillModal
                     isOpen={isAddSkillOpen}
                     initialMode={addSkillMode}
-                    onClose={() => setIsAddSkillOpen(false)}
+                    onClose={() => {
+                        setIsAddSkillOpen(false);
+                        setEditingSkill(null);
+                    }}
+                    initialData={editingSkill || undefined}
                     onAdd={async (newSkills: any[]) => {
                         if (!currentUserId) return;
                         try {
-                            const insertData = newSkills.map(s => ({
-                                user_id: currentUserId,
-                                name: s.name,
-                                min_experience_years: s.minYears || 0,
-                                category: s.category || "Other Skills",
-                                is_soft_skill: s.isSoftSkill || false
-                            }));
+                            if (editingSkill && newSkills.length > 0) {
+                                // Update existing
+                                const s = newSkills[0];
+                                const { error } = await supabase
+                                    .from("skills")
+                                    .update({
+                                        name: s.name,
+                                        min_experience_years: s.minYears || 0,
+                                        category: s.category || (s.isSoftSkill ? "Soft Skills" : "Other Skills"),
+                                        is_soft_skill: s.isSoftSkill || false
+                                    })
+                                    .eq("id", editingSkill.id);
 
-                            console.log("Attempting to insert skills:", insertData);
+                                if (error) throw error;
 
-                            const { error } = await supabase
-                                .from("skills")
-                                .insert(insertData);
+                                setSkills(skills.map(skill => skill.id === editingSkill.id ? { ...s, id: editingSkill.id } : skill));
+                                alert("Skill updated!");
+                            } else {
+                                // Insert new
+                                const insertData = newSkills.map(s => ({
+                                    user_id: currentUserId,
+                                    name: s.name,
+                                    min_experience_years: s.minYears || 0,
+                                    category: s.category || "Other Skills",
+                                    is_soft_skill: s.isSoftSkill || false
+                                }));
 
-                            if (error) {
-                                console.error("Supabase Error:", error);
-                                throw error;
+                                const { data, error } = await supabase
+                                    .from("skills")
+                                    .insert(insertData)
+                                    .select();
+
+                                if (error) throw error;
+
+                                const formattedNewSkills = data.map(s => ({
+                                    id: s.id,
+                                    name: s.name,
+                                    minYears: s.min_experience_years || 0,
+                                    category: s.category || (s.is_soft_skill ? "Soft Skills" : "Other Skills"),
+                                    isSoftSkill: s.is_soft_skill || false
+                                }));
+
+                                setSkills([...skills, ...formattedNewSkills]);
+                                alert(`${newSkills.length > 1 ? newSkills.length + " skills" : "Skill"} added successfully!`);
                             }
-
-                            // Format the new skills for the local state to match the DB-fetched structure
-                            const formattedNewSkills = newSkills.map(s => ({
-                                name: s.name,
-                                minYears: s.minYears || 0,
-                                category: s.category || (s.isSoftSkill ? "Soft Skills" : "Other Skills"),
-                                isSoftSkill: s.isSoftSkill || false
-                            }));
-
-                            const updated = [...skills, ...formattedNewSkills];
-                            setSkills(updated);
                             setIsAddSkillOpen(false);
-                            alert(`${newSkills.length > 1 ? newSkills.length + " skills" : "Skill"} added successfully!`);
+                            setEditingSkill(null);
                         } catch (error: any) {
-                            console.error("Error adding skills:", error);
-                            alert(`Failed to add skills. ${error.message || "Please check your database schema."}`);
+                            console.error("Error saving skills:", error);
+                            alert(`Failed to save skills. ${error.message}`);
                         }
                     }}
                 />
@@ -988,29 +1096,46 @@ export default function ProfilePage() {
                                         onClick={async () => {
                                             if (newLanguage.language && currentUserId) {
                                                 try {
-                                                    const { error } = await supabase
-                                                        .from("languages")
-                                                        .insert({
-                                                            user_id: currentUserId,
-                                                            language: newLanguage.language,
-                                                            proficiency: newLanguage.proficiency,
-                                                        });
-                                                    if (error) throw error;
+                                                    const langData = {
+                                                        user_id: currentUserId,
+                                                        language: newLanguage.language,
+                                                        proficiency: newLanguage.proficiency,
+                                                    };
 
-                                                    const updated = [...languages, newLanguage];
-                                                    setLanguages(updated);
+                                                    if (editingLanguage) {
+                                                        const { error } = await supabase
+                                                            .from("languages")
+                                                            .update(langData)
+                                                            .eq("id", editingLanguage.id);
+                                                        if (error) throw error;
+
+                                                        const updated = languages.map((l, i) => i === editingLanguage.idx ? { ...l, ...langData } : l);
+                                                        setLanguages(updated);
+                                                        alert("Language updated!");
+                                                    } else {
+                                                        const { data, error } = await supabase
+                                                            .from("languages")
+                                                            .insert(langData)
+                                                            .select();
+                                                        if (error) throw error;
+
+                                                        const updated = [...languages, { ...langData, id: data[0].id }];
+                                                        setLanguages(updated);
+                                                        alert("Language added!");
+                                                    }
+
                                                     setNewLanguage({ language: "", proficiency: "Fluent" });
                                                     setIsAddLanguageOpen(false);
-                                                    alert("Language added!");
+                                                    setEditingLanguage(null);
                                                 } catch (error) {
-                                                    console.error("Error adding language:", error);
-                                                    alert("Failed to add language.");
+                                                    console.error("Error adding/updating language:", error);
+                                                    alert("Failed to save language.");
                                                 }
                                             }
                                         }}
                                         className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
                                     >
-                                        Add
+                                        {editingLanguage ? "Update" : "Add"}
                                     </button>
                                 </div>
                             </div>
@@ -1021,7 +1146,11 @@ export default function ProfilePage() {
                 <AddCredentialModal
                     isOpen={isAddCredentialOpen.open}
                     type={isAddCredentialOpen.type}
-                    onClose={() => setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false })}
+                    onClose={() => {
+                        setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
+                        setEditingCredential(null);
+                    }}
+                    initialData={editingCredential}
                     onAdd={async (newCredential: any) => {
                         if (!currentUserId) return;
 
@@ -1032,47 +1161,64 @@ export default function ProfilePage() {
                         }
 
                         try {
-                            const { error } = await supabase
-                                .from("qualifications")
-                                .insert({
-                                    user_id: currentUserId,
-                                    type: dbType,
-                                    title: newCredential.title,
-                                    institution: newCredential.issuer,
-                                    qualification_level: newCredential.qualification_level,
-                                    year: parseInt(newCredential.year) || null,
-                                    start_date: newCredential.start_date || null,
-                                    end_date: newCredential.end_date || null,
-                                    document_url: newCredential.document_url || null,
-                                });
+                            const qualificationData = {
+                                user_id: currentUserId,
+                                type: dbType,
+                                title: newCredential.title,
+                                institution: newCredential.issuer,
+                                qualification_level: newCredential.qualification_level,
+                                year: parseInt(newCredential.year) || null,
+                                start_date: newCredential.start_date || null,
+                                end_date: newCredential.end_date || null,
+                                document_url: newCredential.document_url || null,
+                                is_verified: newCredential.isVerified || false
+                            };
 
-                            if (error) {
-                                console.error("Supabase Error adding qualification:", {
-                                    message: error.message,
-                                    code: error.code,
-                                    hint: error.hint,
-                                    details: error.details
-                                });
-                                throw error;
-                            }
+                            if (newCredential.id) {
+                                const { error } = await supabase
+                                    .from("qualifications")
+                                    .update(qualificationData)
+                                    .eq("id", newCredential.id);
+                                if (error) throw error;
 
-                            if (dbType === 'high_school') {
-                                setMatricData({
-                                    schoolName: newCredential.issuer,
-                                    completionYear: parseInt(newCredential.year) || new Date().getFullYear(),
-                                });
-                            } else if (isAddCredentialOpen.type === "education") {
-                                setEducationList([...educationList, newCredential]);
+                                if (dbType === 'high_school') {
+                                    setMatricData({ ...newCredential, id: newCredential.id, schoolName: newCredential.issuer, completionYear: parseInt(newCredential.year) });
+                                } else if (isAddCredentialOpen.type === "education") {
+                                    setEducationList(educationList.map(e => e.id === newCredential.id ? newCredential : e));
+                                } else {
+                                    setCertificationsList(certificationsList.map(c => c.id === newCredential.id ? newCredential : c));
+                                }
+                                alert("Qualification updated!");
                             } else {
-                                setCertificationsList([...certificationsList, newCredential]);
+                                const { data, error } = await supabase
+                                    .from("qualifications")
+                                    .insert(qualificationData)
+                                    .select();
+
+                                if (error) throw error;
+
+                                const addedCredential = { ...newCredential, id: data[0].id };
+
+                                if (dbType === 'high_school') {
+                                    setMatricData({
+                                        id: data[0].id,
+                                        schoolName: newCredential.issuer,
+                                        completionYear: parseInt(newCredential.year) || new Date().getFullYear(),
+                                    });
+                                } else if (isAddCredentialOpen.type === "education") {
+                                    setEducationList([...educationList, addedCredential]);
+                                } else {
+                                    setCertificationsList([...certificationsList, addedCredential]);
+                                }
+                                alert("Qualification added!");
                             }
-                            alert("Qualification added successfully!");
                         } catch (error: any) {
-                            console.error("Detailed Error adding qualification:", error);
-                            alert(`Failed to add qualification. ${error.message || "Please check your database console."}`);
+                            console.error("Error saving qualification:", error);
+                            alert(`Failed to save qualification. ${error.message}`);
                         }
 
                         setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
+                        setEditingCredential(null);
                     }}
                 />
 
@@ -1082,79 +1228,124 @@ export default function ProfilePage() {
                     onAdd={async (newProject: any) => {
                         if (!currentUserId) return;
                         try {
-                            const { error } = await supabase
-                                .from("projects")
-                                .insert({
-                                    user_id: currentUserId,
-                                    title: newProject.title,
-                                    description: newProject.description,
-                                    technologies: newProject.technologies,
-                                    link: newProject.github_url || newProject.link_url,
-                                    image_url: newProject.image_url || null,
-                                });
-                            if (error) throw error;
+                            const projectData = {
+                                user_id: currentUserId,
+                                title: newProject.title,
+                                description: newProject.description,
+                                technologies: newProject.technologies,
+                                link: newProject.github_url || newProject.link_url,
+                                image_url: newProject.image_url || null,
+                            };
 
-                            // Refresh page data or update local state
-                            setProjectsList([...projectsList, newProject]);
+                            if (newProject.id) {
+                                const { error } = await supabase
+                                    .from("projects")
+                                    .update(projectData)
+                                    .eq("id", newProject.id);
+                                if (error) throw error;
+                                setProjectsList(projectsList.map(p => p.id === newProject.id ? newProject : p));
+                                alert("Project updated!");
+                            } else {
+                                const { data, error } = await supabase
+                                    .from("projects")
+                                    .insert(projectData)
+                                    .select();
+                                if (error) throw error;
+                                setProjectsList([...projectsList, { ...newProject, id: data[0].id }]);
+                                alert("Project added!");
+                            }
                             setIsAddProjectOpen(false);
-                            alert("Project added!");
+                            setEditingProject(null);
                         } catch (error) {
                             console.error("Error adding project:", error);
                             alert("Failed to add project.");
                         }
                     }}
+                    initialData={editingProject}
                 />
 
                 <AddReferenceModal
                     isOpen={isAddReferenceOpen}
-                    onClose={() => setIsAddReferenceOpen(false)}
+                    onClose={() => {
+                        setIsAddReferenceOpen(false);
+                        setEditingReference(null);
+                    }}
+                    initialData={editingReference}
                     onAdd={async (newRef: any) => {
                         if (!currentUserId) return;
                         try {
-                            const { error } = await supabase
-                                .from("references")
-                                .insert({
-                                    user_id: currentUserId,
-                                    name: newRef.name,
-                                    relationship: newRef.relationship,
-                                    company: newRef.company,
-                                    phone: newRef.phone,
-                                    email: newRef.email
-                                });
-                            if (error) throw error;
+                            const refData = {
+                                user_id: currentUserId,
+                                name: newRef.name,
+                                relationship: newRef.relationship,
+                                company: newRef.company,
+                                phone: newRef.phone,
+                                email: newRef.email
+                            };
 
-                            setReferences([...references, newRef]);
+                            if (newRef.id) {
+                                const { error } = await supabase
+                                    .from("references")
+                                    .update(refData)
+                                    .eq("id", newRef.id);
+                                if (error) throw error;
+                                setReferences(references.map(r => r.id === newRef.id ? newRef : r));
+                                alert("Reference updated!");
+                            } else {
+                                const { data, error } = await supabase
+                                    .from("references")
+                                    .insert(refData)
+                                    .select();
+                                if (error) throw error;
+                                setReferences([...references, { ...newRef, id: data[0].id }]);
+                                alert("Reference added!");
+                            }
                             setIsAddReferenceOpen(false);
-                            alert("Reference added!");
+                            setEditingReference(null);
                         } catch (error) {
-                            console.error("Error adding reference:", error);
-                            alert("Failed to add reference.");
+                            console.error("Error saving reference:", error);
+                            alert("Failed to save reference.");
                         }
                     }}
                 />
 
                 <AddSecondaryEducationModal
                     isOpen={isAddMatricOpen}
-                    onClose={() => setIsAddMatricOpen(false)}
+                    onClose={() => {
+                        setIsAddMatricOpen(false);
+                        setEditingMatric(null);
+                    }}
+                    initialData={editingMatric}
                     onAdd={async (data) => {
                         if (!currentUserId) return;
-                        console.log("Adding matric data KEYS:", Object.keys(data));
-                        console.log("Adding matric data VALUES:", data);
                         try {
-                            const { error } = await supabase
-                                .from("qualifications")
-                                .insert({
-                                    user_id: currentUserId,
-                                    type: 'high_school',
-                                    title: "Matric",
-                                    institution: data.schoolName || data.school || "High School (FALLBACK)",
-                                    year: data.completionYear || parseInt(data.year) || null,
-                                });
-                            if (error) throw error;
+                            const matricDataPayload = {
+                                user_id: currentUserId,
+                                type: 'high_school',
+                                title: "Matric",
+                                institution: data.schoolName || data.school,
+                                year: data.completionYear || parseInt(data.year) || null,
+                            };
 
-                            setMatricData(data);
+                            if (data.id) {
+                                const { error } = await supabase
+                                    .from("qualifications")
+                                    .update(matricDataPayload)
+                                    .eq("id", data.id);
+                                if (error) throw error;
+                                setMatricData(data);
+                                alert("Matric data updated!");
+                            } else {
+                                const { data: dbData, error } = await supabase
+                                    .from("qualifications")
+                                    .insert(matricDataPayload)
+                                    .select();
+                                if (error) throw error;
+                                setMatricData({ ...data, id: dbData[0].id });
+                                alert("Matric data saved!");
+                            }
                             setIsAddMatricOpen(false);
-                            alert("Matric data saved!");
+                            setEditingMatric(null);
                         } catch (error) {
                             console.error("Error saving matric data:", error);
                             alert("Failed to save matric data.");
