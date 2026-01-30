@@ -88,8 +88,12 @@ export default function ProfileHeader({
             <div className="px-8 pb-8 -mt-16 relative">
                 <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
                     {/* Avatar */}
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl border-4 border-white shrink-0">
-                        {avatar}
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl border-4 border-white shrink-0 overflow-hidden">
+                        {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
+                            <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                        ) : (
+                            <span>{name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>
+                        )}
                     </div>
 
                     {/* Info */}
