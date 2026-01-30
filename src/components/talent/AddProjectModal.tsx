@@ -77,7 +77,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                <form onSubmit={handleSubmit} className="p-5 md:p-8 space-y-6 max-h-[80vh] overflow-y-auto custom-scrollbar">
                     {/* Visual Upload Area */}
                     <div className="space-y-3">
                         <label className="text-sm font-bold text-slate-700 flex items-center justify-between">
@@ -165,7 +165,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Live Link -> Main Link */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 flex items-center gap-2">

@@ -47,7 +47,7 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
 
                 {/* Form Wrapper */}
                 <div className="overflow-y-auto max-h-[70vh]">
-                    <div className="p-8 grid md:grid-cols-2 gap-6">
+                    <div className="p-5 md:p-8 grid md:grid-cols-2 gap-6">
                         {/* Full Name */}
                         <div className="space-y-2 col-span-2">
                             <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">

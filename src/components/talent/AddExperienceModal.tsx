@@ -141,7 +141,7 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-8 space-y-5 max-h-[85vh] overflow-y-auto">
+                <form onSubmit={handleSubmit} className="p-5 md:p-8 space-y-5 max-h-[85vh] overflow-y-auto">
                     {/* Role & Company */}
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">

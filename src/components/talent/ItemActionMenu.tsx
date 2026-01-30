@@ -30,7 +30,7 @@ export default function ItemActionMenu({ onEdit, onDelete, className = "" }: Ite
                     e.stopPropagation();
                     setIsOpen(!isOpen);
                 }}
-                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-900 hover:text-black transition-all"
+                className="p-2 rounded-lg hover:bg-slate-100 text-slate-900 hover:text-black transition-all"
             >
                 <MoreVertical className="w-4 h-4" />
             </button>

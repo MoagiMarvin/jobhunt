@@ -74,7 +74,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd, initi
                     </button>
                 </div>
 
-                <div className="p-8 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div className="p-5 md:p-8 space-y-4 max-h-[70vh] overflow-y-auto">
                     {/* Title */}
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-slate-700">{titleLabel}</label>
@@ -98,7 +98,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd, initi
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Dates */}
                         {type === "education" ? (
                             <>
@@ -247,6 +247,6 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd, initi
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

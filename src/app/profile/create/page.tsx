@@ -288,7 +288,7 @@ export default function CreateCVPage() {
 
                 <div className="space-y-6">
                     {/* 1. Basics */}
-                    <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm">
+                    <div className="bg-white rounded-xl p-5 md:p-8 border border-slate-200 shadow-sm">
                         <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3 border-b border-slate-100 pb-4">
                             <span className="flex items-center justify-center w-6 h-6 rounded bg-slate-100 text-slate-600 text-xs">1</span>
                             Professional Basics
@@ -381,7 +381,7 @@ export default function CreateCVPage() {
                     </div>
 
                     {/* 2. Skills (Simplified) */}
-                    <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm">
+                    <div className="bg-white rounded-xl p-5 md:p-8 border border-slate-200 shadow-sm">
                         <div className="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span className="flex items-center justify-center w-6 h-6 rounded bg-slate-100 text-slate-600 text-xs">2</span>
@@ -429,7 +429,7 @@ export default function CreateCVPage() {
                                                     </span>
                                                     <button
                                                         onClick={() => setSkills(skills.filter((_, i) => i !== originalIdx))}
-                                                        className="text-slate-300 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg"
+                                                        className="text-slate-300 hover:text-red-500 transition-all opacity-100 md:opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-lg"
                                                     >
                                                         <X className="w-4 h-4" />
                                                     </button>
@@ -447,7 +447,7 @@ export default function CreateCVPage() {
                     </div>
 
                     {/* 3. Experience */}
-                    <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm">
+                    <div className="bg-white rounded-xl p-5 md:p-8 border border-slate-200 shadow-sm">
                         <div className="flex justify-between mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span className="flex items-center justify-center w-6 h-6 rounded bg-slate-100 text-slate-600 text-xs">3</span>
@@ -458,7 +458,7 @@ export default function CreateCVPage() {
                         <div className="space-y-6">
                             {experiences.map((exp) => (
                                 <div key={exp.id} className="p-5 bg-slate-50 rounded-lg border border-slate-200 relative group">
-                                    <button onClick={() => removeExperience(exp.id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
+                                    <button onClick={() => removeExperience(exp.id)} className="absolute top-4 right-4 text-slate-400 hover:text-red-500 opacity-100 md:opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
                                     <div className="grid md:grid-cols-2 gap-4 mb-3">
                                         <div><label className="label-xs">Title</label><input type="text" value={exp.title} onChange={(e) => updateExperience(exp.id, 'title', e.target.value)} className="input-field" /></div>
                                         <div><label className="label-xs">Company</label><input type="text" value={exp.company} onChange={(e) => updateExperience(exp.id, 'company', e.target.value)} className="input-field" /></div>
@@ -483,7 +483,7 @@ export default function CreateCVPage() {
                     </div>
 
                     {/* 4. Education */}
-                    <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm">
+                    <div className="bg-white rounded-xl p-5 md:p-8 border border-slate-200 shadow-sm">
                         <div className="flex justify-between mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span className="flex items-center justify-center w-6 h-6 rounded bg-slate-100 text-slate-600 text-xs">4</span>
@@ -505,7 +505,7 @@ export default function CreateCVPage() {
                     </div>
 
                     {/* 5. Certifications (Highlighted for Operational/Trades) */}
-                    <div className={`bg-white rounded-xl p-8 border shadow-sm transition-all ${currentMode === 'operational' ? 'border-green-200 ring-4 ring-green-50' : 'border-slate-200'}`}>
+                    <div className={`bg-white rounded-xl p-5 md:p-8 border shadow-sm transition-all ${currentMode === 'operational' ? 'border-green-200 ring-4 ring-green-50' : 'border-slate-200'}`}>
                         <div className="flex justify-between mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span className={`flex items-center justify-center w-6 h-6 rounded text-xs ${currentMode === 'operational' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>5</span>
@@ -530,7 +530,7 @@ export default function CreateCVPage() {
                     </div>
 
                     {/* 6. Projects (Important for Tech) */}
-                    <div className={`bg-white rounded-xl p-8 border shadow-sm transition-all ${currentMode === 'tech' ? 'border-blue-200 ring-4 ring-blue-50' : 'border-slate-200'}`}>
+                    <div className={`bg-white rounded-xl p-5 md:p-8 border shadow-sm transition-all ${currentMode === 'tech' ? 'border-blue-200 ring-4 ring-blue-50' : 'border-slate-200'}`}>
                         <div className="flex justify-between mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span className={`flex items-center justify-center w-6 h-6 rounded text-xs ${currentMode === 'tech' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>6</span>
@@ -541,7 +541,7 @@ export default function CreateCVPage() {
                         <div className="space-y-4">
                             {projects.map((proj) => (
                                 <div key={proj.id} className="p-4 bg-slate-50 rounded-lg border border-slate-200 relative">
-                                    <button onClick={() => removeProject(proj.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                                    <button onClick={() => removeProject(proj.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 opacity-100 md:opacity-0 group-hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
                                     <div className="grid md:grid-cols-2 gap-3 mb-2">
                                         <input type="text" value={proj.title} onChange={(e) => updateProject(proj.id, 'title', e.target.value)} placeholder="Project Name" className="input-field" />
                                         <input type="text" value={proj.role} onChange={(e) => updateProject(proj.id, 'role', e.target.value)} placeholder="My Role" className="input-field" />
@@ -554,7 +554,7 @@ export default function CreateCVPage() {
                     </div>
 
                     {/* 7. Languages */}
-                    <div className="bg-white rounded-xl p-8 border border-slate-200 shadow-sm">
+                    <div className="bg-white rounded-xl p-5 md:p-8 border border-slate-200 shadow-sm">
                         <div className="flex justify-between mb-6 border-b border-slate-100 pb-4">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span className="flex items-center justify-center w-6 h-6 rounded bg-slate-100 text-slate-600 text-xs">7</span>

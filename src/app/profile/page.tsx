@@ -475,7 +475,7 @@ export default function ProfilePage() {
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            <div className="max-w-6xl mx-auto px-6 py-12">
+            <div className="max-w-6xl mx-auto px-4 py-6 md:px-6 md:py-12">
                 {/* New Profile Header */}
                 <div className="mb-8">
                     <ProfileHeader
@@ -519,15 +519,15 @@ export default function ProfilePage() {
 
                 {/* Professional Summary Section (New) */}
                 {/* Professional Summary Section (New) */}
-                <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm relative group">
-                    <div className="flex items-center justify-between mb-4">
+                <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-5 md:p-8 shadow-sm relative group">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0 mb-4">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
                                 <FileText className="w-4 h-4" />
                             </div>
                             <h2 className="text-lg font-bold text-slate-800">Professional Summary</h2>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 self-end md:self-auto">
                             {!user.summary && (
                                 <button
                                     onClick={() => setIsEditSummaryOpen(true)}
@@ -566,7 +566,7 @@ export default function ProfilePage() {
                     <div className="space-y-8">
                         {/* Projects Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <FolderKanban className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Projects</h2>
@@ -624,14 +624,14 @@ export default function ProfilePage() {
 
                         {/* Experience Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <Building2 className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Experience</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddExperienceOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Experience
@@ -664,7 +664,7 @@ export default function ProfilePage() {
 
                         {/* 1. Technical Skills Section */}
                         <div className="space-y-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <Layers className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-black text-slate-900 tracking-tight">Technical Skills</h2>
@@ -674,7 +674,7 @@ export default function ProfilePage() {
                                         setAddSkillMode("technical");
                                         setIsAddSkillOpen(true);
                                     }}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 w-full md:w-auto justify-center"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add Technical Skill
@@ -749,7 +749,7 @@ export default function ProfilePage() {
 
                         {/* 2. Soft Skills Section */}
                         <div className="space-y-6">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <MessageSquare className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-black text-slate-900 tracking-tight">Soft Skills</h2>
@@ -759,7 +759,7 @@ export default function ProfilePage() {
                                         setAddSkillMode("soft");
                                         setIsAddSkillOpen(true);
                                     }}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 w-full md:w-auto justify-center"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Add Soft Skill
@@ -822,14 +822,14 @@ export default function ProfilePage() {
 
                         {/* Languages Section (New) */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <Languages className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Languages</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddLanguageOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Language
@@ -868,14 +868,14 @@ export default function ProfilePage() {
 
                         {/* Education Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <GraduationCap className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Tertiary Education</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Degree
@@ -918,7 +918,7 @@ export default function ProfilePage() {
 
                         {/* Matric Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <School className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-bold text-primary">Matric</h2>
@@ -926,7 +926,7 @@ export default function ProfilePage() {
                                 {!matricData && (
                                     <button
                                         onClick={() => setIsAddMatricOpen(true)}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
                                     >
                                         <Plus className="w-3.5 h-3.5" />
                                         Add Matric
@@ -962,14 +962,14 @@ export default function ProfilePage() {
 
                         {/* Certifications Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <Award className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-bold text-primary">Certifications</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Certification
@@ -1011,14 +1011,14 @@ export default function ProfilePage() {
 
                         {/* References Section */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <User className="w-5 h-5 text-blue-600" />
                                     <h2 className="text-xl font-bold text-primary">Professional References</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddReferenceOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Reference
