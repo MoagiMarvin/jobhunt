@@ -30,11 +30,11 @@ export default function CredentialCard({
     const canViewDocument = viewerRole === "recruiter" || viewerRole === "owner";
 
     return (
-        <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-5 group relative">
-            <div className="flex gap-4">
+        <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-200 transition-all shadow-sm p-4 md:p-5 group relative">
+            <div className="flex gap-3 md:gap-4">
                 {/* Icon */}
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 shadow-sm mt-1">
-                    <Icon className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center shrink-0 bg-blue-500 shadow-sm mt-1">
+                    <Icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
                 </div>
 
                 {/* Content */}
@@ -42,14 +42,14 @@ export default function CredentialCard({
                     <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                                <h3 className="text-sm font-bold text-primary leading-tight">{title}</h3>
+                                <h3 className="text-[13px] md:text-sm font-semibold text-slate-800 leading-tight">{title}</h3>
                                 {qualification_level && (
                                     <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md font-bold text-[9px] border border-blue-100 whitespace-nowrap">
                                         {qualification_level}
                                     </span>
                                 )}
                             </div>
-                            <p className="text-[11px] text-slate-600 font-medium">{issuer}</p>
+                            <p className="text-[11px] text-slate-500 font-medium">{issuer}</p>
                         </div>
                         {isOwner && (
                             <div className="shrink-0 -mt-1 -mr-1">
@@ -61,7 +61,7 @@ export default function CredentialCard({
                         )}
                     </div>
 
-                    <div className="flex items-center gap-3 text-[10px] text-slate-900 font-bold">
+                    <div className="flex items-center gap-3 text-[10px] text-slate-500 font-bold uppercase tracking-widest pt-1">
                         <span>{date}</span>
                     </div>
 

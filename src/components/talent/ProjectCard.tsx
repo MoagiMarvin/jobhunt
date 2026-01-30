@@ -29,7 +29,7 @@ export default function ProjectCard({
         <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-all shadow-sm hover:shadow-md overflow-hidden group flex flex-col sm:flex-row">
             {/* Project Image - More compact side-by-side on desktop */}
             {image_url && (
-                <div className="relative w-full sm:w-1/3 h-32 sm:h-auto min-h-[120px] bg-gradient-to-br from-blue-50 to-purple-50 overflow-hidden shrink-0">
+                <div className="relative w-full sm:w-1/3 h-28 sm:h-auto min-h-[100px] sm:min-h-[120px] bg-gradient-to-br from-blue-50 to-purple-50 overflow-hidden shrink-0">
                     <Image
                         src={image_url}
                         alt={title}
@@ -40,11 +40,11 @@ export default function ProjectCard({
             )}
 
             {/* Content */}
-            <div className={`p-4 sm:p-5 flex-1 flex flex-col justify-between relative ${!image_url ? "w-full" : ""}`}>
+            <div className={`p-3 sm:p-5 flex-1 flex flex-col justify-between relative ${!image_url ? "w-full" : ""}`}>
                 <div className="space-y-1.5">
                     <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold text-primary group-hover:text-blue-600 transition-colors line-clamp-1">{title}</h3>
+                            <h3 className="text-[13px] md:text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1">{title}</h3>
                         </div>
                         {isOwner && (
                             <div className="shrink-0 -mt-1 -mr-1">
@@ -64,7 +64,7 @@ export default function ProjectCard({
                         {technologies.slice(0, 4).map((tech, idx) => (
                             <span
                                 key={idx}
-                                className="px-1.5 py-0.5 bg-slate-50 text-slate-600 text-[9px] font-bold rounded border border-slate-100"
+                                className="px-1.5 py-0.5 bg-slate-50 text-slate-500 text-[9px] font-semibold rounded border border-slate-100"
                             >
                                 {tech}
                             </span>

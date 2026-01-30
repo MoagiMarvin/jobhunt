@@ -23,16 +23,16 @@ export default function ReferenceCard({
     isOwner = true
 }: ReferenceCardProps) {
     return (
-        <div className="group relative bg-white rounded-xl border border-slate-100 p-5 hover:border-blue-200 hover:shadow-md transition-all">
-            <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0 mt-1">
-                    <User className="w-5 h-5" />
+        <div className="group relative bg-white rounded-xl border border-slate-100 p-4 md:p-5 hover:border-blue-200 hover:shadow-md transition-all">
+            <div className="flex gap-3 md:gap-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shrink-0 mt-1">
+                    <User className="w-4 h-4 md:w-5 md:h-5" />
                 </div>
                 <div className="flex-1 space-y-2">
                     <div className="flex items-start justify-between gap-4">
                         <div>
-                            <h3 className="text-sm font-bold text-slate-900 leading-tight">{name}</h3>
-                            <p className="text-xs text-slate-500 font-medium">{relationship} at <span className="text-blue-600">{company}</span></p>
+                            <h3 className="text-[13px] md:text-sm font-bold text-slate-800 leading-tight">{name}</h3>
+                            <p className="text-[11px] md:text-xs text-slate-500 font-medium">{relationship} at <span className="text-blue-500">{company}</span></p>
                         </div>
                         {isOwner && (
                             <div className="shrink-0 -mt-1 -mr-1">

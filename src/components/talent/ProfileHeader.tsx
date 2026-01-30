@@ -22,6 +22,8 @@ interface ProfileHeaderProps {
     downloadAction?: React.ReactNode;
     targetRoles?: string[];
     isOwner?: boolean;
+    userId?: string;
+    onShare?: () => void;
 }
 
 export default function ProfileHeader({
@@ -42,7 +44,9 @@ export default function ProfileHeader({
     onDownloadResume,
     downloadAction,
     targetRoles = [],
-    isOwner = true
+    isOwner = true,
+    userId,
+    onShare
 }: ProfileHeaderProps) {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -80,15 +84,15 @@ export default function ProfileHeader({
     const status = statusConfig[availabilityStatus] || statusConfig["Not Looking"];
 
     return (
-        <div className="bg-white rounded-xl border-2 border-blue-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-blue-100 md:border-2 shadow-sm overflow-hidden">
             {/* Background Banner */}
-            <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            <div className="h-24 md:h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
 
             {/* Content */}
-            <div className="px-8 pb-8 -mt-16 relative">
-                <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
+            <div className="px-5 pb-6 md:px-8 md:pb-8 -mt-12 md:-mt-16 relative">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-end">
                     {/* Avatar */}
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl border-4 border-white shrink-0 overflow-hidden">
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold shadow-xl border-4 border-white shrink-0 overflow-hidden">
                         {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
                             <img src={avatar} alt={name} className="w-full h-full object-cover" />
                         ) : (
@@ -100,8 +104,8 @@ export default function ProfileHeader({
                     <div className="flex-1 pt-4">
                         <div className="flex items-start justify-between gap-4 mb-3">
                             <div>
-                                <h1 className="text-xl font-extrabold text-slate-900 mb-0.5 tracking-tight">{name}</h1>
-                                <p className="text-sm text-slate-500 font-semibold leading-relaxed mb-3">{headline}</p>
+                                <h1 className="text-lg md:text-xl font-bold text-slate-800 mb-0.5 tracking-tight">{name}</h1>
+                                <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed mb-3">{headline}</p>
 
                                 {targetRoles.length > 0 && (
                                     <div className="flex flex-wrap gap-2">
@@ -135,10 +139,19 @@ export default function ProfileHeader({
                                         Download Resume
                                     </button>
                                 ))}
+                                {isOwner && onShare && (
+                                    <button
+                                        onClick={onShare}
+                                        className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all font-semibold text-xs shadow-sm border border-green-700"
+                                    >
+                                        <Globe className="w-3.5 h-3.5" />
+                                        Copy Public Link
+                                    </button>
+                                )}
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 md:mt-4">
                             {location && (
                                 <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
                                     <MapPin className="w-3.5 h-3.5 text-blue-600" />
@@ -168,18 +181,18 @@ export default function ProfileHeader({
                             </div>
 
                             {haveLicense && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-purple-200 bg-purple-50 text-purple-700 shadow-sm">
+                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-purple-100 bg-purple-50/50 text-purple-600 shadow-sm">
                                     <CreditCard className="w-3 h-3" />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">
-                                        {isMounted && licenseCode ? `License: ${licenseCode}` : "Driver's License"}
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider">
+                                        {isMounted && licenseCode ? `License: ${licenseCode}` : "Drivers License"}
                                     </span>
                                 </div>
                             )}
 
                             {haveCar && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 shadow-sm">
+                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-blue-100 bg-blue-50/50 text-blue-600 shadow-sm">
                                     <Car className="w-3 h-3" />
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">Own Transport</span>
+                                    <span className="text-[10px] font-semibold uppercase tracking-wider">Own Transport</span>
                                 </div>
                             )}
 

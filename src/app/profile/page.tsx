@@ -475,9 +475,16 @@ export default function ProfilePage() {
         router.push("/");
     };
 
+    const handleShare = () => {
+        if (!currentUserId) return;
+        const url = `${window.location.origin}/p/${currentUserId}`;
+        navigator.clipboard.writeText(url);
+        alert("Public profile link copied to clipboard!");
+    };
+
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            <div className="max-w-6xl mx-auto px-4 py-6 md:px-6 md:py-12">
+            <div className="max-w-6xl mx-auto px-2.5 py-4 md:px-6 md:py-12">
                 {/* New Profile Header */}
                 <div className="mb-8">
                     <ProfileHeader
@@ -508,6 +515,8 @@ export default function ProfilePage() {
                         }} />}
                         targetRoles={user.targetRoles}
                         isOwner={true}
+                        userId={currentUserId || undefined}
+                        onShare={handleShare}
                     />
                 </div>
 
@@ -524,10 +533,10 @@ export default function ProfilePage() {
                 <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-5 md:p-8 shadow-sm relative group">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0 mb-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
                                 <FileText className="w-4 h-4" />
                             </div>
-                            <h2 className="text-lg font-bold text-slate-800">Professional Summary</h2>
+                            <h2 className="text-base md:text-lg font-semibold text-slate-800 tracking-tight">Professional Summary</h2>
                         </div>
                         <div className="flex items-center gap-2 self-end md:self-auto">
                             {!user.summary && (
@@ -570,8 +579,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <FolderKanban className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Projects</h2>
+                                    <FolderKanban className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Projects</h2>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -628,8 +637,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <Building2 className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Experience</h2>
+                                    <Building2 className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Experience</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddExperienceOpen(true)}
@@ -668,8 +677,8 @@ export default function ProfilePage() {
                         <div className="space-y-6">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <Layers className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Technical Skills</h2>
+                                    <Layers className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Technical Skills</h2>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -689,7 +698,7 @@ export default function ProfilePage() {
                                     <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No technical skills added yet.</p>
                                 </div>
                             ) : (
-                                <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="p-4 md:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
                                     <div className="space-y-6">
                                         {(() => {
                                             const technicalGrouped = skills.filter((s: TalentSkill) => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, TalentSkill[]>, skill: TalentSkill) => {
@@ -753,8 +762,8 @@ export default function ProfilePage() {
                         <div className="space-y-6">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <MessageSquare className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-black text-slate-900 tracking-tight">Soft Skills</h2>
+                                    <MessageSquare className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Soft Skills</h2>
                                 </div>
                                 <button
                                     onClick={() => {
@@ -774,7 +783,7 @@ export default function ProfilePage() {
                                     <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No soft skills added yet.</p>
                                 </div>
                             ) : (
-                                <div className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition-all">
+                                <div className="p-4 md:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition-all">
                                     <div className="space-y-3">
                                         {skills.filter((s: TalentSkill) => s.isSoftSkill || s.category === "Soft Skills")
                                             .slice(0, isSoftSkillsExpanded ? undefined : 3)
@@ -827,7 +836,7 @@ export default function ProfilePage() {
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
                                     <Languages className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Languages</h2>
+                                    <h2 className="text-base md:text-lg font-extrabold text-slate-900 tracking-tight">Languages</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddLanguageOpen(true)}
@@ -837,7 +846,7 @@ export default function ProfilePage() {
                                     Add Language
                                 </button>
                             </div>
-                            <div className="bg-white rounded-xl border-2 border-slate-100 p-6 shadow-sm">
+                            <div className="bg-white rounded-xl border-2 border-slate-100 p-4 md:p-6 shadow-sm">
                                 <div className="grid md:grid-cols-3 gap-4">
                                     {languages.map((lang: Language, idx: number) => (
                                         <div key={idx} className="group relative flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-200 transition-all">
@@ -872,8 +881,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <GraduationCap className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-lg font-extrabold text-slate-900 tracking-tight">Tertiary Education</h2>
+                                    <GraduationCap className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Tertiary Education</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
@@ -922,8 +931,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <School className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Matric</h2>
+                                    <School className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Matric</h2>
                                 </div>
                                 {!matricData && (
                                     <button
@@ -966,8 +975,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <Award className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Certifications</h2>
+                                    <Award className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Certifications</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
@@ -1015,8 +1024,8 @@ export default function ProfilePage() {
                         <div className="space-y-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
                                 <div className="flex items-center gap-2">
-                                    <User className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-xl font-bold text-primary">Professional References</h2>
+                                    <User className="w-5 h-5 text-blue-500" />
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Professional References</h2>
                                 </div>
                                 <button
                                     onClick={() => setIsAddReferenceOpen(true)}
