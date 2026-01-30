@@ -19,6 +19,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
         github_url: ""
     });
     const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (initialData && isOpen) {
@@ -37,8 +38,6 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
     }, [initialData, isOpen]);
 
     if (!isOpen) return null;
-
-    const [isUploading, setIsUploading] = useState(false);
 
     const uploadImage = async (file: File): Promise<string | null> => {
         try {
