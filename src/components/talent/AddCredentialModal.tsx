@@ -23,6 +23,7 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd, initi
         isVerified: false
     });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (initialData && isOpen) {
@@ -215,35 +216,66 @@ export default function AddCredentialModal({ isOpen, type, onClose, onAdd, initi
                         Cancel
                     </button>
                     <button
-                        onClick={() => {
+                        onClick={async () => {
                             if (formData.title && formData.issuer) {
-                                // Extract year from end_date for DB compatibility
-                                const issueYear = parseInt(formData.end_date) || parseInt(formData.start_date) || new Date().getFullYear();
+                                setIsUploading(true);
+                                let finalDocUrl = formData.document_url;
 
-                                // Format dates as YYYY-MM-DD for database
-                                // If user only provides a year (e.g. "2024"), we convert it to "2024-01-01"
-                                const formatYearToDate = (yearStr: string) => {
-                                    if (!yearStr) return null;
-                                    if (/^\d{4}$/.test(yearStr)) return `${yearStr}-01-01`;
-                                    return yearStr; // Assume it's already a date or invalid (handled by DB)
-                                };
+                                try {
+                                    // Upload File if selected
+                                    if (selectedFile) {
+                                        const { data: { session } } = await import("@/lib/supabase").then(m => m.supabase.auth.getSession());
+                                        if (session) {
+                                            const fileExt = selectedFile.name.split('.').pop();
+                                            const fileName = `${session.user.id}/${Date.now()}_${type}.${fileExt}`;
 
-                                onAdd({
-                                    ...formData,
-                                    id: initialData?.id,
-                                    year: issueYear,
-                                    start_date: formatYearToDate(formData.start_date),
-                                    end_date: formatYearToDate(formData.end_date),
-                                    isVerified: !!selectedFile || !!formData.document_url,
-                                    document_url: selectedFile ? formData.document_url || "/mock/new-doc.pdf" : formData.document_url
-                                });
+                                            const { error: uploadError } = await import("@/lib/supabase").then(m => m.supabase.storage
+                                                .from('credential-docs')
+                                                .upload(fileName, selectedFile));
+
+                                            if (uploadError) throw uploadError;
+
+                                            const { data: { publicUrl } } = await import("@/lib/supabase").then(m => m.supabase.storage
+                                                .from('credential-docs')
+                                                .getPublicUrl(fileName));
+
+                                            finalDocUrl = publicUrl;
+                                        }
+                                    }
+
+                                    // Extract year from end_date for DB compatibility
+                                    const issueYear = parseInt(formData.end_date) || parseInt(formData.start_date) || new Date().getFullYear();
+
+                                    // Format dates as YYYY-MM-DD for database
+                                    const formatYearToDate = (yearStr: string) => {
+                                        if (!yearStr) return null;
+                                        if (/^\d{4}$/.test(yearStr)) return `${yearStr}-01-01`;
+                                        return yearStr;
+                                    };
+
+                                    onAdd({
+                                        ...formData,
+                                        id: initialData?.id,
+                                        year: issueYear,
+                                        start_date: formatYearToDate(formData.start_date),
+                                        end_date: formatYearToDate(formData.end_date),
+                                        isVerified: !!finalDocUrl,
+                                        document_url: finalDocUrl
+                                    });
+                                } catch (error) {
+                                    console.error("Error uploading credential:", error);
+                                    alert("Failed to upload document. Please try again.");
+                                } finally {
+                                    setIsUploading(false);
+                                }
                             }
                         }}
-                        disabled={!formData.title || !formData.issuer}
+                        disabled={!formData.title || !formData.issuer || isUploading}
                         className="flex-2 py-3 px-8 rounded-xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 bg-blue-600 hover:bg-blue-700"
                     >
                         <Save className="w-5 h-5" />
                         {initialData ? "Update" : "Save"} {type === "education" ? "Education" : "Certification"}
+                        {isUploading && <span className="ml-2 animate-pulse">...</span>}
                     </button>
                 </div>
             </div>

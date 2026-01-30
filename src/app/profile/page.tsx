@@ -226,6 +226,7 @@ export default function ProfilePage() {
                         haveLicense: profile.have_license,
                         licenseCode: profile.license_code || prev.licenseCode,
                         haveCar: profile.have_car,
+                        avatar: profile.avatar_url || prev.avatar,
                     }));
                     setEditedUser(prev => ({
                         ...prev,
@@ -445,6 +446,7 @@ export default function ProfilePage() {
                     have_license: newData.haveLicense,
                     license_code: newData.licenseCode,
                     have_car: newData.haveCar,
+                    avatar_url: newData.avatar,
                     updated_at: new Date().toISOString(),
                 })
                 .eq("id", currentUserId);

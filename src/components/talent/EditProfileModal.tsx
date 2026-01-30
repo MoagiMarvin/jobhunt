@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText, Sparkles } from "lucide-react";
+import { X, Save, User, Mail, Phone, MapPin, Briefcase, Car, CreditCard, Github, Linkedin, Globe, FileText, Sparkles, Edit2 } from "lucide-react";
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -19,11 +19,13 @@ interface EditProfileModalProps {
         linkedin?: string;
         portfolio?: string;
         targetRoles?: string[];
+        avatar?: string;
     };
 }
 
 export default function EditProfileModal({ isOpen, onClose, onSave, initialData }: EditProfileModalProps) {
     const [formData, setFormData] = useState(initialData);
+    const [isUploading, setIsUploading] = useState(false);
 
     // Sync state with initialData whenever modal opens
     useEffect(() => {
@@ -47,6 +49,78 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
 
                 {/* Form Wrapper */}
                 <div className="overflow-y-auto max-h-[70vh]">
+                    {/* Avatar Upload Section */}
+                    <div className="flex flex-col items-center justify-center py-6 bg-slate-50 border-b border-slate-100">
+                        <div className="relative group cursor-pointer">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                id="avatar-upload"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        setIsUploading(true);
+                                        try {
+                                            // 1. Show preview immediately
+                                            const previewUrl = URL.createObjectURL(file);
+                                            setFormData(prev => ({ ...prev, avatar: previewUrl })); // Optimistic update
+
+                                            // 2. Upload to Supabase
+                                            const { data: { session } } = await import("@/lib/supabase").then(m => m.supabase.auth.getSession());
+                                            if (session) {
+                                                const fileExt = file.name.split('.').pop();
+                                                const fileName = `${session.user.id}/avatar_${Date.now()}.${fileExt}`;
+
+                                                // Upload
+                                                const { error: uploadError } = await import("@/lib/supabase").then(m => m.supabase.storage
+                                                    .from('avatars')
+                                                    .upload(fileName, file, { upsert: true }));
+
+                                                if (uploadError) throw uploadError;
+
+                                                // Get Public URL
+                                                const { data: { publicUrl } } = await import("@/lib/supabase").then(m => m.supabase.storage
+                                                    .from('avatars')
+                                                    .getPublicUrl(fileName));
+
+                                                // Update form data with real URL
+                                                setFormData(prev => ({ ...prev, avatar: publicUrl }));
+                                            }
+                                        } catch (error) {
+                                            console.error("Error uploading avatar:", error);
+                                            alert("Failed to upload profile picture. Please try again.");
+                                            // Reset to previous avatar on error
+                                            setFormData(prev => ({ ...prev, avatar: initialData.avatar }));
+                                        } finally {
+                                            setIsUploading(false);
+                                        }
+                                    }
+                                }}
+                            />
+                            <label htmlFor="avatar-upload" className="block cursor-pointer">
+                                <div className="w-24 h-24 rounded-full border-4 border-white shadow-xl overflow-hidden bg-slate-200 relative group-hover:border-blue-200 transition-all">
+                                    {(formData as any).avatar ? (
+                                        <img src={(formData as any).avatar} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-slate-300 text-slate-500">
+                                            <User className="w-10 h-10" />
+                                        </div>
+                                    )}
+
+                                    {/* Overlay */}
+                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Sparkles className="w-6 h-6 text-white drop-shadow-md" />
+                                    </div>
+                                </div>
+                                <div className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full border-2 border-white shadow-sm group-hover:bg-blue-700 transition-colors">
+                                    <Edit2 className="w-3.5 h-3.5" />
+                                </div>
+                            </label>
+                        </div>
+                        <p className="mt-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Tap to Change Photo</p>
+                    </div>
+
                     <div className="p-5 md:p-8 grid md:grid-cols-2 gap-6">
                         {/* Full Name */}
                         <div className="space-y-2 col-span-2">
@@ -317,10 +391,14 @@ export default function EditProfileModal({ isOpen, onClose, onSave, initialData 
                     </button>
                     <button
                         onClick={() => onSave(formData)}
-                        className="flex-[2] py-3 px-12 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2"
+                        disabled={isUploading}
+                        className={`flex-[2] py-3 px-12 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 ${isUploading
+                                ? 'bg-slate-400 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            }`}
                     >
                         <Save className="w-5 h-5" />
-                        Save Changes
+                        {isUploading ? 'Uploading...' : 'Save Changes'}
                     </button>
                 </div>
             </div>

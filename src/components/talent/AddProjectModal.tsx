@@ -38,24 +38,84 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
 
     if (!isOpen) return null;
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const url = URL.createObjectURL(file);
-            setPreviewImage(url);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const uploadImage = async (file: File): Promise<string | null> => {
+        try {
+            const { data: { session } } = await import("@/lib/supabase").then(m => m.supabase.auth.getSession());
+            if (!session) return null;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${session.user.id}/${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            // Upload
+            const { error: uploadError } = await import("@/lib/supabase").then(m => m.supabase.storage
+                .from('project-images')
+                .upload(filePath, file));
+
+            if (uploadError) {
+                console.error("Upload error:", uploadError);
+                throw uploadError;
+            }
+
+            // Get Public URL
+            const { data: { publicUrl } } = await import("@/lib/supabase").then(m => m.supabase.storage
+                .from('project-images')
+                .getPublicUrl(filePath));
+
+            return publicUrl;
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            alert("Failed to upload image. Please try again.");
+            return null;
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Show preview immediately
+            const previewUrl = URL.createObjectURL(file);
+            setPreviewImage(previewUrl);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onAdd({
-            ...formData,
-            id: initialData?.id,
-            technologies: formData.technologies.split(",").map((s: string) => s.trim()).filter(Boolean),
-            image_url: previewImage // In production, this would be the Supabase URL
-        });
-        setFormData({ title: "", description: "", technologies: "", link_url: "", github_url: "" });
-        setPreviewImage(null);
+        setIsUploading(true);
+
+        try {
+            let finalImageUrl = initialData?.image_url || "";
+
+            // Check if previewImage is a blob (new file) or existing URL
+            if (previewImage && previewImage.startsWith("blob:")) {
+                // Find the file input to get the actual file object, 
+                // BUT better approach: store the File object in state when selected
+                const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+                if (fileInput?.files?.[0]) {
+                    const uploadedUrl = await uploadImage(fileInput.files[0]);
+                    if (uploadedUrl) finalImageUrl = uploadedUrl;
+                }
+            } else if (previewImage) {
+                finalImageUrl = previewImage;
+            }
+
+            onAdd({
+                ...formData,
+                id: initialData?.id,
+                technologies: formData.technologies.split(",").map((s: string) => s.trim()).filter(Boolean),
+                image_url: finalImageUrl
+            });
+
+            setFormData({ title: "", description: "", technologies: "", link_url: "", github_url: "" });
+            setPreviewImage(null);
+
+        } catch (error) {
+            console.error("Error saving project:", error);
+        } finally {
+            setIsUploading(false);
+        }
     };
 
     return (
@@ -213,6 +273,7 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
                     >
                         <Save className="w-5 h-5" />
                         {initialData ? "Update Project" : "Save Project"}
+                        {isUploading && <span className="ml-2 animate-pulse">...</span>}
                     </button>
                 </div>
             </div>
