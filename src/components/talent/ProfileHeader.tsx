@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, ChevronDown, Share2, Settings } from "lucide-react";
+import Link from "next/link";
+import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, ChevronDown, Share2, Settings, FileText } from "lucide-react";
 
 interface ProfileHeaderProps {
     name: string;
@@ -159,41 +160,38 @@ export default function ProfileHeader({
                                                     className="fixed inset-0 z-20"
                                                     onClick={() => setIsActionsOpen(false)}
                                                 ></div>
-                                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden flex flex-col">
+                                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden flex flex-col items-stretch">
                                                     <div className="px-4 py-2 border-b border-slate-50 mb-1">
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Profile Options</p>
                                                     </div>
 
-                                                    {/* 1. Download CV */}
-                                                    <div className="w-full">
-                                                        {downloadAction ? (
-                                                            <div className="w-full flex" onClick={() => setIsActionsOpen(false)}>{downloadAction}</div>
-                                                        ) : (onDownloadResume && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    setIsActionsOpen(false);
-                                                                    onDownloadResume();
-                                                                }}
-                                                                className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
-                                                            >
-                                                                <Download className="w-4 h-4" />
-                                                                Download CV
-                                                            </button>
-                                                        ))}
-                                                    </div>
+                                                    {/* 1. Download CV / Quick Download */}
+                                                    {downloadAction ? (
+                                                        <div className="w-full flex" onClick={() => setIsActionsOpen(false)}>
+                                                            {downloadAction}
+                                                        </div>
+                                                    ) : (onDownloadResume && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setIsActionsOpen(false);
+                                                                onDownloadResume();
+                                                            }}
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                        >
+                                                            <Download className="w-4 h-4 text-blue-600" />
+                                                            Quick Download
+                                                        </button>
+                                                    ))}
 
-                                                    {/* 2. Customize Profile */}
-                                                    <button
-                                                        onClick={() => {
-                                                            setIsActionsOpen(false);
-                                                            // onEdit trigger (pencil icon logic)
-                                                            document.getElementById('edit-profile-trigger')?.click();
-                                                        }}
-                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                    {/* 2. Customize CV */}
+                                                    <Link
+                                                        href="/cv/preview"
+                                                        onClick={() => setIsActionsOpen(false)}
+                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
                                                     >
-                                                        <Edit2 className="w-4 h-4" />
-                                                        Customize Profile
-                                                    </button>
+                                                        <FileText className="w-4 h-4 text-slate-400" />
+                                                        Customize CV
+                                                    </Link>
 
                                                     {/* 3. Copy Link */}
                                                     <button
@@ -203,7 +201,7 @@ export default function ProfileHeader({
                                                         }}
                                                         className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
                                                     >
-                                                        <Share2 className="w-4 h-4" />
+                                                        <Share2 className="w-4 h-4 text-slate-400" />
                                                         Copy Profile Link
                                                     </button>
                                                 </div>

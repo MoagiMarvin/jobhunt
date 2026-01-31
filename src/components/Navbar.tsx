@@ -113,28 +113,24 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
-                    <div className="lg:hidden flex items-center gap-3">
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 rounded-xl bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all"
-                        >
-                            <div className="w-6 h-6 flex flex-col justify-center gap-1.5">
-                                <span className={cn("h-0.5 w-6 bg-current transition-all", isOpen && "rotate-45 translate-y-2")} />
-                                <span className={cn("h-0.5 w-6 bg-current transition-all", isOpen && "opacity-0")} />
-                                <span className={cn("h-0.5 w-6 bg-current transition-all", isOpen && "-rotate-45 -translate-y-2")} />
-                            </div>
-                        </button>
+                    {/* Mobile - Logout Only on Top Header */}
+                    <div className="lg:hidden flex items-center gap-2">
+                        {isLoggedIn && (
+                            <button
+                                onClick={handleLogout}
+                                className="p-2 rounded-xl text-red-500 hover:bg-red-50 transition-all"
+                                title="Logout"
+                            >
+                                <LogOut className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Mobile Navigation Overlay */}
-            <div className={cn(
-                "lg:hidden fixed inset-0 top-[64px] md:top-[80px] bg-white z-40 transition-all duration-300 transform",
-                isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
-            )}>
-                <div className="p-6 space-y-4">
+            {/* Premium Mobile Tab Bar */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none">
+                <div className="max-w-md mx-auto bg-white/90 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-3xl pointer-events-auto overflow-hidden flex items-center justify-around h-16 px-2">
                     {links.map((link) => {
                         const Icon = link.icon;
                         const isActive = pathname === link.href;
@@ -144,31 +140,25 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 className={cn(
-                                    "flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-bold transition-all",
-                                    isActive
-                                        ? "bg-blue-600 text-white shadow-xl shadow-blue-200"
-                                        : "text-slate-600 bg-slate-50 hover:bg-slate-100"
+                                    "flex flex-col items-center justify-center gap-1 w-full h-full transition-all duration-300 relative",
+                                    isActive ? "text-blue-600" : "text-slate-400"
                                 )}
                             >
-                                <div className={cn("p-2 rounded-lg", isActive ? "bg-white/20" : "bg-white text-blue-600")}>
-                                    <Icon className="w-5 h-5" />
+                                <div className={cn(
+                                    "p-1.5 rounded-xl transition-all duration-300",
+                                    isActive ? "bg-blue-50/50 scale-110" : "bg-transparent"
+                                )}>
+                                    <Icon className={cn("w-6 h-6 transition-all", isActive ? "stroke-[2.5]" : "stroke-[2]")} />
                                 </div>
-                                {link.label}
+                                <span className={cn("text-[10px] font-black uppercase tracking-tighter transition-all", isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1")}>
+                                    {link.label.split(' ')[0]}
+                                </span>
+                                {isActive && (
+                                    <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full" />
+                                )}
                             </Link>
                         );
                     })}
-
-                    {isLoggedIn && (
-                        <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-bold text-red-500 bg-red-50 hover:bg-red-100 transition-all"
-                        >
-                            <div className="p-2 rounded-lg bg-white">
-                                <LogOut className="w-5 h-5" />
-                            </div>
-                            Logout
-                        </button>
-                    )}
                 </div>
             </div>
         </nav>

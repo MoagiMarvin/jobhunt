@@ -503,7 +503,7 @@ export default function ProfilePage() {
                         licenseCode={user.licenseCode}
                         haveCar={user.haveCar}
                         onEdit={() => setIsEditing(true)}
-                        downloadAction={<DownloadResumeButton data={{
+                        downloadAction={<DownloadResumeButton showCustomize={false} data={{
                             user,
                             experiences,
                             educationList,

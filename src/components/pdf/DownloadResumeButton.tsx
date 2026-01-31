@@ -13,9 +13,10 @@ const PDFDownloadLink = dynamic(
 
 interface DownloadResumeButtonProps {
     data?: any;
+    showCustomize?: boolean;
 }
 
-export default function DownloadResumeButton({ data }: DownloadResumeButtonProps) {
+export default function DownloadResumeButton({ data, showCustomize = true }: DownloadResumeButtonProps) {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -25,12 +26,12 @@ export default function DownloadResumeButton({ data }: DownloadResumeButtonProps
     if (!isMounted) return null;
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="contents">
             {data && (
                 <PDFDownloadLink
                     document={<ResumeDocument data={data} />}
                     fileName={`${(data.user?.name || 'Resume').replace(/\s+/g, '_')}_Resume.pdf`}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-slate-700 hover:bg-slate-50 transition-all font-semibold text-sm border border-slate-200 shadow-sm"
+                    className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
                 >
                     {({ loading }: any) => (
                         <>
@@ -41,13 +42,15 @@ export default function DownloadResumeButton({ data }: DownloadResumeButtonProps
                 </PDFDownloadLink>
             )}
 
-            <Link
-                href="/cv/preview"
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all font-semibold text-sm shadow-sm"
-            >
-                <FileEdit className="w-4 h-4" />
-                Customize
-            </Link>
+            {showCustomize && (
+                <Link
+                    href="/cv/preview"
+                    className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                >
+                    <FileEdit className="w-4 h-4 text-slate-400" />
+                    Customize CV
+                </Link>
+            )}
         </div>
     );
 }
