@@ -4,4 +4,9 @@
   body {
     @apply bg-slate-50 text-slate-900;
   }
+
+  main {
+    /* Clear fixed bottom tab bar (56px) + safe area + extra breathing room */
+    @apply pb-24 lg:pb-0;
+  }
 }

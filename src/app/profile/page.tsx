@@ -21,6 +21,8 @@ import AddReferenceModal from "@/components/talent/AddReferenceModal";
 import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
 import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
 import AddExperienceModal from "@/components/talent/AddExperienceModal";
+import { useBackToClose } from "@/hooks/useBackToClose";
+
 
 interface WorkExperience {
     id: string;
@@ -171,6 +173,39 @@ export default function ProfilePage() {
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(false);
     const [isSoftSkillsExpanded, setIsSoftSkillsExpanded] = useState(false);
     const [isSkillsExpanded, setIsSkillsExpanded] = useState(false);
+
+    // Navigation Back-Button Support for Modals
+    useBackToClose(isEditing, () => setIsEditing(false));
+    useBackToClose(isEditSummaryOpen, () => setIsEditSummaryOpen(false));
+    useBackToClose(isAddSkillOpen, () => {
+        setIsAddSkillOpen(false);
+        setEditingSkill(null);
+    });
+    useBackToClose(isAddLanguageOpen, () => {
+        setIsAddLanguageOpen(false);
+        setEditingLanguage(null);
+    });
+    useBackToClose(isAddProjectOpen, () => {
+        setIsAddProjectOpen(false);
+        setEditingProject(null);
+    });
+    useBackToClose(isAddCredentialOpen.open, () => {
+        setIsAddCredentialOpen({ open: false, type: "education" });
+        setEditingCredential(null);
+    });
+    useBackToClose(isAddReferenceOpen, () => {
+        setIsAddReferenceOpen(false);
+        setEditingReference(null);
+    });
+    useBackToClose(isAddMatricOpen, () => {
+        setIsAddMatricOpen(false);
+        setEditingMatric(null);
+    });
+    useBackToClose(isAddExperienceOpen, () => {
+        setIsAddExperienceOpen(false);
+        setEditingExperience(null);
+    });
+    useBackToClose(isSettingsOpen, () => setIsSettingsOpen(false));
 
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
