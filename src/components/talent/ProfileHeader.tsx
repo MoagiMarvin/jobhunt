@@ -97,7 +97,7 @@ export default function ProfileHeader({
                 <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-end">
                     {/* Avatar */}
                     <div className="group/avatar relative">
-                        <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-4 border-white shadow-xl shrink-0 overflow-hidden transition-all ${availabilityStatus === "Looking for Work" ? "ring-4 ring-green-500 ring-offset-2" : ""}`}>
+                        <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-4 border-white shadow-xl shrink-0 overflow-hidden transition-all ${availabilityStatus === "Looking for Work" ? "ring-[6px] ring-green-400 ring-offset-2" : ""}`}>
                             {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
                                 <img src={avatar} alt={name} className="w-full h-full object-cover" />
                             ) : (
@@ -123,9 +123,9 @@ export default function ProfileHeader({
                         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-3">
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <h1 className="text-lg md:text-xl font-bold text-slate-800 tracking-tight">{name}</h1>
+                                    <h1 className="text-lg md:text-xl font-black text-black tracking-tight">{name}</h1>
                                 </div>
-                                <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed mt-1 mb-3">{headline}</p>
+                                <p className="text-[13px] md:text-sm text-slate-800 font-bold leading-relaxed mt-1 mb-3">{headline}</p>
 
                                 {targetRoles.length > 0 && (
                                     <div className="flex flex-wrap gap-2">
@@ -220,21 +220,21 @@ export default function ProfileHeader({
 
                         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 md:mt-4">
                             {location && (
-                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-black font-bold">
                                     <MapPin className="w-3.5 h-3.5 text-blue-600" />
                                     {location}
                                 </div>
                             )}
 
                             {email && (
-                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-black font-bold">
                                     <Mail className="w-3.5 h-3.5 text-blue-600" />
                                     {email}
                                 </div>
                             )}
 
                             {phone && (
-                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-black font-bold">
                                     <Phone className="w-3.5 h-3.5 text-blue-600" />
                                     {phone}
                                 </div>
@@ -242,14 +242,14 @@ export default function ProfileHeader({
 
 
                             {haveLicense && (
-                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-black font-bold">
                                     <CreditCard className="w-3.5 h-3.5 text-blue-600" />
                                     <span>{isMounted && licenseCode ? `License: ${licenseCode}` : "Drivers License"}</span>
                                 </div>
                             )}
 
                             {haveCar && (
-                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-black font-bold">
                                     <Car className="w-3.5 h-3.5 text-blue-600" />
                                     <span>Own Transport</span>
                                 </div>
