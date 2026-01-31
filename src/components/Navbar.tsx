@@ -85,8 +85,9 @@ export default function Navbar() {
     };
 
     // Don't show Navbar on login/register pages at all, or on public profile routes
-    const isAuthPage = pathname === "/" || pathname === "/register";
-    const isPublicProfile = pathname?.startsWith("/p/");
+    const currentPath = pathname || (typeof window !== 'undefined' ? window.location.pathname : '');
+    const isAuthPage = currentPath === "/" || currentPath === "/register";
+    const isPublicProfile = currentPath?.startsWith("/p/");
 
     if (isAuthPage || isPublicProfile) return null;
 

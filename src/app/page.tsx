@@ -13,6 +13,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [role, setRole] = useState<"talent" | "recruiter">("talent");
     const [isLoading, setIsLoading] = useState(false);
+    const [isCheckingSession, setIsCheckingSession] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     // Auto-redirect if already logged in (LinkedIn Style)
@@ -26,6 +27,8 @@ export default function LoginPage() {
                 } else {
                     router.push("/recruiter/search");
                 }
+            } else {
+                setIsCheckingSession(false);
             }
         };
         checkSession();
@@ -80,6 +83,20 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     };
+
+    if (isCheckingSession) {
+        return (
+            <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center space-y-4">
+                <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-xl flex items-center justify-center animate-pulse">
+                    <Briefcase className="w-8 h-8 text-blue-600" />
+                </div>
+                <div className="space-y-2">
+                    <div className="h-4 w-32 bg-slate-200 rounded animate-pulse mx-auto"></div>
+                    <div className="h-3 w-24 bg-slate-100 rounded animate-pulse mx-auto"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <main className="min-h-screen relative flex items-center justify-center p-6 overflow-hidden bg-slate-50">
