@@ -143,7 +143,7 @@ export default function ProfileHeader({
 
                             {/* Header Actions Menu */}
                             <div className="absolute top-0 right-0 md:relative md:top-auto md:right-auto shrink-0 flex items-center gap-2">
-                                {isOwner && (
+                                {isOwner ? (
                                     <div className="relative">
                                         <button
                                             onClick={() => setIsActionsOpen(!isActionsOpen)}
@@ -208,6 +208,12 @@ export default function ProfileHeader({
                                             </>
                                         )}
                                     </div>
+                                ) : (
+                                    downloadAction && (
+                                        <div className="flex items-center">
+                                            {downloadAction}
+                                        </div>
+                                    )
                                 )}
                             </div>
                         </div>

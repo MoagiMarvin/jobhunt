@@ -9,6 +9,7 @@ import CredentialCard from "@/components/talent/CredentialCard";
 import ExperienceCard from "@/components/talent/ExperienceCard";
 import ReferenceCard from "@/components/talent/ReferenceCard";
 import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
+import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
 import { Loader2, FileText, FolderKanban, Building2, Languages, Award, Briefcase, School, MessageSquare, Layers, GraduationCap, User } from "lucide-react";
 import Link from "next/link";
 
@@ -313,6 +314,32 @@ export default function PublicProfilePage() {
         );
     }
 
+    const fullProfileData = {
+        user: {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            summary: user.summary,
+            linkedin: user.linkedin,
+            github: user.github,
+            portfolio: user.portfolio,
+            headline: user.headline,
+            location: user.location,
+            availabilityStatus: user.availabilityStatus,
+            haveLicense: user.haveLicense,
+            licenseCode: user.licenseCode,
+            haveCar: user.haveCar,
+            avatar: user.avatar,
+        },
+        skills,
+        experiences,
+        projectsList,
+        educationList,
+        certificationsList,
+        references,
+        matricData
+    };
+
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
             <div className="max-w-6xl mx-auto px-2.5 py-4 md:px-6 md:py-12">
@@ -321,6 +348,13 @@ export default function PublicProfilePage() {
                     <ProfileHeader
                         {...user}
                         isOwner={false}
+                        downloadAction={
+                            <DownloadResumeButton
+                                data={fullProfileData}
+                                showCustomize={false}
+                                variant="button"
+                            />
+                        }
                     />
                 </div>
 
