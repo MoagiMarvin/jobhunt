@@ -24,6 +24,8 @@ interface ProfileHeaderProps {
     isOwner?: boolean;
     userId?: string;
     onShare?: () => void;
+    isEditMode?: boolean;
+    onToggleEditMode?: () => void;
 }
 
 export default function ProfileHeader({
@@ -46,7 +48,9 @@ export default function ProfileHeader({
     targetRoles = [],
     isOwner = true,
     userId,
-    onShare
+    onShare,
+    isEditMode = false,
+    onToggleEditMode
 }: ProfileHeaderProps) {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -92,20 +96,46 @@ export default function ProfileHeader({
             <div className="px-5 pb-6 md:px-8 md:pb-8 -mt-12 md:-mt-16 relative">
                 <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-end">
                     {/* Avatar */}
-                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold shadow-xl border-4 border-white shrink-0 overflow-hidden">
-                        {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
-                            <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                        ) : (
-                            <span>{name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>
+                    <div className="group/avatar relative">
+                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold shadow-xl border-4 border-white shrink-0 overflow-hidden">
+                            {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
+                                <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                            ) : (
+                                <span>{name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>
+                            )}
+                        </div>
+
+                        {/* Over-Avatar Action Button (Desktop) */}
+                        {isOwner && onEdit && isEditMode && (
+                            <button
+                                onClick={onEdit}
+                                className="absolute bottom-0 right-0 p-1.5 md:p-2 rounded-full bg-blue-600 text-white shadow-lg border-2 border-white hover:bg-blue-700 transition-all transform hover:scale-110"
+                                title="Change Profile Picture"
+                            >
+                                <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                            </button>
                         )}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 pt-4">
-                        <div className="flex items-start justify-between gap-4 mb-3">
-                            <div>
-                                <h1 className="text-lg md:text-xl font-bold text-slate-800 mb-0.5 tracking-tight">{name}</h1>
-                                <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed mb-3">{headline}</p>
+                        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-3">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <h1 className="text-lg md:text-xl font-bold text-slate-800 tracking-tight">{name}</h1>
+                                    {isOwner && onToggleEditMode && (
+                                        <button
+                                            onClick={onToggleEditMode}
+                                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border ${isEditMode
+                                                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
+                                                : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
+                                                }`}
+                                        >
+                                            {isEditMode ? "Exit Edit Mode" : "Edit Profile"}
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed mt-1 mb-3">{headline}</p>
 
                                 {targetRoles.length > 0 && (
                                     <div className="flex flex-wrap gap-2">
@@ -120,32 +150,34 @@ export default function ProfileHeader({
                                     </div>
                                 )}
                             </div>
-                            <div className="flex flex-col gap-2">
-                                {isOwner && onEdit && (
+
+                            {/* Desktop Header Actions (Tightened) */}
+                            <div className="flex flex-wrap md:flex-col gap-2 shrink-0">
+                                {isOwner && isEditMode && (
                                     <button
                                         onClick={onEdit}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-all font-semibold text-xs"
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all font-semibold text-[10px] uppercase tracking-wider"
                                     >
-                                        <Edit2 className="w-3.5 h-3.5" />
-                                        Edit Profile
+                                        <Edit2 className="w-3 h-3" />
+                                        Customize
                                     </button>
                                 )}
                                 {downloadAction ? downloadAction : (onDownloadResume && (
                                     <button
                                         onClick={onDownloadResume}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-slate-800 transition-all font-semibold text-xs shadow-sm"
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all font-semibold text-[10px] uppercase tracking-wider shadow-sm"
                                     >
-                                        <Download className="w-3.5 h-3.5" />
-                                        Download Resume
+                                        <Download className="w-3 h-3" />
+                                        Resume
                                     </button>
                                 ))}
                                 {isOwner && onShare && (
                                     <button
                                         onClick={onShare}
-                                        className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all font-semibold text-xs shadow-sm border border-green-700"
+                                        className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-white text-slate-700 hover:bg-slate-50 transition-all font-semibold text-[10px] uppercase tracking-wider shadow-sm border border-slate-200"
                                     >
-                                        <Globe className="w-3.5 h-3.5" />
-                                        Copy Public Link
+                                        <Globe className="w-3 h-3 text-blue-500" />
+                                        Share Link
                                     </button>
                                 )}
                             </div>

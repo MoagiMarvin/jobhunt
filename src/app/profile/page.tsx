@@ -146,6 +146,7 @@ export default function ProfilePage() {
     const [matricData, setMatricData] = useState<any>(null);
 
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
     const [isEditSummaryOpen, setIsEditSummaryOpen] = useState(false);
     const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
     const [addSkillMode, setAddSkillMode] = useState<"technical" | "soft">("technical");
@@ -517,48 +518,50 @@ export default function ProfilePage() {
                         isOwner={true}
                         userId={currentUserId || undefined}
                         onShare={handleShare}
+                        isEditMode={isEditMode}
+                        onToggleEditMode={() => setIsEditMode(!isEditMode)}
                     />
                 </div>
 
-                {/* Upload CV Button */}
-                <div className="mb-6 flex justify-end">
-                    <Link href="/profile/master-cv" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all border border-blue-700 shadow-sm">
-                        <Upload className="w-3.5 h-3.5" />
-                        Upload CV
-                    </Link>
-                </div>
+                {/* Upload CV Button (Only in Edit Mode) */}
+                {isEditMode && (
+                    <div className="mb-6 flex justify-end">
+                        <Link href="/profile/master-cv" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all border border-blue-700 shadow-sm">
+                            <Upload className="w-3.5 h-3.5" />
+                            Upload CV
+                        </Link>
+                    </div>
+                )}
 
                 {/* Professional Summary Section (New) */}
                 {/* Professional Summary Section (New) */}
                 <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-5 md:p-8 shadow-sm relative group">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0 mb-4">
+                    <div className="flex items-center justify-between gap-4 mb-4">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
                                 <FileText className="w-4 h-4" />
                             </div>
                             <h2 className="text-base md:text-lg font-semibold text-slate-800 tracking-tight">Professional Summary</h2>
-                        </div>
-                        <div className="flex items-center gap-2 self-end md:self-auto">
-                            {!user.summary && (
+                            {isEditMode && !user.summary && (
                                 <button
                                     onClick={() => setIsEditSummaryOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm"
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
                                 >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Summary
-                                </button>
-                            )}
-                            {user.summary && (
-                                <button
-                                    onClick={() => setIsEditSummaryOpen(true)}
-                                    className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors opacity-100 md:opacity-0 group-hover:opacity-100 flex items-center gap-2"
-                                    title="Edit Summary"
-                                >
-                                    <Edit2 className="w-4 h-4" />
-                                    <span className="text-xs font-bold md:hidden">Edit</span>
+                                    <Plus className="w-3 h-3" />
+                                    Add
                                 </button>
                             )}
                         </div>
+                        {isEditMode && user.summary && (
+                            <button
+                                onClick={() => setIsEditSummaryOpen(true)}
+                                className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-2"
+                                title="Edit Summary"
+                            >
+                                <Edit2 className="w-4 h-4" />
+                                <span className="text-xs font-bold md:hidden">Edit</span>
+                            </button>
+                        )}
                     </div>
 
                     {user.summary ? (
@@ -577,28 +580,29 @@ export default function ProfilePage() {
                     <div className="space-y-8">
                         {/* Projects Section */}
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <FolderKanban className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <FolderKanban className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Projects</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => {
+                                                if (projectsList.length >= 4) {
+                                                    alert("Maximum of 4 projects allowed for a focused profile.");
+                                                } else {
+                                                    setIsAddProjectOpen(true);
+                                                }
+                                            }}
+                                            disabled={projectsList.length >= 4}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2 disabled:text-slate-400"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            {projectsList.length >= 4 ? "Limit Reached" : "Add"}
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        if (projectsList.length >= 4) {
-                                            alert("Maximum of 4 projects allowed for a focused profile.");
-                                        } else {
-                                            setIsAddProjectOpen(true);
-                                        }
-                                    }}
-                                    disabled={projectsList.length >= 4}
-                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${projectsList.length >= 4
-                                        ? "bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed"
-                                        : "bg-blue-600 text-white hover:bg-blue-700 border-blue-700 shadow-sm"
-                                        }`}
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Project {projectsList.length >= 4 && "(Limit Reached)"}
-                                </button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
                                 {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project: UIProject, idx: number) => (
@@ -619,7 +623,7 @@ export default function ProfilePage() {
                                             setEditingProject(project);
                                             setIsAddProjectOpen(true);
                                         }}
-                                        isOwner={true}
+                                        isOwner={isEditMode}
                                     />
                                 ))}
                             </div>
@@ -635,18 +639,22 @@ export default function ProfilePage() {
 
                         {/* Experience Section */}
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <Building2 className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <Building2 className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Experience</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => setIsAddExperienceOpen(true)}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => setIsAddExperienceOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Experience
-                                </button>
                             </div>
                             <div className="space-y-4">
                                 {experiences.map((exp: UIExperience, idx: number) => (
@@ -667,7 +675,7 @@ export default function ProfilePage() {
                                             setEditingExperience(exp);
                                             setIsAddExperienceOpen(true);
                                         }}
-                                        isOwner={true}
+                                        isOwner={isEditMode}
                                     />
                                 ))}
                             </div>
@@ -675,21 +683,25 @@ export default function ProfilePage() {
 
                         {/* 1. Technical Skills Section */}
                         <div className="space-y-6">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <Layers className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <Layers className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Technical Skills</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => {
+                                                setAddSkillMode("technical");
+                                                setIsAddSkillOpen(true);
+                                            }}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        setAddSkillMode("technical");
-                                        setIsAddSkillOpen(true);
-                                    }}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 w-full md:w-auto justify-center"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    Add Technical Skill
-                                </button>
                             </div>
 
                             {skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").length === 0 ? (
@@ -728,24 +740,26 @@ export default function ProfilePage() {
                                                                             {skill.minYears}Y
                                                                         </span>
                                                                     )}
-                                                                    <div>
-                                                                        <ItemActionMenu
-                                                                            onEdit={() => {
-                                                                                setEditingSkill(skill);
-                                                                                setAddSkillMode("technical");
-                                                                                setIsAddSkillOpen(true);
-                                                                            }}
-                                                                            onDelete={async () => {
-                                                                                if (currentUserId && skill.id) {
-                                                                                    await supabase.from("skills").delete().eq("id", skill.id);
-                                                                                } else if (currentUserId) {
-                                                                                    await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                                                }
-                                                                                const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
-                                                                                setSkills(updated);
-                                                                            }}
-                                                                        />
-                                                                    </div>
+                                                                    {isEditMode && (
+                                                                        <div>
+                                                                            <ItemActionMenu
+                                                                                onEdit={() => {
+                                                                                    setEditingSkill(skill);
+                                                                                    setAddSkillMode("technical");
+                                                                                    setIsAddSkillOpen(true);
+                                                                                }}
+                                                                                onDelete={async () => {
+                                                                                    if (currentUserId && skill.id) {
+                                                                                        await supabase.from("skills").delete().eq("id", skill.id);
+                                                                                    } else if (currentUserId) {
+                                                                                        await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                                    }
+                                                                                    const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
+                                                                                    setSkills(updated);
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                             );
                                                         })}
@@ -760,21 +774,25 @@ export default function ProfilePage() {
 
                         {/* 2. Soft Skills Section */}
                         <div className="space-y-6">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <MessageSquare className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <MessageSquare className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Soft Skills</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => {
+                                                setAddSkillMode("soft");
+                                                setIsAddSkillOpen(true);
+                                            }}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => {
-                                        setAddSkillMode("soft");
-                                        setIsAddSkillOpen(true);
-                                    }}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 w-full md:w-auto justify-center"
-                                >
-                                    <Plus className="w-4 h-4" />
-                                    Add Soft Skill
-                                </button>
                             </div>
 
                             {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length === 0 ? (
@@ -795,24 +813,26 @@ export default function ProfilePage() {
                                                         <p className="text-sm text-slate-700 leading-relaxed font-medium flex-1">
                                                             {skill.name}
                                                         </p>
-                                                        <div>
-                                                            <ItemActionMenu
-                                                                onEdit={() => {
-                                                                    setEditingSkill(skill);
-                                                                    setAddSkillMode("soft");
-                                                                    setIsAddSkillOpen(true);
-                                                                }}
-                                                                onDelete={async () => {
-                                                                    if (currentUserId && skill.id) {
-                                                                        await supabase.from("skills").delete().eq("id", skill.id);
-                                                                    } else if (currentUserId) {
-                                                                        await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                                    }
-                                                                    const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
-                                                                    setSkills(updated);
-                                                                }}
-                                                            />
-                                                        </div>
+                                                        {isEditMode && (
+                                                            <div>
+                                                                <ItemActionMenu
+                                                                    onEdit={() => {
+                                                                        setEditingSkill(skill);
+                                                                        setAddSkillMode("soft");
+                                                                        setIsAddSkillOpen(true);
+                                                                    }}
+                                                                    onDelete={async () => {
+                                                                        if (currentUserId && skill.id) {
+                                                                            await supabase.from("skills").delete().eq("id", skill.id);
+                                                                        } else if (currentUserId) {
+                                                                            await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                        }
+                                                                        const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
+                                                                        setSkills(updated);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 );
                                             })}
@@ -833,18 +853,22 @@ export default function ProfilePage() {
 
                         {/* Languages Section (New) */}
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <Languages className="w-5 h-5 text-blue-600" />
-                                    <h2 className="text-base md:text-lg font-extrabold text-slate-900 tracking-tight">Languages</h2>
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                                        <Languages className="w-4 h-4" />
+                                    </div>
+                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Languages</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => setIsAddLanguageOpen(true)}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => setIsAddLanguageOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Language
-                                </button>
                             </div>
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-4 md:p-6 shadow-sm">
                                 <div className="grid md:grid-cols-3 gap-4">
@@ -855,21 +879,23 @@ export default function ProfilePage() {
                                                 <p className="text-[10px] text-slate-500">{lang.proficiency}</p>
                                             </div>
                                             <div>
-                                                <ItemActionMenu
-                                                    onEdit={() => {
-                                                        setEditingLanguage({ ...lang, idx });
-                                                        setNewLanguage({ language: lang.language, proficiency: lang.proficiency });
-                                                        setIsAddLanguageOpen(true);
-                                                    }}
-                                                    onDelete={async () => {
-                                                        if (currentUserId && lang.id) {
-                                                            await supabase.from("languages").delete().eq("id", lang.id);
-                                                        }
-                                                        const updated = languages.filter((_: Language, i: number) => i !== idx);
-                                                        setLanguages(updated);
-                                                        localStorage.setItem("user_languages_list", JSON.stringify(updated));
-                                                    }}
-                                                />
+                                                {isEditMode && (
+                                                    <ItemActionMenu
+                                                        onEdit={() => {
+                                                            setEditingLanguage({ ...lang, idx });
+                                                            setNewLanguage({ language: lang.language, proficiency: lang.proficiency });
+                                                            setIsAddLanguageOpen(true);
+                                                        }}
+                                                        onDelete={async () => {
+                                                            if (currentUserId && lang.id) {
+                                                                await supabase.from("languages").delete().eq("id", lang.id);
+                                                            }
+                                                            const updated = languages.filter((_: Language, i: number) => i !== idx);
+                                                            setLanguages(updated);
+                                                            localStorage.setItem("user_languages_list", JSON.stringify(updated));
+                                                        }}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -879,18 +905,22 @@ export default function ProfilePage() {
 
                         {/* Education Section */}
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <GraduationCap className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <GraduationCap className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Tertiary Education</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Degree
-                                </button>
                             </div>
                             <div className="space-y-4">
                                 {educationList.map((edu: UIQualification, idx: number) => (
@@ -921,7 +951,7 @@ export default function ProfilePage() {
                                             setEditingCredential(edu);
                                             setIsAddCredentialOpen({ open: true, type: "education" });
                                         }}
-                                        isOwner={true}
+                                        isOwner={isEditMode}
                                     />
                                 ))}
                             </div>
@@ -929,20 +959,22 @@ export default function ProfilePage() {
 
                         {/* Matric Section */}
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <School className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <School className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Matric</h2>
+                                    {isEditMode && !matricData && (
+                                        <button
+                                            onClick={() => setIsAddMatricOpen(true)}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                {!matricData && (
-                                    <button
-                                        onClick={() => setIsAddMatricOpen(true)}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
-                                    >
-                                        <Plus className="w-3.5 h-3.5" />
-                                        Add Matric
-                                    </button>
-                                )}
                             </div>
                             {matricData ? (
                                 <SecondaryEducationCard
@@ -962,7 +994,7 @@ export default function ProfilePage() {
                                         setEditingMatric(matricData);
                                         setIsAddMatricOpen(true);
                                     }}
-                                    isOwner={true}
+                                    isOwner={isEditMode}
                                 />
                             ) : (
                                 <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-xl">
@@ -973,18 +1005,22 @@ export default function ProfilePage() {
 
                         {/* Certifications Section */}
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <Award className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <Award className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Certifications</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Certification
-                                </button>
                             </div>
                             <div className="space-y-4">
                                 {certificationsList.map((cert: UIQualification, idx: number) => (
@@ -1014,7 +1050,7 @@ export default function ProfilePage() {
                                             setEditingCredential(cert);
                                             setIsAddCredentialOpen({ open: true, type: "certification" });
                                         }}
-                                        isOwner={true}
+                                        isOwner={isEditMode}
                                     />
                                 ))}
                             </div>
@@ -1022,18 +1058,22 @@ export default function ProfilePage() {
 
                         {/* References Section */}
                         <div className="space-y-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-2">
-                                    <User className="w-5 h-5 text-blue-500" />
+                            <div className="flex items-center justify-between gap-3 md:gap-0">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                        <User className="w-4 h-4" />
+                                    </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Professional References</h2>
+                                    {isEditMode && (
+                                        <button
+                                            onClick={() => setIsAddReferenceOpen(true)}
+                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
+                                        >
+                                            <Plus className="w-3 h-3" />
+                                            Add
+                                        </button>
+                                    )}
                                 </div>
-                                <button
-                                    onClick={() => setIsAddReferenceOpen(true)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-all border border-blue-700 shadow-sm w-full md:w-auto justify-center"
-                                >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    Add Reference
-                                </button>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
                                 {references.map((ref: Reference, idx: number) => (
@@ -1056,7 +1096,7 @@ export default function ProfilePage() {
                                             setEditingReference(ref);
                                             setIsAddReferenceOpen(true);
                                         }}
-                                        isOwner={true}
+                                        isOwner={isEditMode}
                                     />
                                 ))}
                             </div>
