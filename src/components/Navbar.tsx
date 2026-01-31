@@ -84,10 +84,14 @@ export default function Navbar() {
         router.push("/");
     };
 
-    // Don't show Navbar on login/register if not logged in, or on public profile routes
+    // Don't show Navbar on login/register pages at all, or on public profile routes
     const isAuthPage = pathname === "/" || pathname === "/register";
     const isPublicProfile = pathname?.startsWith("/p/");
-    if ((!isLoggedIn && isAuthPage) || isPublicProfile) return null;
+
+    if (isAuthPage || isPublicProfile) return null;
+
+    // Fallback security check
+    if (!isLoggedIn) return null;
 
     return (
         <>

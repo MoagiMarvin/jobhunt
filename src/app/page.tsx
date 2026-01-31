@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { Briefcase, Mail, Lock, Building2, User, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
@@ -14,6 +14,22 @@ export default function LoginPage() {
     const [role, setRole] = useState<"talent" | "recruiter">("talent");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Auto-redirect if already logged in (LinkedIn Style)
+    useEffect(() => {
+        const checkSession = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                const savedRole = localStorage.getItem("mock_role") || "talent";
+                if (savedRole === "talent") {
+                    router.push("/profile");
+                } else {
+                    router.push("/recruiter/search");
+                }
+            }
+        };
+        checkSession();
+    }, [router]);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
