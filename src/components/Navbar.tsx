@@ -151,12 +151,12 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Premium Mobile Tab Bar */}
+            {/* Premium Mobile Tab Bar (LinkedIn/Airbnb Style) */}
             <div className={cn(
-                "lg:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none transition-all duration-500 ease-in-out transform",
-                isVisible ? "translate-y-0 opacity-100" : "translate-y-32 opacity-0"
+                "lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200 transition-all duration-500 ease-in-out transform shadow-[0_-4px_12px_rgba(0,0,0,0.03)] pb-[env(safe-area-inset-bottom)]",
+                isVisible ? "translate-y-0" : "translate-y-full"
             )}>
-                <div className="max-w-md mx-auto bg-white/90 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-3xl pointer-events-auto overflow-hidden flex items-center justify-around h-16 px-2">
+                <div className="flex items-center justify-around h-[72px] px-2 max-w-md mx-auto">
                     {links.map((link) => {
                         const Icon = link.icon;
                         const isActive = pathname === link.href;
@@ -166,21 +166,24 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 className={cn(
-                                    "flex flex-col items-center justify-center gap-1 w-full h-full transition-all duration-300 relative",
-                                    isActive ? "text-blue-600" : "text-slate-400"
+                                    "flex flex-col items-center justify-center gap-1 w-full h-full transition-colors duration-300",
+                                    isActive ? "text-blue-600" : "text-slate-400 hover:text-slate-600"
                                 )}
                             >
                                 <div className={cn(
-                                    "p-1.5 rounded-xl transition-all duration-300",
-                                    isActive ? "bg-blue-50/50 scale-110" : "bg-transparent"
+                                    "p-1 rounded-lg transition-transform duration-300",
+                                    isActive && "scale-110"
                                 )}>
-                                    <Icon className={cn("w-6 h-6 transition-all", isActive ? "stroke-[2.5]" : "stroke-[2]")} />
+                                    <Icon className={cn("w-6 h-6", isActive ? "stroke-[2.5]" : "stroke-[2]")} />
                                 </div>
-                                <span className={cn("text-[10px] font-black uppercase tracking-tighter transition-all", isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-1")}>
+                                <span className={cn(
+                                    "text-[10px] font-bold tracking-tight transition-all",
+                                    isActive ? "opacity-100" : "opacity-80"
+                                )}>
                                     {link.label.split(' ')[0]}
                                 </span>
                                 {isActive && (
-                                    <div className="absolute -bottom-1 w-1 h-1 bg-blue-600 rounded-full" />
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-b-full shadow-[0_1px_4px_rgba(37,99,235,0.4)]" />
                                 )}
                             </Link>
                         );
