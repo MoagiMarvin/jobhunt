@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { Link2, Sparkles, Download, FileText, AlertCircle, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import MinimalistCVPreview from "@/components/cv/MinimalistCVPreview";
 import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
+import { cn } from "@/lib/utils";
 
 /** MOCK DATA FOR FALLBACK (Matches Profile Page) **/
 const MOCK_PROFILE = {
@@ -94,6 +95,7 @@ function GenerateContent() {
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [optimizedData, setOptimizedData] = useState<any>(null);
     const [viewMode, setViewMode] = useState<"master" | "optimized">("master");
+    const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
 
     // Load Profile Data from multiple localStorage keys
     useEffect(() => {
@@ -260,10 +262,28 @@ function GenerateContent() {
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            <div className="max-w-7xl mx-auto px-6 py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+                {/* Mobile View Toggle */}
+                <div className="lg:hidden flex p-1 bg-slate-100 rounded-xl mb-6 shadow-sm border border-slate-200">
+                    <button
+                        onClick={() => setMobileTab("edit")}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold transition-all ${mobileTab === 'edit' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}
+                    >
+                        <FileText className="w-4 h-4" />
+                        Editor
+                    </button>
+                    <button
+                        onClick={() => setMobileTab("preview")}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-bold transition-all ${mobileTab === 'preview' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'}`}
+                    >
+                        <Sparkles className="w-4 h-4" />
+                        Preview
+                    </button>
+                </div>
+
                 <div className="grid lg:grid-cols-2 gap-8">
                     {/* Left: Input & Analysis */}
-                    <div className="space-y-6">
+                    <div className={cn("space-y-6", mobileTab === 'preview' && "hidden lg:block")}>
                         <div className="space-y-2">
                             <h1 className="text-3xl font-bold text-primary">Generate Tailored CV</h1>
                             <p className="text-slate-600">
@@ -303,10 +323,15 @@ function GenerateContent() {
                                         <button
                                             onClick={() => handleScrape()}
                                             disabled={isScraping}
-                                            className="px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+                                            className="px-4 sm:px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 min-w-[100px]"
                                         >
                                             {isScraping ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                                            {isScraping ? "Scraping..." : "Scrape"}
+                                            {isScraping ? "Scraping..." : (
+                                                <>
+                                                    <span className="xs:hidden">Scrape</span>
+                                                    <span className="hidden xs:inline">Scrape Job</span>
+                                                </>
+                                            )}
                                         </button>
                                     </div>
                                 ) : (
@@ -453,9 +478,9 @@ function GenerateContent() {
                                     {/* Two Gauges Side-by-Side */}
                                     <div className="grid grid-cols-2 gap-4">
                                         {/* Legacy Score */}
-                                        <div className="bg-white/60 p-4 rounded-xl border border-blue-100 flex flex-col items-center text-center relative group">
-                                            <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter mb-2">Legacy (Keywords)</span>
-                                            <span className={`text-3xl font-black ${analysis?.legacyScore >= 70 ? 'text-green-600' : 'text-slate-600'}`}>
+                                        <div className="bg-white/60 p-3 sm:p-4 rounded-xl border border-blue-100 flex flex-col items-center text-center relative group">
+                                            <span className="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-tighter mb-2">Legacy (Keywords)</span>
+                                            <span className={`text-2xl sm:text-3xl font-black ${analysis?.legacyScore >= 70 ? 'text-green-600' : 'text-slate-600'}`}>
                                                 {analysis ? `${analysis.legacyScore}%` : "--%"}
                                             </span>
                                             <div className="w-full h-1.5 bg-slate-100 rounded-full mt-3 overflow-hidden">
@@ -468,10 +493,10 @@ function GenerateContent() {
                                         </div>
 
                                         {/* AI Score */}
-                                        <div className="bg-white p-4 rounded-xl border-2 border-blue-200 flex flex-col items-center text-center shadow-md relative overflow-hidden group">
+                                        <div className="bg-white p-3 sm:p-4 rounded-xl border-2 border-blue-200 flex flex-col items-center text-center shadow-md relative overflow-hidden group">
                                             <div className="absolute top-0 right-0 p-1 bg-blue-600 text-[8px] font-black text-white uppercase tracking-widest rounded-bl-lg">Turbo</div>
-                                            <span className="text-[10px] font-black uppercase text-blue-600 tracking-tighter mb-2">AI (Context) Match</span>
-                                            <span className={`text-3xl font-black transition-all ${analysis?.semanticScore >= 70 ? 'text-blue-600' : 'text-purple-600'}`}>
+                                            <span className="text-[9px] sm:text-[10px] font-black uppercase text-blue-600 tracking-tighter mb-2">AI (Context) Match</span>
+                                            <span className={`text-2xl sm:text-3xl font-black transition-all ${analysis?.semanticScore >= 70 ? 'text-blue-600' : 'text-purple-600'}`}>
                                                 {analysis?.semanticScore !== null && analysis?.semanticScore !== undefined ? `${analysis.semanticScore}%` : (isAnalyzing ? "--%" : "OFF")}
                                             </span>
                                             <div className="w-full h-1.5 bg-blue-50 rounded-full mt-3 overflow-hidden">
@@ -571,7 +596,10 @@ function GenerateContent() {
                     </div>
 
                     {/* Right: CV Preview */}
-                    <div className="bg-white rounded-xl p-8 flex items-center justify-center sticky top-24 h-fit border-2 border-primary/10 shadow-xl overflow-hidden min-h-[600px]">
+                    <div className={cn(
+                        "bg-white rounded-xl p-4 sm:p-8 flex items-center justify-center lg:sticky lg:top-24 h-fit border-2 border-primary/10 shadow-xl overflow-hidden min-h-[500px] sm:min-h-[600px]",
+                        mobileTab === 'edit' && "hidden lg:flex"
+                    )}>
                         <div className="absolute top-4 right-4 z-10 flex gap-2">
                             {optimizedData && (
                                 <span className={`px-2 py-1 rounded text-[9px] font-black uppercase tracking-widest shadow-sm ${viewMode === 'optimized' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
@@ -580,7 +608,11 @@ function GenerateContent() {
                             )}
                         </div>
                         {profileData ? (
-                            <MinimalistCVPreview data={viewMode === "optimized" ? optimizedData : profileData} />
+                            <div className="w-full overflow-x-auto pb-4 custom-scrollbar flex justify-start sm:justify-center">
+                                <div className="min-w-[210mm] sm:min-w-0 sm:w-full">
+                                    <MinimalistCVPreview data={viewMode === "optimized" ? optimizedData : profileData} />
+                                </div>
+                            </div>
                         ) : (
 
                             <div className="text-center p-12 text-slate-400">
@@ -599,6 +631,6 @@ function GenerateContent() {
                     </div>
                 )}
             </div>
-        </main>
+        </main >
     );
 }

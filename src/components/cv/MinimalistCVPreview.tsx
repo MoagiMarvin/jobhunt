@@ -58,7 +58,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
     };
 
     return (
-        <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm border border-slate-300 p-10 space-y-4 text-left">
+        <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm border border-slate-300 p-6 sm:p-10 space-y-4 text-left">
             {/* Header */}
             <div className="border-b border-slate-300 pb-4">
                 <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
@@ -288,7 +288,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                     <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Professional References
                     </h2>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {referencesArr.map((ref: any, i: number) => (
                             <div key={i}>
                                 <p className="text-xs font-bold text-black">{ref.name}</p>

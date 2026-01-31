@@ -93,9 +93,14 @@ export default function SearchPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="bg-blue-600 text-white px-8 font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                            className="bg-blue-600 text-white px-4 sm:px-8 font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 min-w-[60px]"
                         >
-                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Find Jobs"}
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                <>
+                                    <Search className="w-5 h-5 sm:hidden" />
+                                    <span className="hidden sm:inline">Find Jobs</span>
+                                </>
+                            )}
                         </button>
                     </div>
                 </form>
@@ -170,12 +175,11 @@ function JobCard({ job, router }: { job: any; router: any }) {
                     <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-1">
                         {job.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border ${job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border shrink-0 ${job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
                             {job.source}
                         </span>
-                        <span>{job.company}</span>
-                        <span>•</span>
+                        <span className="font-medium">{job.company}</span>
                         <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             {job.location}
@@ -184,29 +188,33 @@ function JobCard({ job, router }: { job: any; router: any }) {
                 </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                    onClick={handleCopyLink}
-                    className="flex-1 px-4 py-2.5 rounded-lg border-2 border-slate-100 text-slate-600 hover:bg-slate-50 text-xs font-bold transition-all flex items-center justify-center gap-2"
-                >
-                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                    {copied ? "Link Copied!" : "Copy Job Link"}
-                </button>
-                <a
-                    href={job.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-slate-100 text-slate-900 hover:bg-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-2"
-                >
-                    <ExternalLink className="w-4 h-4" />
-                    Open Original
-                </a>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
+                <div className="flex gap-2 flex-1">
+                    <button
+                        onClick={handleCopyLink}
+                        className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 text-[11px] font-bold transition-all flex items-center justify-center gap-2"
+                    >
+                        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                        <span className="hidden xs:inline">{copied ? "Link Copied!" : "Copy Link"}</span>
+                        <span className="xs:hidden">{copied ? "Copied" : "Copy"}</span>
+                    </button>
+                    <a
+                        href={job.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-900 hover:bg-slate-200 text-[11px] font-bold transition-all flex items-center justify-center gap-2"
+                    >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Open</span>
+                    </a>
+                </div>
                 <button
                     onClick={handleUseForCV}
-                    className="flex-[2] px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold transition-all flex items-center justify-center gap-2"
+                    className="flex-[1.5] px-6 py-3.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100 active:scale-[0.98]"
                 >
                     <Briefcase className="w-4 h-4" />
-                    Scrape & Optimize CV
+                    <span className="sm:hidden">Optimize My CV</span>
+                    <span className="hidden sm:inline">Scrape & Optimize CV</span>
                 </button>
             </div>
 
