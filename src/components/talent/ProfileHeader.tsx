@@ -96,7 +96,7 @@ export default function ProfileHeader({
                 <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-end">
                     {/* Avatar */}
                     <div className="group/avatar relative">
-                        <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold shadow-xl border-4 border-white shrink-0 overflow-hidden">
+                        <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-4 border-white shadow-xl shrink-0 overflow-hidden transition-all ${availabilityStatus === "Looking for Work" ? "ring-4 ring-green-500 ring-offset-2" : ""}`}>
                             {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
                                 <img src={avatar} alt={name} className="w-full h-full object-cover" />
                             ) : (
@@ -163,17 +163,6 @@ export default function ProfileHeader({
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Profile Options</p>
                                                     </div>
 
-                                                    <button
-                                                        onClick={() => {
-                                                            setIsActionsOpen(false);
-                                                            onEdit?.();
-                                                        }}
-                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
-                                                    >
-                                                        <Edit2 className="w-4 h-4" />
-                                                        Customize Profile
-                                                    </button>
-
                                                     <div className="py-1">
                                                         {downloadAction ? (
                                                             <div onClick={() => setIsActionsOpen(false)}>{downloadAction}</div>
@@ -231,12 +220,6 @@ export default function ProfileHeader({
                                 </div>
                             )}
 
-                            {/* Availability Badge */}
-                            <div className={`flex items-center gap-2 px-2.5 py-0.5 rounded-full border ${status.bg} ${status.text} ${status.border}`}>
-                                <div className={`w-1 h-1 rounded-full ${status.dot} animate-pulse`}></div>
-                                <Briefcase className="w-3 h-3" />
-                                <span className="text-[10px] font-bold uppercase tracking-wider">{availabilityStatus}</span>
-                            </div>
 
                             {haveLicense && (
                                 <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
