@@ -158,7 +158,7 @@ export default function Navbar() {
                 "lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200 transition-all duration-500 ease-in-out transform shadow-[0_-4px_12px_rgba(0,0,0,0.03)] pb-[env(safe-area-inset-bottom)]",
                 isVisible ? "translate-y-0" : "translate-y-full"
             )}>
-                <div className="flex items-center justify-around h-[64px] px-2 max-w-md mx-auto">
+                <div className="flex items-center justify-around h-[56px] px-2 max-w-md mx-auto">
                     {links.map((link) => {
                         const Icon = link.icon;
                         const isActive = pathname === link.href;
@@ -168,18 +168,18 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 className={cn(
-                                    "flex flex-col items-center justify-center gap-1 w-full h-full transition-colors duration-300 relative",
+                                    "flex flex-col items-center justify-center gap-0.5 w-full h-full transition-colors duration-300 relative",
                                     isActive ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
                                 )}
                             >
                                 {isActive && (
-                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-slate-900 rounded-b-full shadow-[0_1px_4px_rgba(0,0,0,0.1)]" />
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-slate-900 rounded-b-full shadow-[0_1px_2px_rgba(0,0,0,0.1)]" />
                                 )}
-                                <div className="p-1 transition-transform duration-300">
+                                <div className="p-0.5 transition-transform duration-300">
                                     <Icon className={cn("w-5 h-5", isActive ? "stroke-[2.5]" : "stroke-[2]")} />
                                 </div>
                                 <span className={cn(
-                                    "text-[9px] font-bold tracking-tight transition-all",
+                                    "text-[8px] font-bold tracking-tight transition-all",
                                     isActive ? "opacity-100" : "opacity-80"
                                 )}>
                                     {link.label.split(' ')[0]}
