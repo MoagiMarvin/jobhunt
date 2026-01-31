@@ -108,6 +108,7 @@ export default function ProfileHeader({
                         {isOwner && onEdit && (
                             <button
                                 onClick={onEdit}
+                                id="edit-profile-trigger"
                                 className="absolute bottom-1 right-1 p-2 rounded-full bg-blue-600 text-white shadow-lg border-2 border-white hover:bg-blue-700 transition-all transform hover:scale-110 z-10"
                                 title="Change Profile Picture"
                             >
@@ -158,14 +159,15 @@ export default function ProfileHeader({
                                                     className="fixed inset-0 z-20"
                                                     onClick={() => setIsActionsOpen(false)}
                                                 ></div>
-                                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden">
+                                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden flex flex-col">
                                                     <div className="px-4 py-2 border-b border-slate-50 mb-1">
                                                         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Profile Options</p>
                                                     </div>
 
-                                                    <div className="py-1">
+                                                    {/* 1. Download CV */}
+                                                    <div className="w-full">
                                                         {downloadAction ? (
-                                                            <div onClick={() => setIsActionsOpen(false)}>{downloadAction}</div>
+                                                            <div className="w-full flex" onClick={() => setIsActionsOpen(false)}>{downloadAction}</div>
                                                         ) : (onDownloadResume && (
                                                             <button
                                                                 onClick={() => {
@@ -180,6 +182,20 @@ export default function ProfileHeader({
                                                         ))}
                                                     </div>
 
+                                                    {/* 2. Customize Profile */}
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsActionsOpen(false);
+                                                            // onEdit trigger (pencil icon logic)
+                                                            document.getElementById('edit-profile-trigger')?.click();
+                                                        }}
+                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                        Customize Profile
+                                                    </button>
+
+                                                    {/* 3. Copy Link */}
                                                     <button
                                                         onClick={() => {
                                                             setIsActionsOpen(false);
