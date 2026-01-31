@@ -128,168 +128,193 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
         }
     };
 
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(initialData || { role: "", company: "" }) || achievements.length > 0;
+
+    const handleClose = () => {
+        if (hasChanges) {
+            if (window.confirm("You have unsaved changes. Are you sure you want to close?")) {
+                onClose();
+            }
+        } else {
+            onClose();
+        }
+    };
+
+    if (!isOpen) return null;
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
+            onClick={handleClose}
+        >
+            <div
+                className="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom sm:zoom-in duration-300 max-h-[95vh] sm:max-h-[90vh] flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Mobile Grab Handle */}
+                <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mt-3 mb-1 sm:hidden shrink-0" />
+
+                <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
                     <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                         <Briefcase className="w-5 h-5 text-blue-600" />
                         {initialData ? "Edit Work Experience" : "Add Work Experience"}
                     </h2>
-                    <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+                    <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-5 md:p-8 space-y-5 max-h-[85vh] overflow-y-auto">
-                    {/* Role & Company */}
-                    <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Job Title</label>
-                            <input
-                                required
-                                type="text"
-                                value={formData.role}
-                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                placeholder="e.g. Developer"
-                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium"
-                            />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="text-xs font-bold text-slate-500 uppercase">Company</label>
-                            <input
-                                required
-                                type="text"
-                                value={formData.company}
-                                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                placeholder="e.g. Google"
-                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Start Date */}
-                    <div className="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                        <label className="text-xs font-bold text-slate-600 uppercase flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-blue-600" /> Start Date
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
-                            <select
-                                value={startDate.month}
-                                onChange={(e) => setStartDate({ ...startDate, month: e.target.value })}
-                                className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"
-                            >
-                                {months.map(m => <option key={m} value={m}>{m}</option>)}
-                            </select>
-                            <select
-                                value={startDate.year}
-                                onChange={(e) => setStartDate({ ...startDate, year: e.target.value })}
-                                className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"
-                            >
-                                {years.map(y => <option key={y} value={y}>{y}</option>)}
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* End Date */}
-                    <div className={`space-y-3 p-4 rounded-xl border transition-all ${isCurrent ? 'bg-blue-50 border-blue-100' : 'bg-slate-50 border-slate-100'}`}>
-                        <div className="flex items-center justify-between">
-                            <label className="text-xs font-bold text-slate-600 uppercase flex items-center gap-2">
-                                <Calendar className="w-3.5 h-3.5 text-blue-600" /> End Date
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer group">
+                <form onSubmit={handleSubmit} className="flex flex-col min-h-0 overflow-hidden">
+                    <div className="p-5 md:p-8 space-y-5 overflow-y-auto custom-scrollbar">
+                        {/* Role & Company */}
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-500 uppercase">Job Title</label>
                                 <input
-                                    type="checkbox"
-                                    checked={isCurrent}
-                                    onChange={(e) => setIsCurrent(e.target.checked)}
-                                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                                    required
+                                    type="text"
+                                    value={formData.role}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                    placeholder="e.g. Developer"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium"
                                 />
-                                <span className="text-xs font-bold text-blue-700">Currently Working Here</span>
-                            </label>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-500 uppercase">Company</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={formData.company}
+                                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                                    placeholder="e.g. Google"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium"
+                                />
+                            </div>
                         </div>
 
-                        {!isCurrent && (
-                            <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-top-2">
+                        {/* Start Date */}
+                        <div className="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <label className="text-xs font-bold text-slate-600 uppercase flex items-center gap-2">
+                                <Calendar className="w-3.5 h-3.5 text-blue-600" /> Start Date
+                            </label>
+                            <div className="grid grid-cols-2 gap-3">
                                 <select
-                                    value={endDate.month}
-                                    onChange={(e) => setEndDate({ ...endDate, month: e.target.value })}
+                                    value={startDate.month}
+                                    onChange={(e) => setStartDate({ ...startDate, month: e.target.value })}
                                     className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"
                                 >
                                     {months.map(m => <option key={m} value={m}>{m}</option>)}
                                 </select>
                                 <select
-                                    value={endDate.year}
-                                    onChange={(e) => setEndDate({ ...endDate, year: e.target.value })}
+                                    value={startDate.year}
+                                    onChange={(e) => setStartDate({ ...startDate, year: e.target.value })}
                                     className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"
                                 >
                                     {years.map(y => <option key={y} value={y}>{y}</option>)}
                                 </select>
                             </div>
-                        )}
-                        {isCurrent && (
-                            <p className="text-[10px] font-bold text-blue-400 italic">This will show as "Present" on your CV</p>
-                        )}
-                    </div>
-
-                    {/* Achievements & Responsibilities */}
-                    <div className="space-y-3">
-                        <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                            <FileText className="w-3.5 h-3.5 text-blue-600" /> Achievements & Responsibilities
-                        </label>
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={currentAchievement}
-                                onChange={(e) => setCurrentAchievement(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Type a responsibility and press Enter..."
-                                className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium"
-                            />
-                            <button
-                                type="button"
-                                onClick={addAchievement}
-                                className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition-all"
-                            >
-                                Add
-                            </button>
                         </div>
 
-                        {/* List of achievements */}
-                        <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                            {achievements.map((item, index) => (
-                                <div key={index} className="flex font-semibold items-start justify-between gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100 group animate-in slide-in-from-left-2 duration-200">
-                                    <div className="flex gap-3">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-                                        <p className="text-sm text-slate-700 leading-relaxed capitalize italic">
-                                            {item}
-                                        </p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => removeAchievement(index)}
-                                        className="text-slate-300 hover:text-red-500 transition-colors"
+                        {/* End Date */}
+                        <div className={`space-y-3 p-4 rounded-xl border transition-all ${isCurrent ? 'bg-blue-50 border-blue-100' : 'bg-slate-50 border-slate-100'}`}>
+                            <div className="flex items-center justify-between">
+                                <label className="text-xs font-bold text-slate-600 uppercase flex items-center gap-2">
+                                    <Calendar className="w-3.5 h-3.5 text-blue-600" /> End Date
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer group">
+                                    <input
+                                        type="checkbox"
+                                        checked={isCurrent}
+                                        onChange={(e) => setIsCurrent(e.target.checked)}
+                                        className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <span className="text-xs font-bold text-blue-700">Currently Working Here</span>
+                                </label>
+                            </div>
+
+                            {!isCurrent && (
+                                <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-top-2">
+                                    <select
+                                        value={endDate.month}
+                                        onChange={(e) => setEndDate({ ...endDate, month: e.target.value })}
+                                        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"
                                     >
-                                        <X className="w-4 h-4" />
-                                    </button>
+                                        {months.map(m => <option key={m} value={m}>{m}</option>)}
+                                    </select>
+                                    <select
+                                        value={endDate.year}
+                                        onChange={(e) => setEndDate({ ...endDate, year: e.target.value })}
+                                        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white"
+                                    >
+                                        {years.map(y => <option key={y} value={y}>{y}</option>)}
+                                    </select>
                                 </div>
-                            ))}
+                            )}
+                            {isCurrent && (
+                                <p className="text-[10px] font-bold text-blue-400 italic">This will show as "Present" on your CV</p>
+                            )}
+                        </div>
+
+                        {/* Achievements & Responsibilities */}
+                        <div className="space-y-3">
+                            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                                <FileText className="w-3.5 h-3.5 text-blue-600" /> Achievements & Responsibilities
+                            </label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={currentAchievement}
+                                    onChange={(e) => setCurrentAchievement(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Type a responsibility and press Enter..."
+                                    className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={addAchievement}
+                                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-sm transition-all"
+                                >
+                                    Add
+                                </button>
+                            </div>
+
+                            {/* List of achievements */}
+                            <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                                {achievements.map((item, index) => (
+                                    <div key={index} className="flex font-semibold items-start justify-between gap-3 p-3 bg-blue-50/50 rounded-xl border border-blue-100 group animate-in slide-in-from-left-2 duration-200">
+                                        <div className="flex gap-3">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                                            <p className="text-sm text-slate-700 leading-relaxed capitalize italic">
+                                                {item}
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeAchievement(index)}
+                                            className="text-slate-300 hover:text-red-500 transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
-                    <div className="pt-2 flex gap-3">
+                    <div className="p-5 md:p-6 border-t border-slate-100 bg-slate-50 flex gap-3 shrink-0 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-all text-sm"
+                            className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-all text-sm border border-slate-200"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="flex-[2] py-2.5 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
+                            className="flex-[2] py-3 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all flex items-center justify-center gap-2 text-sm"
                         >
                             <Save className="w-4 h-4" />
-                            {initialData ? "Update Experience" : "Save Experience"}
+                            {initialData ? "Update" : "Save"} Experience
                         </button>
                     </div>
                 </form>
