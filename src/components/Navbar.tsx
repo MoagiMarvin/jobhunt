@@ -13,6 +13,29 @@ export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [role, setRole] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY < 10) {
+                setIsVisible(true);
+            } else if (currentScrollY > lastScrollY) {
+                // Scrolling down - hide
+                setIsVisible(false);
+            } else {
+                // Scrolling up - show
+                setIsVisible(true);
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
 
     useEffect(() => {
         // Close menu on route change
@@ -129,7 +152,10 @@ export default function Navbar() {
             </div>
 
             {/* Premium Mobile Tab Bar */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none">
+            <div className={cn(
+                "lg:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none transition-all duration-500 ease-in-out transform",
+                isVisible ? "translate-y-0 opacity-100" : "translate-y-32 opacity-0"
+            )}>
                 <div className="max-w-md mx-auto bg-white/90 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-3xl pointer-events-auto overflow-hidden flex items-center justify-around h-16 px-2">
                     {links.map((link) => {
                         const Icon = link.icon;
