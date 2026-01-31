@@ -38,6 +38,13 @@ export default function RegisterPage() {
             return;
         }
 
+        // Enforce @gmail.com for talent
+        if (role === "talent" && !email.toLowerCase().endsWith("@gmail.com")) {
+            setError("Talent registration requires a @gmail.com address.");
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const { data: { user, session }, error: authError } = await supabase.auth.signUp({
                 email,
@@ -202,6 +209,11 @@ export default function RegisterPage() {
                                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
                                 />
                             </div>
+                            {role === "talent" && (
+                                <p className="text-[10px] text-slate-400 ml-1 font-medium italic">
+                                    * Talent accounts must use a @gmail.com address
+                                </p>
+                            )}
                         </div>
 
                         <div className="space-y-1.5">
