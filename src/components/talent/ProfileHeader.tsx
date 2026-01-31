@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard } from "lucide-react";
+import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, ChevronDown, Share2, Settings } from "lucide-react";
 
 interface ProfileHeaderProps {
     name: string;
@@ -25,7 +25,6 @@ interface ProfileHeaderProps {
     userId?: string;
     onShare?: () => void;
     isEditMode?: boolean;
-    onToggleEditMode?: () => void;
 }
 
 export default function ProfileHeader({
@@ -49,10 +48,10 @@ export default function ProfileHeader({
     isOwner = true,
     userId,
     onShare,
-    isEditMode = false,
-    onToggleEditMode
+    isEditMode = true, // Default to true now for owner
 }: ProfileHeaderProps) {
     const [isMounted, setIsMounted] = useState(false);
+    const [isActionsOpen, setIsActionsOpen] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -106,13 +105,13 @@ export default function ProfileHeader({
                         </div>
 
                         {/* Over-Avatar Action Button (Desktop) */}
-                        {isOwner && onEdit && isEditMode && (
+                        {isOwner && onEdit && (
                             <button
                                 onClick={onEdit}
-                                className="absolute bottom-0 right-0 p-1.5 md:p-2 rounded-full bg-blue-600 text-white shadow-lg border-2 border-white hover:bg-blue-700 transition-all transform hover:scale-110"
+                                className="absolute bottom-1 right-1 p-2 rounded-full bg-blue-600 text-white shadow-lg border-2 border-white hover:bg-blue-700 transition-all transform hover:scale-110 z-10"
                                 title="Change Profile Picture"
                             >
-                                <Edit2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                                <Edit2 className="w-4 h-4" />
                             </button>
                         )}
                     </div>
@@ -123,17 +122,6 @@ export default function ProfileHeader({
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 flex-wrap">
                                     <h1 className="text-lg md:text-xl font-bold text-slate-800 tracking-tight">{name}</h1>
-                                    {isOwner && onToggleEditMode && (
-                                        <button
-                                            onClick={onToggleEditMode}
-                                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all border ${isEditMode
-                                                ? "bg-blue-600 text-white border-blue-700 shadow-sm"
-                                                : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
-                                                }`}
-                                        >
-                                            {isEditMode ? "Exit Edit Mode" : "Edit Profile"}
-                                        </button>
-                                    )}
                                 </div>
                                 <p className="text-[13px] md:text-sm text-slate-500 font-medium leading-relaxed mt-1 mb-3">{headline}</p>
 
@@ -151,26 +139,72 @@ export default function ProfileHeader({
                                 )}
                             </div>
 
-                            {/* Desktop Header Actions (Tightened) */}
-                            <div className="flex flex-wrap md:flex-col gap-2 shrink-0">
+                            {/* Header Actions Menu */}
+                            <div className="absolute top-0 right-0 md:relative md:top-auto md:right-auto shrink-0 flex items-center gap-2">
+                                {isOwner && (
+                                    <div className="relative">
+                                        <button
+                                            onClick={() => setIsActionsOpen(!isActionsOpen)}
+                                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-lg group"
+                                        >
+                                            <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform" />
+                                            <span>Manage</span>
+                                            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isActionsOpen ? 'rotate-180' : ''}`} />
+                                        </button>
 
-                                {downloadAction ? downloadAction : (onDownloadResume && (
-                                    <button
-                                        onClick={onDownloadResume}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all font-semibold text-[10px] uppercase tracking-wider shadow-sm"
-                                    >
-                                        <Download className="w-3 h-3" />
-                                        Resume
-                                    </button>
-                                ))}
-                                {isOwner && onShare && (
-                                    <button
-                                        onClick={onShare}
-                                        className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-white text-slate-700 hover:bg-slate-50 transition-all font-semibold text-[10px] uppercase tracking-wider shadow-sm border border-slate-200"
-                                    >
-                                        <Globe className="w-3 h-3 text-blue-500" />
-                                        Share Link
-                                    </button>
+                                        {isActionsOpen && (
+                                            <>
+                                                <div
+                                                    className="fixed inset-0 z-20"
+                                                    onClick={() => setIsActionsOpen(false)}
+                                                ></div>
+                                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden">
+                                                    <div className="px-4 py-2 border-b border-slate-50 mb-1">
+                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Profile Options</p>
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsActionsOpen(false);
+                                                            onEdit?.();
+                                                        }}
+                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                    >
+                                                        <Edit2 className="w-4 h-4" />
+                                                        Customize Profile
+                                                    </button>
+
+                                                    <div className="py-1">
+                                                        {downloadAction ? (
+                                                            <div onClick={() => setIsActionsOpen(false)}>{downloadAction}</div>
+                                                        ) : (onDownloadResume && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setIsActionsOpen(false);
+                                                                    onDownloadResume();
+                                                                }}
+                                                                className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                            >
+                                                                <Download className="w-4 h-4" />
+                                                                Download CV
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsActionsOpen(false);
+                                                            onShare?.();
+                                                        }}
+                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
+                                                    >
+                                                        <Share2 className="w-4 h-4" />
+                                                        Copy Profile Link
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>

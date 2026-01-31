@@ -146,7 +146,7 @@ export default function ProfilePage() {
     const [matricData, setMatricData] = useState<any>(null);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
+    const isEditMode = true; // Always on for owner in this view
     const [isEditSummaryOpen, setIsEditSummaryOpen] = useState(false);
     const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
     const [addSkillMode, setAddSkillMode] = useState<"technical" | "soft">("technical");
@@ -519,7 +519,6 @@ export default function ProfilePage() {
                         userId={currentUserId || undefined}
                         onShare={handleShare}
                         isEditMode={isEditMode}
-                        onToggleEditMode={() => setIsEditMode(!isEditMode)}
                     />
                 </div>
 
