@@ -89,69 +89,71 @@ export default function Navbar() {
     if (!isLoggedIn && isAuthPage) return null;
 
     return (
-        <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="flex items-center justify-between h-16 md:h-20">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 shrink-0">
-                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                            <Briefcase className="w-5 h-5 md:w-6 md:h-6" />
-                        </div>
-                        <span className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                            JOB<span className="text-blue-600">HUNT</span>
-                        </span>
-                    </Link>
+        <>
+            <nav className="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div className="flex items-center justify-between h-16 md:h-20">
+                        {/* Logo */}
+                        <Link href="/" className="flex items-center gap-2 shrink-0">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                                <Briefcase className="w-5 h-5 md:w-6 md:h-6" />
+                            </div>
+                            <span className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+                                JOB<span className="text-blue-600">HUNT</span>
+                            </span>
+                        </Link>
 
-                    {/* Desktop Navigation */}
-                    <div className="hidden lg:flex items-center gap-1">
-                        {links.map((link) => {
-                            const Icon = link.icon;
-                            const isActive = pathname === link.href;
+                        {/* Desktop Navigation */}
+                        <div className="hidden lg:flex items-center gap-1">
+                            {links.map((link) => {
+                                const Icon = link.icon;
+                                const isActive = pathname === link.href;
 
-                            return (
-                                <Link
-                                    key={link.href}
-                                    href={link.href}
-                                    className={cn(
-                                        "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
-                                        isActive
-                                            ? "bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105"
-                                            : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
-                                    )}
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={cn(
+                                            "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
+                                            isActive
+                                                ? "bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105"
+                                                : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                                        )}
+                                    >
+                                        <Icon className="w-4 h-4" />
+                                        {link.label}
+                                    </Link>
+                                );
+                            })}
+
+                            {isLoggedIn && (
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all ml-4"
                                 >
-                                    <Icon className="w-4 h-4" />
-                                    {link.label}
-                                </Link>
-                            );
-                        })}
+                                    <LogOut className="w-4 h-4" />
+                                    Logout
+                                </button>
+                            )}
+                        </div>
 
-                        {isLoggedIn && (
-                            <button
-                                onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 transition-all ml-4"
-                            >
-                                <LogOut className="w-4 h-4" />
-                                Logout
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Mobile - Logout Only on Top Header */}
-                    <div className="lg:hidden flex items-center gap-2">
-                        {isLoggedIn && (
-                            <button
-                                onClick={handleLogout}
-                                className="p-2 rounded-xl text-red-500 hover:bg-red-50 transition-all"
-                                title="Logout"
-                            >
-                                <LogOut className="w-5 h-5" />
-                            </button>
-                        )}
+                        {/* Mobile - Logout Only on Top Header */}
+                        <div className="lg:hidden flex items-center gap-2">
+                            {isLoggedIn && (
+                                <button
+                                    onClick={handleLogout}
+                                    className="p-2 rounded-xl text-red-500 hover:bg-red-50 transition-all"
+                                    title="Logout"
+                                >
+                                    <LogOut className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </nav>
 
-            {/* Premium Mobile Tab Bar (LinkedIn/Airbnb Style) */}
+            {/* Premium Mobile Tab Bar (LinkedIn/Airbnb Style) - Independent of top nav */}
             <div className={cn(
                 "lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200 transition-all duration-500 ease-in-out transform shadow-[0_-4px_12px_rgba(0,0,0,0.03)] pb-[env(safe-area-inset-bottom)]",
                 isVisible ? "translate-y-0" : "translate-y-full"
@@ -166,10 +168,13 @@ export default function Navbar() {
                                 key={link.href}
                                 href={link.href}
                                 className={cn(
-                                    "flex flex-col items-center justify-center gap-1 w-full h-full transition-colors duration-300",
+                                    "flex flex-col items-center justify-center gap-1 w-full h-full transition-colors duration-300 relative",
                                     isActive ? "text-blue-600" : "text-slate-400 hover:text-slate-600"
                                 )}
                             >
+                                {isActive && (
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-b-full shadow-[0_1px_4px_rgba(37,99,235,0.4)]" />
+                                )}
                                 <div className={cn(
                                     "p-1 rounded-lg transition-transform duration-300",
                                     isActive && "scale-110"
@@ -182,14 +187,11 @@ export default function Navbar() {
                                 )}>
                                     {link.label.split(' ')[0]}
                                 </span>
-                                {isActive && (
-                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-b-full shadow-[0_1px_4px_rgba(37,99,235,0.4)]" />
-                                )}
                             </Link>
                         );
                     })}
                 </div>
             </div>
-        </nav>
+        </>
     );
 }
