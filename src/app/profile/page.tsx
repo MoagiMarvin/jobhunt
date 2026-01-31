@@ -542,16 +542,16 @@ export default function ProfilePage() {
                                 <FileText className="w-4 h-4" />
                             </div>
                             <h2 className="text-base md:text-lg font-semibold text-slate-800 tracking-tight">Professional Summary</h2>
-                            {isEditMode && !user.summary && (
-                                <button
-                                    onClick={() => setIsEditSummaryOpen(true)}
-                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                >
-                                    <Plus className="w-3 h-3" />
-                                    Add
-                                </button>
-                            )}
                         </div>
+                        {isEditMode && !user.summary && (
+                            <button
+                                onClick={() => setIsEditSummaryOpen(true)}
+                                className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                            >
+                                <Plus className="w-3 h-3" />
+                                Add
+                            </button>
+                        )}
                         {isEditMode && user.summary && (
                             <button
                                 onClick={() => setIsEditSummaryOpen(true)}
@@ -586,23 +586,23 @@ export default function ProfilePage() {
                                         <FolderKanban className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Projects</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => {
-                                                if (projectsList.length >= 4) {
-                                                    alert("Maximum of 4 projects allowed for a focused profile.");
-                                                } else {
-                                                    setIsAddProjectOpen(true);
-                                                }
-                                            }}
-                                            disabled={projectsList.length >= 4}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2 disabled:text-slate-400"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            {projectsList.length >= 4 ? "Limit Reached" : "Add"}
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => {
+                                            if (projectsList.length >= 4) {
+                                                alert("Maximum of 4 projects allowed for a focused profile.");
+                                            } else {
+                                                setIsAddProjectOpen(true);
+                                            }
+                                        }}
+                                        disabled={projectsList.length >= 4}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest disabled:text-slate-400"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        {projectsList.length >= 4 ? "Limit Reached" : "Add"}
+                                    </button>
+                                )}
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
                                 {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project: UIProject, idx: number) => (
@@ -645,16 +645,16 @@ export default function ProfilePage() {
                                         <Building2 className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Experience</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => setIsAddExperienceOpen(true)}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => setIsAddExperienceOpen(true)}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
                             <div className="space-y-4">
                                 {experiences.map((exp: UIExperience, idx: number) => (
@@ -689,19 +689,19 @@ export default function ProfilePage() {
                                         <Layers className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Technical Skills</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => {
-                                                setAddSkillMode("technical");
-                                                setIsAddSkillOpen(true);
-                                            }}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => {
+                                            setAddSkillMode("technical");
+                                            setIsAddSkillOpen(true);
+                                        }}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
 
                             {skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").length === 0 ? (
@@ -780,19 +780,19 @@ export default function ProfilePage() {
                                         <MessageSquare className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Soft Skills</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => {
-                                                setAddSkillMode("soft");
-                                                setIsAddSkillOpen(true);
-                                            }}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => {
+                                            setAddSkillMode("soft");
+                                            setIsAddSkillOpen(true);
+                                        }}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
 
                             {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length === 0 ? (
@@ -859,16 +859,16 @@ export default function ProfilePage() {
                                         <Languages className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Languages</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => setIsAddLanguageOpen(true)}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => setIsAddLanguageOpen(true)}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
                             <div className="bg-white rounded-xl border-2 border-slate-100 p-4 md:p-6 shadow-sm">
                                 <div className="grid md:grid-cols-3 gap-4">
@@ -911,16 +911,16 @@ export default function ProfilePage() {
                                         <GraduationCap className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Tertiary Education</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
                             <div className="space-y-4">
                                 {educationList.map((edu: UIQualification, idx: number) => (
@@ -965,16 +965,16 @@ export default function ProfilePage() {
                                         <School className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Matric</h2>
-                                    {isEditMode && !matricData && (
-                                        <button
-                                            onClick={() => setIsAddMatricOpen(true)}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && !matricData && (
+                                    <button
+                                        onClick={() => setIsAddMatricOpen(true)}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
                             {matricData ? (
                                 <SecondaryEducationCard
@@ -1011,16 +1011,16 @@ export default function ProfilePage() {
                                         <Award className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Certifications</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
                             <div className="space-y-4">
                                 {certificationsList.map((cert: UIQualification, idx: number) => (
@@ -1064,16 +1064,16 @@ export default function ProfilePage() {
                                         <User className="w-4 h-4" />
                                     </div>
                                     <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Professional References</h2>
-                                    {isEditMode && (
-                                        <button
-                                            onClick={() => setIsAddReferenceOpen(true)}
-                                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest ml-2"
-                                        >
-                                            <Plus className="w-3 h-3" />
-                                            Add
-                                        </button>
-                                    )}
                                 </div>
+                                {isEditMode && (
+                                    <button
+                                        onClick={() => setIsAddReferenceOpen(true)}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                    >
+                                        <Plus className="w-3 h-3" />
+                                        Add
+                                    </button>
+                                )}
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
                                 {references.map((ref: Reference, idx: number) => (

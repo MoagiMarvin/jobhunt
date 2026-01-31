@@ -153,15 +153,7 @@ export default function ProfileHeader({
 
                             {/* Desktop Header Actions (Tightened) */}
                             <div className="flex flex-wrap md:flex-col gap-2 shrink-0">
-                                {isOwner && isEditMode && (
-                                    <button
-                                        onClick={onEdit}
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-all font-semibold text-[10px] uppercase tracking-wider"
-                                    >
-                                        <Edit2 className="w-3 h-3" />
-                                        Customize
-                                    </button>
-                                )}
+
                                 {downloadAction ? downloadAction : (onDownloadResume && (
                                     <button
                                         onClick={onDownloadResume}
@@ -183,23 +175,23 @@ export default function ProfileHeader({
                             </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 md:mt-4">
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-3 md:mt-4">
                             {location && (
-                                <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
                                     <MapPin className="w-3.5 h-3.5 text-blue-600" />
                                     {location}
                                 </div>
                             )}
 
                             {email && (
-                                <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
                                     <Mail className="w-3.5 h-3.5 text-blue-600" />
                                     {email}
                                 </div>
                             )}
 
                             {phone && (
-                                <div className="flex items-center gap-1.5 text-[11px] text-slate-600 font-bold">
+                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
                                     <Phone className="w-3.5 h-3.5 text-blue-600" />
                                     {phone}
                                 </div>
@@ -213,18 +205,16 @@ export default function ProfileHeader({
                             </div>
 
                             {haveLicense && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-purple-100 bg-purple-50/50 text-purple-600 shadow-sm">
-                                    <CreditCard className="w-3 h-3" />
-                                    <span className="text-[10px] font-semibold uppercase tracking-wider">
-                                        {isMounted && licenseCode ? `License: ${licenseCode}` : "Drivers License"}
-                                    </span>
+                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
+                                    <CreditCard className="w-3.5 h-3.5 text-blue-600" />
+                                    <span>{isMounted && licenseCode ? `License: ${licenseCode}` : "Drivers License"}</span>
                                 </div>
                             )}
 
                             {haveCar && (
-                                <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-blue-100 bg-blue-50/50 text-blue-600 shadow-sm">
-                                    <Car className="w-3 h-3" />
-                                    <span className="text-[10px] font-semibold uppercase tracking-wider">Own Transport</span>
+                                <div className="flex items-center gap-2 text-[11px] text-slate-800 font-bold">
+                                    <Car className="w-3.5 h-3.5 text-blue-600" />
+                                    <span>Own Transport</span>
                                 </div>
                             )}
 
