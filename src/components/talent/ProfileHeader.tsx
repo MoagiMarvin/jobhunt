@@ -144,70 +144,106 @@ export default function ProfileHeader({
                             {/* Header Actions Menu */}
                             <div className="absolute top-0 right-0 md:relative md:top-auto md:right-auto shrink-0 flex items-center gap-2">
                                 {isOwner ? (
-                                    <div className="relative">
-                                        <button
-                                            onClick={() => setIsActionsOpen(!isActionsOpen)}
-                                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-lg group"
-                                        >
-                                            <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform" />
-                                            <span>Manage</span>
-                                            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isActionsOpen ? 'rotate-180' : ''}`} />
-                                        </button>
+                                    <>
+                                        {/* Desktop Standalone Buttons */}
+                                        <div className="hidden lg:flex items-center gap-2">
+                                            {downloadAction ? (
+                                                <div className="flex">
+                                                    {downloadAction}
+                                                </div>
+                                            ) : (onDownloadResume && (
+                                                <button
+                                                    onClick={onDownloadResume}
+                                                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-lg"
+                                                >
+                                                    <Download className="w-4 h-4" />
+                                                    <span>Quick Download</span>
+                                                </button>
+                                            ))}
 
-                                        {isActionsOpen && (
-                                            <>
-                                                <div
-                                                    className="fixed inset-0 z-20"
-                                                    onClick={() => setIsActionsOpen(false)}
-                                                ></div>
-                                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden flex flex-col items-stretch">
-                                                    <div className="px-4 py-2 border-b border-slate-50 mb-1">
-                                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Profile Options</p>
-                                                    </div>
+                                            <Link
+                                                href="/cv/preview"
+                                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all font-bold text-xs shadow-sm"
+                                            >
+                                                <FileText className="w-4 h-4 text-slate-400" />
+                                                <span>Customize CV</span>
+                                            </Link>
 
-                                                    {/* 1. Download CV / Quick Download */}
-                                                    {downloadAction ? (
-                                                        <div className="w-full flex" onClick={() => setIsActionsOpen(false)}>
-                                                            {downloadAction}
+                                            <button
+                                                onClick={() => onShare?.()}
+                                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all font-bold text-xs shadow-sm"
+                                            >
+                                                <Share2 className="w-4 h-4 text-slate-400" />
+                                                <span>Copy Link</span>
+                                            </button>
+                                        </div>
+
+                                        {/* Mobile Consolidated Menu */}
+                                        <div className="lg:hidden relative">
+                                            <button
+                                                onClick={() => setIsActionsOpen(!isActionsOpen)}
+                                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-lg group"
+                                            >
+                                                <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform" />
+                                                <span>Manage</span>
+                                                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isActionsOpen ? 'rotate-180' : ''}`} />
+                                            </button>
+
+                                            {isActionsOpen && (
+                                                <>
+                                                    <div
+                                                        className="fixed inset-0 z-20"
+                                                        onClick={() => setIsActionsOpen(false)}
+                                                    ></div>
+                                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden flex flex-col items-stretch text-left">
+                                                        <div className="px-4 py-2 border-b border-slate-50 mb-1">
+                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left">Profile Options</p>
                                                         </div>
-                                                    ) : (onDownloadResume && (
+
+                                                        {/* 1. Download CV */}
+                                                        {downloadAction ? (
+                                                            <div className="w-full flex" onClick={() => setIsActionsOpen(false)}>
+                                                                {downloadAction}
+                                                            </div>
+                                                        ) : (onDownloadResume && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setIsActionsOpen(false);
+                                                                    onDownloadResume();
+                                                                }}
+                                                                className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                            >
+                                                                <Download className="w-4 h-4 text-blue-600" />
+                                                                Quick Download
+                                                            </button>
+                                                        ))}
+
+                                                        {/* 2. Customize CV */}
+                                                        <Link
+                                                            href="/cv/preview"
+                                                            onClick={() => setIsActionsOpen(false)}
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
+                                                        >
+                                                            <FileText className="w-4 h-4 text-slate-400" />
+                                                            Customize CV
+                                                        </Link>
+
+                                                        {/* 3. Copy Link */}
                                                         <button
                                                             onClick={() => {
                                                                 setIsActionsOpen(false);
-                                                                onDownloadResume();
+                                                                onShare?.();
                                                             }}
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
                                                         >
-                                                            <Download className="w-4 h-4 text-blue-600" />
-                                                            Quick Download
+                                                            <Share2 className="w-4 h-4 text-slate-400" />
+                                                            Copy Profile Link
                                                         </button>
-                                                    ))}
-
-                                                    {/* 2. Customize CV */}
-                                                    <Link
-                                                        href="/cv/preview"
-                                                        onClick={() => setIsActionsOpen(false)}
-                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
-                                                    >
-                                                        <FileText className="w-4 h-4 text-slate-400" />
-                                                        Customize CV
-                                                    </Link>
-
-                                                    {/* 3. Copy Link */}
-                                                    <button
-                                                        onClick={() => {
-                                                            setIsActionsOpen(false);
-                                                            onShare?.();
-                                                        }}
-                                                        className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
-                                                    >
-                                                        <Share2 className="w-4 h-4 text-slate-400" />
-                                                        Copy Profile Link
-                                                    </button>
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </>
                                 ) : (
                                     downloadAction && (
                                         <div className="flex items-center">
