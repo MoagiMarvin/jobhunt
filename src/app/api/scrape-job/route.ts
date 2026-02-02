@@ -172,8 +172,25 @@ export async function GET(request: NextRequest) {
             }
         }
 
+        // Helper function to strip HTML tags
+        const stripHTML = (text: string): string => {
+            return text
+                .replace(/<[^>]*>/g, '') // Remove HTML tags
+                .replace(/&nbsp;/g, ' ') // Replace &nbsp; with space
+                .replace(/&amp;/g, '&')  // Replace &amp; with &
+                .replace(/&lt;/g, '<')   // Replace &lt; with <
+                .replace(/&gt;/g, '>')   // Replace &gt; with >
+                .replace(/&quot;/g, '"') // Replace &quot; with "
+                .replace(/&#39;/g, "'")  // Replace &#39; with '
+                .replace(/\s+/g, ' ')    // Collapse multiple spaces
+                .trim();
+        };
+
+        // Apply HTML stripping to all requirements
+        const sanitizedReqs = cleanReqs.map(req => stripHTML(req)).filter(r => r.length > 5);
+
         return NextResponse.json({
-            requirements: cleanReqs.length > 0 ? cleanReqs : ["Could not automatically extract requirements. Please paste the job description manually."]
+            requirements: sanitizedReqs.length > 0 ? sanitizedReqs : ["Could not automatically extract requirements. Please paste the job description manually."]
         });
 
     } catch (error: any) {
