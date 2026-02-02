@@ -220,15 +220,15 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                     <Text style={styles.name}>{user.name || user.fullName}</Text>
                     <Text style={styles.title}>{user.headline || user.title}</Text>
                     <View style={styles.contactGrid}>
-                        <Text style={styles.contactItem}>{user.email}</Text>
+                        <Link src={`mailto:${user.email}`} style={styles.contactItem}>{user.email}</Link>
                         <Text style={styles.contactItem}>•</Text>
-                        <Text style={styles.contactItem}>{user.phone}</Text>
+                        <Link src={`tel:${user.phone?.replace(/\s/g, '')}`} style={styles.contactItem}>{user.phone}</Link>
                         <Text style={styles.contactItem}>•</Text>
                         <Text style={styles.contactItem}>{user.location}</Text>
                         {user.linkedin && (
                             <>
                                 <Text style={styles.contactItem}>•</Text>
-                                <Text style={styles.contactItem}>LinkedIn</Text>
+                                <Link src={user.linkedin} style={styles.contactItem}>LinkedIn</Link>
                             </>
                         )}
                     </View>
