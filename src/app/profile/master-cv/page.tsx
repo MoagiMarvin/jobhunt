@@ -1,28 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, Save, Loader2, Zap } from "lucide-react";
+import { useState } from "react";
+import { Upload, Loader2, Zap, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-export default function MasterCVPage() {
+export default function UploadCVPage() {
     const [cvText, setCvText] = useState("");
-    const [isCleaning, setIsCleaning] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
     const [isFilling, setIsFilling] = useState(false);
     const [parsedCvData, setParsedCvData] = useState<any>(null);
-
-    // Load CV text from localStorage on mount
-    useEffect(() => {
-        const savedCvText = localStorage.getItem("master_cv_text");
-        if (savedCvText) setCvText(savedCvText);
-    }, []);
+    const [extractedFileName, setExtractedFileName] = useState("");
 
     const handleFileUpload = async (event: any) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
         setIsExtracting(true);
+        setExtractedFileName(file.name);
+        setParsedCvData(null); // Reset previous data
+
         try {
             // Load PDF.js dynamically to avoid SSR issues
             const pdfjs = await import('pdfjs-dist');
@@ -43,7 +40,7 @@ export default function MasterCVPage() {
                 const pageText = textContent.items
                     .map((item: any) => item.str)
                     .join(" ");
-                fullText += pageText + "\n\n";
+                fullText += pageText + "\\n\\n";
             }
 
             if (!fullText.trim()) {
@@ -51,29 +48,29 @@ export default function MasterCVPage() {
             }
 
             setCvText(fullText.trim());
-            alert('CV extracted successfully! Review and edit below.');
+
+            // Automatically parse with AI after extraction
+            await parseWithAI(fullText.trim());
+
         } catch (error: any) {
             console.error('PDF Extraction failed:', error);
             alert('Failed to extract PDF: ' + error.message);
-        } finally {
             setIsExtracting(false);
+        } finally {
             event.target.value = '';
         }
     };
 
-    const handleClean = async () => {
-        if (!cvText.trim()) return;
-
-        setIsCleaning(true);
+    const parseWithAI = async (text: string) => {
         try {
             const res = await fetch('/api/clean-cv', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cvText }),
+                body: JSON.stringify({ cvText: text }),
             });
 
             const data = await res.json();
-            if (data.error) throw new Error(`${data.error} (${data.details || 'No details'})}`);
+            if (data.error) throw new Error(`${data.error} (${data.details || 'No details'})`);
 
             console.log("CV Clean Response:", data);
 
@@ -83,37 +80,27 @@ export default function MasterCVPage() {
                 console.log("Parsed CV Data:", data.parsedCv);
 
                 if (data.version === 'ai') {
-                    alert('✅ CV parsed successfully by AI! Click "Auto-fill Profile" below to sync to your profile.');
-                } else if (data.version === 'basic') {
-                    alert('⚠️ Using basic parsing (GEMINI_API_KEY not set). The Auto-fill will have limited data. Consider setting up your API key for better results.');
+                    // Success - show ready state
                 } else if (data.version === 'fallback') {
-                    alert('❌ AI parsing failed: ' + (data.note || 'Unknown error') + '\n\nThe Auto-fill button will appear but may not have any data. Please check the console for details.');
+                    alert('⚠️ AI parsing had issues: ' + (data.note || 'Unknown error') + '\\n\\nSome data may be missing.');
                 }
-            } else if (data.cleanedText) {
-                setCvText(data.cleanedText);
-                alert('CV text cleaned, but no structured data was extracted.');
             }
         } catch (error: any) {
-            console.error('Cleaning failed:', error);
-            alert('Failed to clean CV: ' + error.message);
+            console.error('Parsing failed:', error);
+            alert('Failed to parse CV: ' + error.message);
         } finally {
-            setIsCleaning(false);
+            setIsExtracting(false);
         }
-    };
-
-    const handleSave = () => {
-        localStorage.setItem("master_cv_text", cvText);
-        alert("Master CV saved successfully!");
     };
 
     const handleAutoFill = async () => {
         if (!parsedCvData) {
-            alert("Please clean & format your CV with AI first to enable auto-fill.");
+            alert("No CV data available. Please upload a PDF first.");
             return;
         }
 
         const confirmFill = confirm(
-            "This will replace your current profile data with the information from your CV.\n\nAre you sure you want to continue?"
+            "This will replace your current profile data with the information from your CV.\\n\\nAre you sure you want to continue?"
         );
 
         if (!confirmFill) return;
@@ -139,14 +126,14 @@ export default function MasterCVPage() {
             if (data.error) throw new Error(data.error);
 
             alert(
-                `Profile filled successfully!\n\n` +
-                `✓ ${data.stats.skills} skills added\n` +
-                `✓ ${data.stats.experiences} work experiences added\n` +
-                `✓ ${data.stats.education} education entries added\n\n` +
-                `Visit your profile to review and edit.`
+                `Profile filled successfully!\\n\\n` +
+                `✓ ${data.stats.skills} skills added\\n` +
+                `✓ ${data.stats.experiences} work experiences added\\n` +
+                `✓ ${data.stats.education} education entries added\\n\\n` +
+                `Redirecting to your profile...`
             );
 
-            // Optionally redirect to profile
+            // Redirect to profile
             window.location.href = '/profile';
         } catch (error: any) {
             console.error('Auto-fill failed:', error);
@@ -156,11 +143,9 @@ export default function MasterCVPage() {
         }
     };
 
-
-
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            <div className="max-w-6xl mx-auto px-6 py-12">
+            <div className="max-w-4xl mx-auto px-6 py-12">
                 {/* Header with Back Button */}
                 <div className="mb-8">
                     <Link href="/profile" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 font-semibold text-sm transition-all">
@@ -168,12 +153,12 @@ export default function MasterCVPage() {
                     </Link>
                 </div>
 
-                {/* Master CV Section */}
-                <div className="space-y-6">
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-bold text-primary">Master CV</h1>
-                        <p className="text-slate-600 text-sm">
-                            Upload an existing CV, paste your details, or create one from scratch. This becomes your master document.
+                {/* Main Upload Section */}
+                <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 md:p-12">
+                    <div className="text-center mb-8">
+                        <h1 className="text-3xl font-bold text-slate-900 mb-2">Upload Your CV</h1>
+                        <p className="text-slate-600">
+                            Upload your existing CV and we'll automatically fill your profile
                         </p>
                     </div>
 
@@ -186,110 +171,83 @@ export default function MasterCVPage() {
                         onChange={handleFileUpload}
                     />
 
-                    {/* Upload PDF Button */}
-                    <div className="mb-4">
-                        <button
-                            onClick={() => document.getElementById('pdf-upload')?.click()}
-                            disabled={isExtracting}
-                            type="button"
-                            className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isExtracting ? (
-                                <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Extracting CV Text...
-                                </>
-                            ) : (
-                                <>
-                                    <Upload className="w-5 h-5" />
-                                    📄 Upload PDF CV
-                                </>
-                            )}
-                        </button>
-                        <p className="text-xs text-slate-500 mt-2 text-center">
-                            Upload your existing CV and we'll extract the text automatically
-                        </p>
-                    </div>
+                    {/* Upload State */}
+                    {!parsedCvData && !isExtracting && (
+                        <div className="text-center py-12">
+                            <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Upload className="w-10 h-10 text-blue-600" />
+                            </div>
+                            <button
+                                onClick={() => document.getElementById('pdf-upload')?.click()}
+                                className="px-8 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-lg transition-all text-lg"
+                            >
+                                Choose PDF File
+                            </button>
+                            <p className="text-sm text-slate-500 mt-4">
+                                Supported format: PDF only
+                            </p>
+                        </div>
+                    )}
 
-                    {/* Text Area Section */}
-                    <div className="space-y-3 relative">
-                        <div className="flex items-center justify-between">
-                            <label className="text-sm font-semibold flex items-center gap-2 text-primary">
-                                <FileText className="w-4 h-4" />
-                                CV Content
-                            </label>
-                            <div className="flex items-center gap-3">
+                    {/* Extracting State */}
+                    {isExtracting && (
+                        <div className="text-center py-12">
+                            <Loader2 className="w-16 h-16 text-blue-600 animate-spin mx-auto mb-4" />
+                            <h3 className="text-lg font-bold text-slate-900 mb-2">Processing Your CV...</h3>
+                            <p className="text-slate-600 text-sm">
+                                {extractedFileName && `Extracting data from ${extractedFileName}`}
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Ready to Auto-fill State */}
+                    {parsedCvData && !isExtracting && (
+                        <div className="text-center py-12">
+                            <div className="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <CheckCircle2 className="w-10 h-10 text-green-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">CV Processed Successfully!</h3>
+                            <p className="text-slate-600 mb-8">
+                                Ready to fill your profile with extracted data
+                            </p>
+
+                            <div className="space-y-4 max-w-md mx-auto">
                                 <button
-                                    onClick={handleClean}
-                                    disabled={isCleaning || !cvText}
-                                    type="button"
-                                    className={`text-[10px] font-bold px-2 py-1 rounded border transition-all flex items-center gap-1.5 ${isCleaning ? 'bg-blue-50 text-blue-400 border-blue-100' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300'} disabled:opacity-50`}
+                                    onClick={handleAutoFill}
+                                    disabled={isFilling}
+                                    className="w-full py-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {isCleaning ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                    {isCleaning ? "Polishing..." : "Clean & Format with AI"}
+                                    {isFilling ? (
+                                        <>
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                            Filling Profile...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Zap className="w-5 h-5" />
+                                            🚀 Auto-fill My Profile
+                                        </>
+                                    )}
                                 </button>
-                                {cvText && (
-                                    <span className="text-[10px] text-green-600 font-bold bg-green-50 px-1.5 py-0.5 rounded border border-green-100 animate-pulse">
-                                        Extracted Content
-                                    </span>
-                                )}
+
+                                <button
+                                    onClick={() => {
+                                        setParsedCvData(null);
+                                        setCvText("");
+                                        setExtractedFileName("");
+                                    }}
+                                    className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition-all"
+                                >
+                                    Upload Different CV
+                                </button>
                             </div>
                         </div>
+                    )}
+                </div>
 
-                        <textarea
-                            value={cvText}
-                            onChange={(e) => setCvText(e.target.value)}
-                            placeholder="Paste your CV text here or use the options above..."
-                            className="w-full h-80 bg-white border-2 border-slate-200 rounded-lg p-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 font-mono leading-relaxed"
-                        />
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3">
-                        {parsedCvData && (
-                            <button
-                                onClick={handleAutoFill}
-                                disabled={isFilling}
-                                type="button"
-                                className="flex-1 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isFilling ? (
-                                    <>
-                                        <Loader2 className="w-4 h-4 animate-spin" />
-                                        Filling Profile...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Zap className="w-4 h-4" />
-                                        🚀 Auto-fill My Profile
-                                    </>
-                                )}
-                            </button>
-                        )}
-                        <button
-                            onClick={handleSave}
-                            type="button"
-                            className={`${parsedCvData ? 'flex-none' : 'flex-1'} py-3 px-6 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm`}
-                        >
-                            <Save className="w-4 h-4" />
-                            Save Master CV
-                        </button>
-                        <button
-                            onClick={() => {
-                                setCvText("");
-                                setParsedCvData(null);
-                            }}
-                            type="button"
-                            className="px-6 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all border border-slate-200 text-sm"
-                        >
-                            Clear
-                        </button>
-                    </div>
-
-                    {/* Info Box */}
-                    <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 text-sm text-slate-700">
-                        <strong className="text-primary">💡 Tip:</strong> Include all your skills, experiences, projects, and achievements. This is your master document that you can reference when building your structured profile.
-                    </div>
+                {/* Info Box */}
+                <div className="mt-6 p-4 rounded-lg bg-blue-50 border border-blue-200 text-sm text-slate-700">
+                    <strong className="text-blue-700">💡 How it works:</strong> Upload your CV → AI extracts your information → Click Auto-fill to populate your profile instantly
                 </div>
             </div>
         </main>
