@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, Save, LogOut, Loader2 } from "lucide-react";
+import { Upload, FileText, Sparkles, Save, LogOut, Loader2, Zap } from "lucide-react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 export default function MasterCVPage() {
     const [cvText, setCvText] = useState("");
     const [isCleaning, setIsCleaning] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
+    const [isFilling, setIsFilling] = useState(false);
+    const [parsedCvData, setParsedCvData] = useState<any>(null);
 
     // Load CV text from localStorage on mount
     useEffect(() => {
@@ -72,11 +75,23 @@ export default function MasterCVPage() {
             const data = await res.json();
             if (data.error) throw new Error(`${data.error} (${data.details || 'No details'})}`);
 
-            setCvText(data.cleanedText);
-            if (data.version === 'basic' || data.version === 'fallback') {
-                alert(`CV Polished (Basic Mode): ${data.note || 'AI was unavailable, using basic patterns.'}`);
-            } else {
-                alert('CV cleaned and formatted for ATS success!');
+            console.log("CV Clean Response:", data);
+
+            // Check if we have parsed CV data
+            if (data.parsedCv) {
+                setParsedCvData(data.parsedCv);
+                console.log("Parsed CV Data:", data.parsedCv);
+
+                if (data.version === 'ai') {
+                    alert('✅ CV parsed successfully by AI! Click "Auto-fill Profile" below to sync to your profile.');
+                } else if (data.version === 'basic') {
+                    alert('⚠️ Using basic parsing (GEMINI_API_KEY not set). The Auto-fill will have limited data. Consider setting up your API key for better results.');
+                } else if (data.version === 'fallback') {
+                    alert('❌ AI parsing failed: ' + (data.note || 'Unknown error') + '\n\nThe Auto-fill button will appear but may not have any data. Please check the console for details.');
+                }
+            } else if (data.cleanedText) {
+                setCvText(data.cleanedText);
+                alert('CV text cleaned, but no structured data was extracted.');
             }
         } catch (error: any) {
             console.error('Cleaning failed:', error);
@@ -89,6 +104,56 @@ export default function MasterCVPage() {
     const handleSave = () => {
         localStorage.setItem("master_cv_text", cvText);
         alert("Master CV saved successfully!");
+    };
+
+    const handleAutoFill = async () => {
+        if (!parsedCvData) {
+            alert("Please clean & format your CV with AI first to enable auto-fill.");
+            return;
+        }
+
+        const confirmFill = confirm(
+            "This will replace your current profile data with the information from your CV.\n\nAre you sure you want to continue?"
+        );
+
+        if (!confirmFill) return;
+
+        setIsFilling(true);
+        try {
+            // Get current user ID
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("You must be logged in to auto-fill your profile.");
+                return;
+            }
+
+            const userId = session.user.id;
+
+            const res = await fetch('/api/profile/fill', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ parsedCv: parsedCvData, userId }),
+            });
+
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            alert(
+                `Profile filled successfully!\n\n` +
+                `✓ ${data.stats.skills} skills added\n` +
+                `✓ ${data.stats.experiences} work experiences added\n` +
+                `✓ ${data.stats.education} education entries added\n\n` +
+                `Visit your profile to review and edit.`
+            );
+
+            // Optionally redirect to profile
+            window.location.href = '/profile';
+        } catch (error: any) {
+            console.error('Auto-fill failed:', error);
+            alert('Failed to auto-fill profile: ' + error.message);
+        } finally {
+            setIsFilling(false);
+        }
     };
 
     const handleLogout = () => {
@@ -131,6 +196,31 @@ export default function MasterCVPage() {
                         onChange={handleFileUpload}
                     />
 
+                    {/* Upload PDF Button */}
+                    <div className="mb-4">
+                        <button
+                            onClick={() => document.getElementById('pdf-upload')?.click()}
+                            disabled={isExtracting}
+                            type="button"
+                            className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-lg transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isExtracting ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Extracting CV Text...
+                                </>
+                            ) : (
+                                <>
+                                    <Upload className="w-5 h-5" />
+                                    📄 Upload PDF CV
+                                </>
+                            )}
+                        </button>
+                        <p className="text-xs text-slate-500 mt-2 text-center">
+                            Upload your existing CV and we'll extract the text automatically
+                        </p>
+                    </div>
+
                     {/* Text Area Section */}
                     <div className="space-y-3 relative">
                         <div className="flex items-center justify-between">
@@ -166,16 +256,39 @@ export default function MasterCVPage() {
 
                     {/* Action Buttons */}
                     <div className="flex gap-3">
+                        {parsedCvData && (
+                            <button
+                                onClick={handleAutoFill}
+                                disabled={isFilling}
+                                type="button"
+                                className="flex-1 py-3 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isFilling ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        Filling Profile...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Zap className="w-4 h-4" />
+                                        🚀 Auto-fill My Profile
+                                    </>
+                                )}
+                            </button>
+                        )}
                         <button
                             onClick={handleSave}
                             type="button"
-                            className="flex-1 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm"
+                            className={`${parsedCvData ? 'flex-none' : 'flex-1'} py-3 px-6 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold shadow-md transition-all flex items-center justify-center gap-2 text-sm`}
                         >
                             <Save className="w-4 h-4" />
                             Save Master CV
                         </button>
                         <button
-                            onClick={() => setCvText("")}
+                            onClick={() => {
+                                setCvText("");
+                                setParsedCvData(null);
+                            }}
                             type="button"
                             className="px-6 py-3 rounded-lg bg-slate-100 hover:bg-slate-200 font-semibold text-primary transition-all border border-slate-200 text-sm"
                         >
