@@ -66,15 +66,9 @@ export default function Navbar() {
         { href: "/interview/practice", label: "Interview Coach", icon: Video },
     ];
 
-    const recruiterLinks = [
-        { href: "/recruiter/profile", label: "Recruiter Profile", icon: Building2 },
-        { href: "/recruiter/search", label: "Recruiter Portal", icon: Briefcase },
-        { href: "/recruiter/groups", label: "Saved Candidates", icon: FolderOpen },
-    ];
 
-    const links = isLoggedIn
-        ? (role === "talent" ? talentLinks : recruiterLinks)
-        : [];
+
+    const links = isLoggedIn ? talentLinks : [];
 
     const handleLogout = async () => {
         await supabase.auth.signOut();

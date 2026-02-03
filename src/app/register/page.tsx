@@ -13,8 +13,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [fullName, setFullName] = useState("");
-    const [companyName, setCompanyName] = useState("");
-    const [role, setRole] = useState<"talent" | "recruiter">("talent");
+    const [role] = useState<"talent" | "recruiter">("talent");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -38,9 +37,12 @@ export default function RegisterPage() {
             return;
         }
 
-        // Enforce @gmail.com for talent
-        if (role === "talent" && !email.toLowerCase().endsWith("@gmail.com")) {
-            setError("Talent registration requires a @gmail.com address.");
+        // Enforce @gmail.com or @icloud.com for talent
+        const validDomains = ["@gmail.com", "@icloud.com"];
+        const isEmailValid = validDomains.some(domain => email.toLowerCase().endsWith(domain));
+
+        if (role === "talent" && !isEmailValid) {
+            setError("Talent registration requires a @gmail.com or @icloud.com address.");
             setIsLoading(false);
             return;
         }
@@ -54,15 +56,9 @@ export default function RegisterPage() {
             if (authError) throw authError;
 
             if (user) {
-                // Determine table and data based on role
-                const table = role === "talent" ? "profiles" : "recruiter_profiles";
-                const profileData = role === "talent"
-                    ? { id: user.id, full_name: fullName, email: email }
-                    : { user_id: user.id, company_name: companyName, full_name: fullName, email: email };
-
                 const { error: profileError } = await supabase
-                    .from(table)
-                    .insert(profileData);
+                    .from("profiles")
+                    .insert({ id: user.id, full_name: fullName, email: email });
 
                 if (profileError) {
                     console.error("Profile creation error:", profileError);
@@ -73,11 +69,7 @@ export default function RegisterPage() {
                     localStorage.setItem("mock_role", role);
                     localStorage.setItem("is_logged_in", "true");
 
-                    if (role === "talent") {
-                        router.push("/profile");
-                    } else {
-                        router.push("/recruiter/search");
-                    }
+                    router.push("/profile");
                 } else {
                     // EMAIL CONFIRMATION REQUIRED
                     setSuccessMessage("Account created successfully! Please check your email.");
@@ -128,33 +120,7 @@ export default function RegisterPage() {
                 {/* Premium White Card */}
                 <div className="bg-white border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-8 ring-1 ring-slate-100">
 
-                    {/* Role Toggle */}
-                    <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100/80 border border-slate-200 rounded-xl mb-8">
-                        <button
-                            onClick={() => setRole("talent")}
-                            className={cn(
-                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200",
-                                role === "talent"
-                                    ? "bg-white text-blue-600 shadow-sm border border-slate-200 ring-1 ring-slate-200/50"
-                                    : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
-                            )}
-                        >
-                            <User className="w-4 h-4" />
-                            Talent
-                        </button>
-                        <button
-                            onClick={() => setRole("recruiter")}
-                            className={cn(
-                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200",
-                                role === "recruiter"
-                                    ? "bg-white text-indigo-600 shadow-sm border border-slate-200 ring-1 ring-slate-200/50"
-                                    : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
-                            )}
-                        >
-                            <Building2 className="w-4 h-4" />
-                            Recruiter
-                        </button>
-                    </div>
+
 
                     <form onSubmit={handleRegister} className="space-y-4">
                         {error && (
@@ -179,22 +145,7 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
-                        {role === "recruiter" && (
-                            <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
-                                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Company Name</label>
-                                <div className="relative group">
-                                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                                    <input
-                                        type="text"
-                                        placeholder="Acme Corp"
-                                        required
-                                        value={companyName}
-                                        onChange={(e) => setCompanyName(e.target.value)}
-                                        className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
-                                    />
-                                </div>
-                            </div>
-                        )}
+
 
                         <div className="space-y-1.5">
                             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider ml-1">Email</label>
@@ -209,11 +160,9 @@ export default function RegisterPage() {
                                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
                                 />
                             </div>
-                            {role === "talent" && (
-                                <p className="text-[10px] text-slate-400 ml-1 font-medium italic">
-                                    * Talent accounts must use a @gmail.com address
-                                </p>
-                            )}
+                            <p className="text-[10px] text-slate-400 ml-1 font-medium italic">
+                                * Accounts must use a @gmail.com or @icloud.com address
+                            </p>
                         </div>
 
                         <div className="space-y-1.5">

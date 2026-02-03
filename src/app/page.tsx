@@ -11,7 +11,7 @@ export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState<"talent" | "recruiter">("talent");
+    const [role] = useState<"talent" | "recruiter">("talent");
     const [isLoading, setIsLoading] = useState(false);
     const [isCheckingSession, setIsCheckingSession] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -21,12 +21,7 @@ export default function LoginPage() {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                const savedRole = localStorage.getItem("mock_role") || "talent";
-                if (savedRole === "talent") {
-                    router.push("/profile");
-                } else {
-                    router.push("/recruiter/search");
-                }
+                router.push("/profile");
             } else {
                 setIsCheckingSession(false);
             }
@@ -64,11 +59,7 @@ export default function LoginPage() {
             localStorage.setItem("mock_role", role);
             localStorage.setItem("is_logged_in", "true");
 
-            if (role === "talent") {
-                router.push("/profile");
-            } else {
-                router.push("/recruiter/search");
-            }
+            router.push("/profile");
         } catch (err: any) {
             console.error("Login catch error:", err);
             let message = err.message || "Failed to login.";
@@ -123,33 +114,7 @@ export default function LoginPage() {
                 {/* Premium White Card */}
                 <div className="bg-white border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-8 ring-1 ring-slate-100">
 
-                    {/* Role Toggle */}
-                    <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100/80 border border-slate-200 rounded-xl mb-8">
-                        <button
-                            onClick={() => setRole("talent")}
-                            className={cn(
-                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200",
-                                role === "talent"
-                                    ? "bg-white text-blue-600 shadow-sm border border-slate-200 ring-1 ring-slate-200/50"
-                                    : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
-                            )}
-                        >
-                            <User className="w-4 h-4" />
-                            Talent
-                        </button>
-                        <button
-                            onClick={() => setRole("recruiter")}
-                            className={cn(
-                                "flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200",
-                                role === "recruiter"
-                                    ? "bg-white text-indigo-600 shadow-sm border border-slate-200 ring-1 ring-slate-200/50"
-                                    : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
-                            )}
-                        >
-                            <Building2 className="w-4 h-4" />
-                            Recruiter
-                        </button>
-                    </div>
+
 
                     <form onSubmit={handleLogin} className="space-y-5">
                         {error && (
