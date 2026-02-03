@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, Save, LogOut, Loader2, Zap } from "lucide-react";
+import { Upload, FileText, Sparkles, Save, Loader2, Zap } from "lucide-react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
@@ -156,26 +156,16 @@ export default function MasterCVPage() {
         }
     };
 
-    const handleLogout = () => {
-        console.log("Logging out...");
-        alert("Logged out successfully (Mock)");
-    };
+
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
             <div className="max-w-6xl mx-auto px-6 py-12">
-                {/* Header with Back Button and Logout */}
-                <div className="flex items-center justify-between mb-8">
-                    <Link href="/profile" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 font-semibold text-sm transition-all">
+                {/* Header with Back Button */}
+                <div className="mb-8">
+                    <Link href="/profile" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 font-semibold text-sm transition-all">
                         ← Back to Profile
                     </Link>
-                    <button
-                        onClick={handleLogout}
-                        className="px-6 py-3 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 border-2 border-slate-100 hover:border-red-100 rounded-xl transition-all flex items-center justify-center gap-2 text-sm font-semibold shadow-sm"
-                    >
-                        <LogOut className="w-4 h-4" />
-                        Logout
-                    </button>
                 </div>
 
                 {/* Master CV Section */}

@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
         const supabase = createClient(supabaseUrl, supabaseKey);
 
         console.log("Profile Fill: Starting database sync for user:", userId);
+        console.log("Profile Fill: Received parsedCv data:", JSON.stringify(parsedCv, null, 2));
 
         // 1. Update Basic Profile Info
         if (parsedCv.personalInfo || parsedCv.summary) {
