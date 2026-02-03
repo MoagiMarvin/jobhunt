@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Briefcase, FileText, Search, User, FolderOpen, Building2, LogOut } from "lucide-react";
+import { Briefcase, FileText, Search, User, FolderOpen, Building2, LogOut, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 
@@ -63,6 +63,7 @@ export default function Navbar() {
         { href: "/profile", label: "Profile", icon: User },
         { href: "/search", label: "Job Search", icon: Search },
         { href: "/generate", label: "Generate CV", icon: FileText },
+        { href: "/interview/practice", label: "Interview Coach", icon: Video },
     ];
 
     const recruiterLinks = [
