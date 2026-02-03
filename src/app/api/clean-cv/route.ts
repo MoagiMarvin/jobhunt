@@ -63,7 +63,7 @@ I will provide you with a CV that has been extracted from a PDF.
 The extraction process has created formatting artifacts, but your goal is to extract the core professional information into a structured JSON format.
 
 YOUR TASK:
-1. Extract the candidate's personal info, summary, skills, experience, and education.
+1. Extract the candidate's personal info, summary, skills, experience, education, projects, languages, and references.
 2. Return a CLEAN JSON OBJECT only (no markdown, no backticks, no code fences).
 3. Map the data to this EXACT structure with these EXACT field names.
 
@@ -72,7 +72,9 @@ IMPORTANT RULES:
 - For "is_current": Set to true if the job/education is ongoing (e.g., "Present", "Current").
 - For skills: Extract individual skills as separate items in the array, not categories.
 - For education type: Use "high_school" for Matric/High School, "tertiary" for University/College degrees, "certification" for certifications/courses.
-- For experience descriptions: Keep it concise but informative (2-3 sentences max per role).
+- For experience bullets: Split descriptions by periods (.) or bullet points into separate items. Each item should be a complete achievement/responsibility.
+- For languages: Extract all languages with proficiency levels (Basic, Intermediate, Fluent, Native).
+- For references: Extract name, relationship, company, phone, email if available.
 
 JSON STRUCTURE:
 {
@@ -98,7 +100,10 @@ JSON STRUCTURE:
       "start_date": "2020-01",
       "end_date": "2022-12" or null if current,
       "is_current": false,
-      "description": "Brief description of role and key responsibilities"
+      "bullets": [
+        "Achievement or responsibility statement 1",
+        "Achievement or responsibility statement 2"
+      ]
     }
   ],
   "education": [
@@ -110,6 +115,29 @@ JSON STRUCTURE:
       "start_date": "2016-01",
       "end_date": "2019-12",
       "year": 2019
+    }
+  ],
+  "projects": [
+    {
+      "title": "Project Name",
+      "description": "Brief project description",
+      "technologies": ["Tech1", "Tech2"],
+      "link": "https://github.com/..."
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "proficiency": "Native" or "Fluent" or "Intermediate" or "Basic"
+    }
+  ],
+  "references": [
+    {
+      "name": "Reference Name",
+      "relationship": "Manager" or "Colleague" or "Professor",
+      "company": "Company Name",
+      "phone": "+27...",
+      "email": "email@example.com"
     }
   ]
 }

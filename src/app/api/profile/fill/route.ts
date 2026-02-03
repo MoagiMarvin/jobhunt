@@ -154,6 +154,106 @@ export async function POST(req: NextRequest) {
             console.log(`Profile Fill: Inserted ${educationData.length} education entries`);
         }
 
+        // 5. Insert Experience Bullets (for each experience)
+        if (parsedCv.experiences && Array.isArray(parsedCv.experiences) && parsedCv.experiences.length > 0) {
+            for (const exp of parsedCv.experiences) {
+                if (exp.bullets && Array.isArray(exp.bullets) && exp.bullets.length > 0) {
+                    // Find the experience ID that was just created
+                    const { data: experiences, error: fetchError } = await supabase
+                        .from("work_experiences")
+                        .select("id, company, position")
+                        .eq("user_id", userId)
+                        .eq("company", exp.company)
+                        .eq("position", exp.role);
+
+                    if (!fetchError && experiences && experiences.length > 0) {
+                        const experienceId = experiences[0].id;
+
+                        const bulletsData = exp.bullets.map((bullet: string) => ({
+                            experience_id: experienceId,
+                            content: bullet.trim()
+                        }));
+
+                        const { error: bulletsError } = await supabase
+                            .from("experience_bullets")
+                            .insert(bulletsData);
+
+                        if (!bulletsError) {
+                            console.log(`Profile Fill: Inserted ${bulletsData.length} bullets for ${exp.company}`);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 6. Insert Projects
+        if (parsedCv.projects && Array.isArray(parsedCv.projects) && parsedCv.projects.length > 0) {
+            await supabase.from("projects").delete().eq("user_id", userId);
+
+            const projectsData = parsedCv.projects.map((proj: any) => ({
+                user_id: userId,
+                title: proj.title,
+                description: proj.description || "",
+                technologies: proj.technologies || [],
+                link: proj.link || null
+            }));
+
+            const { error: projectsError } = await supabase
+                .from("projects")
+                .insert(projectsData);
+
+            if (projectsError) {
+                console.error("Projects insert error:", projectsError);
+                throw new Error("Failed to insert projects");
+            }
+            console.log(`Profile Fill: Inserted ${projectsData.length} projects`);
+        }
+
+        // 7. Insert Languages
+        if (parsedCv.languages && Array.isArray(parsedCv.languages) && parsedCv.languages.length > 0) {
+            await supabase.from("languages").delete().eq("user_id", userId);
+
+            const languagesData = parsedCv.languages.map((lang: any) => ({
+                user_id: userId,
+                language: lang.language,
+                proficiency: lang.proficiency
+            }));
+
+            const { error: languagesError } = await supabase
+                .from("languages")
+                .insert(languagesData);
+
+            if (languagesError) {
+                console.error("Languages insert error:", languagesError);
+                throw new Error("Failed to insert languages");
+            }
+            console.log(`Profile Fill: Inserted ${languagesData.length} languages`);
+        }
+
+        // 8. Insert References
+        if (parsedCv.references && Array.isArray(parsedCv.references) && parsedCv.references.length > 0) {
+            await supabase.from("references").delete().eq("user_id", userId);
+
+            const referencesData = parsedCv.references.map((ref: any) => ({
+                user_id: userId,
+                name: ref.name,
+                relationship: ref.relationship || null,
+                company: ref.company || null,
+                phone: ref.phone || null,
+                email: ref.email || null
+            }));
+
+            const { error: referencesError } = await supabase
+                .from("references")
+                .insert(referencesData);
+
+            if (referencesError) {
+                console.error("References insert error:", referencesError);
+                throw new Error("Failed to insert references");
+            }
+            console.log(`Profile Fill: Inserted ${referencesData.length} references`);
+        }
+
         console.log("Profile Fill: All data synced successfully!");
         return NextResponse.json({
             success: true,
@@ -161,7 +261,10 @@ export async function POST(req: NextRequest) {
             stats: {
                 skills: parsedCv.skills?.length || 0,
                 experiences: parsedCv.experiences?.length || 0,
-                education: parsedCv.education?.length || 0
+                education: parsedCv.education?.length || 0,
+                projects: parsedCv.projects?.length || 0,
+                languages: parsedCv.languages?.length || 0,
+                references: parsedCv.references?.length || 0
             }
         });
 

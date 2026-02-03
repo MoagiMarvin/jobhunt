@@ -126,10 +126,13 @@ export default function UploadCVPage() {
             if (data.error) throw new Error(data.error);
 
             alert(
-                `Profile filled successfully!\\n\\n` +
-                `✓ ${data.stats.skills} skills added\\n` +
-                `✓ ${data.stats.experiences} work experiences added\\n` +
-                `✓ ${data.stats.education} education entries added\\n\\n` +
+                `Profile filled successfully!\n\n` +
+                `✓ ${data.stats.skills} skills added\n` +
+                `✓ ${data.stats.experiences} work experiences added\n` +
+                `✓ ${data.stats.education} education entries added\n` +
+                `✓ ${data.stats.projects} projects added\n` +
+                `✓ ${data.stats.languages} languages added\n` +
+                `✓ ${data.stats.references} references added\n\n` +
                 `Redirecting to your profile...`
             );
 
