@@ -106,9 +106,9 @@ export default function CreateCVPage() {
 
     // --- State: Form Data ---
     const [basics, setBasics] = useState({
-        name: "Moagi Marvin", // Default mock
-        email: "moagi@example.com", // Default mock
-        phone: "+27 61 234 5678", // Default mock
+        name: "", // Removed mock
+        email: "", // Removed mock
+        phone: "", // Removed mock
         location: "",
         jobTitle: "",
         summary: "",
@@ -131,9 +131,7 @@ export default function CreateCVPage() {
 
     const [certifications, setCertifications] = useState<Certification[]>([]);
 
-    const [languages, setLanguages] = useState<Language[]>([
-        { id: 1, language: "English", proficiency: "Professional" }
-    ]);
+    const [languages, setLanguages] = useState<Language[]>([]);
 
     // Skills State
     const [skills, setSkills] = useState<string[]>([]);

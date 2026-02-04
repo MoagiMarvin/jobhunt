@@ -59,7 +59,7 @@ interface UIProject {
     description: string;
     technologies: string[];
     github_url: string;
-    image_url: string;
+    image_url: string | null;
 }
 
 interface UIQualification {
@@ -195,7 +195,7 @@ export default function PublicProfilePage() {
                         description: proj.description || "",
                         technologies: proj.technologies || [],
                         github_url: proj.link || "",
-                        image_url: proj.image_url || "/mock/cv-project.jpg",
+                        image_url: proj.image_url || null,
                     })));
                 }
 

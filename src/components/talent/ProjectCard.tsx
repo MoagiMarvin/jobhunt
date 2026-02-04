@@ -8,7 +8,7 @@ interface ProjectCardProps {
     technologies: string[];
     link_url?: string;
     github_url?: string;
-    image_url?: string;
+    image_url?: string | null;
     onDelete?: () => void;
     onEdit?: () => void;
     isOwner?: boolean;

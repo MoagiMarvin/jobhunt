@@ -88,7 +88,7 @@ interface UIProject {
     description: string;
     technologies: string[];
     github_url: string;
-    image_url: string;
+    image_url: string | null;
     topSkills: string[];
     experienceYears: number;
     education: string;
@@ -303,7 +303,7 @@ export default function ProfilePage() {
                         description: proj.description || "",
                         technologies: proj.technologies || [],
                         github_url: proj.link || "",
-                        image_url: proj.image_url || "/mock/cv-project.jpg",
+                        image_url: proj.image_url || null,
                         topSkills: proj.technologies || [],
                         experienceYears: 1,
                         education: "Bachelor's Degree",

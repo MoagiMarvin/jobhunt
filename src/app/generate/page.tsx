@@ -7,66 +7,23 @@ import MinimalistCVPreview from "@/components/cv/MinimalistCVPreview";
 import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
 import { cn } from "@/lib/utils";
 
-/** MOCK DATA FOR FALLBACK (Matches Profile Page) **/
+/** MOCK DATA FOR FALLBACK (Empty for real users) **/
 const MOCK_PROFILE = {
     user: {
-        name: "Moagi Marvin",
-        email: "moagi@example.com",
-        phone: "+27 61 234 5678",
-        headline: "Computer Science Graduate | Full-Stack Developer",
-        location: "Johannesburg, South Africa",
-        summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies. Eager to contribute to innovative projects and continue learning in a fast-paced environment."
+        name: "",
+        email: "",
+        phone: "",
+        headline: "",
+        location: "",
+        summary: ""
     },
-    skills: ["React", "TypeScript", "Node.js", "Python", "AWS", "Public Speaking", "Agile Methodology"],
-    experiences: [
-        {
-            role: "Full Stack Intern",
-            company: "Tech StartUp SA",
-            duration: "Jun 2024 - Present",
-            description: "Developed and maintained several React-based dashboards and integrated Supabase for real-time data sync."
-        },
-        {
-            role: "Open Source Contributor",
-            company: "GitHub / Community",
-            duration: "2023 - 2024",
-            description: "Mentored 3 junior developers and improved documentation for a popular UI library used by 2k+ developers."
-        }
-    ],
-    educationList: [
-        {
-            title: "BSc Computer Science",
-            issuer: "University of Johannesburg",
-            date: "2021 - 2024",
-            qualification_level: "Bachelor's Degree",
-        }
-    ],
-    certificationsList: [
-        {
-            title: "Google Cloud Professional Developer",
-            issuer: "Google Cloud",
-            date: "January 2024",
-        }
-    ],
-    projectsList: [
-        {
-            title: "AI CV Optimizer",
-            description: "Built with Next.js and Gemini AI to help students optimize their career paths.",
-            technologies: ["Next.js", "Gemini AI", "Tailwind"],
-        }
-    ],
-    languages: [
-        { language: "English", proficiency: "Native" },
-        { language: "Zulu", proficiency: "Fluent" }
-    ],
-    references: [
-        {
-            name: "Sarah Jenkins",
-            relationship: "Senior Developer / Manager",
-            company: "Tech StartUp SA",
-            phone: "+27 11 987 6543",
-            email: "sarah@techstartup.co.za"
-        }
-    ]
+    skills: [],
+    experiences: [],
+    educationList: [],
+    certificationsList: [],
+    projectsList: [],
+    languages: [],
+    references: []
 };
 
 

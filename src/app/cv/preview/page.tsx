@@ -33,82 +33,33 @@ export default function CVPreviewPage() {
     const loadMasterData = () => {
         const savedUser = localStorage.getItem("user_basic_info");
         const user = savedUser ? JSON.parse(savedUser) : {
-            name: "Moagi Marvin",
-            headline: "Computer Science Graduate | Full-Stack Developer",
-            email: "moagi@example.com",
-            phone: "+27 61 234 5678",
-            location: "Johannesburg, South Africa",
-            summary: "Passionate Computer Science graduate with a strong foundation in full-stack development. Experienced in building scalable web applications using React, Node.js, and cloud technologies.",
-            haveLicense: true,
-            licenseCode: "Code 8 / B",
-            haveCar: true
+            name: "",
+            headline: "",
+            email: "",
+            phone: "",
+            location: "",
+            summary: "",
+            haveLicense: false,
+            licenseCode: "",
+            haveCar: false
         };
 
-        const experiences = JSON.parse(localStorage.getItem("user_experience_list") || JSON.stringify([
-            {
-                role: "Full Stack Intern",
-                company: "Tech StartUp SA",
-                duration: "Jun 2024 - Present",
-                description: "Developed and maintained several React-based dashboards and integrated Supabase for real-time data sync."
-            },
-            {
-                role: "Open Source Contributor",
-                company: "GitHub / Community",
-                duration: "2023 - 2024",
-                description: "Mentored 3 junior developers and improved documentation for a popular UI library."
-            }
-        ]));
+        const experiences = JSON.parse(localStorage.getItem("user_experience_list") || "[]");
 
-        const savedCredentials = JSON.parse(localStorage.getItem("user_credentials_list") || JSON.stringify([
-            {
-                title: "BSc Computer Science",
-                issuer: "University of Johannesburg",
-                date: "2021 - 2024",
-                type: "education"
-            },
-            {
-                title: "Google Cloud Professional Developer",
-                issuer: "Google Cloud",
-                date: "January 2024",
-                type: "certification"
-            }
-        ]));
+        const savedCredentials = JSON.parse(localStorage.getItem("user_credentials_list") || "[]");
 
         const educationList = savedCredentials.filter((c: any) => c.type === "education");
         const certificationsList = savedCredentials.filter((c: any) => c.type === "certification");
 
-        const skills = JSON.parse(localStorage.getItem("user_skills_list") || JSON.stringify([
-            "React", "TypeScript", "Node.js", "Supabase", "TailwindCSS"
-        ]));
+        const skills = JSON.parse(localStorage.getItem("user_skills_list") || "[]");
 
-        const projectsList = JSON.parse(localStorage.getItem("user_projects_list") || JSON.stringify([
-            {
-                title: "AI CV Optimizer",
-                description: "Built with Next.js and Gemini AI to help students optimize their career paths.",
-                technologies: ["Next.js", "Gemini AI", "Tailwind"]
-            }
-        ]));
+        const projectsList = JSON.parse(localStorage.getItem("user_projects_list") || "[]");
 
-        const languages = JSON.parse(localStorage.getItem("user_languages_list") || JSON.stringify([
-            { language: "English", proficiency: "Native" },
-            { language: "Zulu", proficiency: "Fluent" }
-        ]));
+        const languages = JSON.parse(localStorage.getItem("user_languages_list") || "[]");
 
-        const references = JSON.parse(localStorage.getItem("user_references_list") || JSON.stringify([
-            {
-                name: "Sarah Jenkins",
-                relationship: "Senior Developer / Manager",
-                company: "Tech StartUp SA",
-                email: "sarah@techstartup.co.za",
-                phone: "+27 11 987 6543"
-            }
-        ]));
+        const references = JSON.parse(localStorage.getItem("user_references_list") || "[]");
 
-        const matricData = JSON.parse(localStorage.getItem("user_matric_data") || JSON.stringify({
-            schoolName: "Johannesburg North High",
-            completionYear: "2020",
-            distinctionsCount: "4"
-        }));
+        const matricData = JSON.parse(localStorage.getItem("user_matric_data") || "null");
 
         setData({
             user,
