@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowLeft, Save, Plus, Trash2, Linkedin, Github, Globe, Briefcase, GraduationCap, X, Award, Languages, Layout, AlertCircle, CheckCircle2, Tags } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 // --- Types ---
 interface Experience {
@@ -138,64 +139,103 @@ export default function CreateCVPage() {
     const [currentSkill, setCurrentSkill] = useState("");
 
     // --- Handlers (Generic) ---
-    const handleSave = () => {
-        // 1. Save Basic Info
-        const basicInfo = {
-            ...basics,
-            headline: basics.jobTitle, // Map job title to headline
-            availabilityStatus: "Looking for Work",
-            haveLicense: basics.driverLicense !== "" && basics.driverLicense !== "None",
-            licenseCode: basics.driverLicense,
-            haveCar: basics.ownVehicle,
-        };
-        localStorage.setItem("user_basic_info", JSON.stringify(basicInfo));
+    const handleSave = async () => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Please log in to save your profile.");
+                return;
+            }
+            const userId = session.user.id;
 
-        // 2. Save Skills
-        localStorage.setItem("user_skills_list", JSON.stringify(skills));
+            // 1. Save Basic Info
+            const basicInfo = {
+                ...basics,
+                headline: basics.jobTitle,
+                availability_status: "Looking for Work",
+                have_license: basics.driverLicense !== "" && basics.driverLicense !== "None",
+                license_code: basics.driverLicense,
+                have_car: basics.ownVehicle,
+                full_name: basics.name,
+                phone: basics.phone,
+                location: basics.location,
+                linkedin_url: basics.linkedin,
+                github_url: basics.github,
+                portfolio_url: basics.portfolio,
+                summary: basics.summary
+            };
 
-        // 3. Save Experience
-        const mappedExperience = experiences.map((exp: Experience) => ({
-            role: exp.title,
-            company: exp.company,
-            duration: `${exp.startDate} - ${exp.current ? "Present" : exp.endDate}`,
-            description: exp.description
-        }));
-        localStorage.setItem("user_experience_list", JSON.stringify(mappedExperience));
+            const { error: profileError } = await supabase
+                .from("profiles")
+                .update(basicInfo)
+                .eq("id", userId);
 
-        // 4. Save Credentials (Education + Certifications)
-        const mappedCredentials = [
-            ...educations.map((edu: Education) => ({
-                type: "education",
-                title: edu.degree,
-                issuer: edu.school,
-                date: edu.year,
-                isVerified: false
-            })),
-            ...certifications.map((cert: Certification) => ({
-                type: "certification",
-                title: cert.name,
-                issuer: cert.issuer,
-                date: cert.date,
-                isVerified: false
-            }))
-        ];
-        localStorage.setItem("user_credentials_list", JSON.stringify(mappedCredentials));
+            if (profileError) throw new Error(`Profile Save Error: ${profileError.message}`);
 
-        // 5. Save Projects
-        const mappedProjects = projects.map((proj: Project) => ({
-            title: proj.title,
-            description: proj.description,
-            technologies: [], // Can be extracted or left empty
-            date: proj.date
-        }));
-        localStorage.setItem("user_projects_list", JSON.stringify(mappedProjects));
+            // 2. Save Skills (Delete & Insert)
+            await supabase.from("skills").delete().eq("user_id", userId);
+            if (skills.length > 0) {
+                const skillsData = skills.map(skill => ({
+                    user_id: userId,
+                    name: skill,
+                    category: "Other",
+                    is_soft_skill: false
+                }));
+                const { error: skillsError } = await supabase.from("skills").insert(skillsData);
+                if (skillsError) throw new Error(`Skills Save Error: ${skillsError.message}`);
+            }
 
-        // 6. Save Languages
-        localStorage.setItem("user_languages_list", JSON.stringify(languages));
+            // 3. Save Experience
+            await supabase.from("work_experiences").delete().eq("user_id", userId);
+            if (experiences.length > 0) {
+                const expData = experiences.filter(e => e.title).map(exp => ({
+                    user_id: userId,
+                    position: exp.title,
+                    company: exp.company,
+                    start_date: exp.startDate || null,
+                    end_date: exp.current ? null : (exp.endDate || null),
+                    is_current: exp.current,
+                    description: exp.description
+                }));
+                const { error: expError } = await supabase.from("work_experiences").insert(expData);
+                if (expError) throw new Error(`Experience Save Error: ${expError.message}`);
+            }
 
-        // Notify and Redirect
-        alert("Master Profile Saved! Your Talent Profile has been updated.");
-        router.push("/profile");
+            // 4. Save Qualifications (Education + Certifications)
+            await supabase.from("qualifications").delete().eq("user_id", userId);
+            const qualificationsData = [
+                ...educations.filter(e => e.school).map(edu => ({
+                    user_id: userId,
+                    type: "tertiary",
+                    institution: edu.school,
+                    title: edu.degree,
+                    year: parseInt(edu.year) || null,
+                    qualification_level: "Degree"
+                })),
+                ...certifications.filter(c => c.name).map(cert => ({
+                    user_id: userId,
+                    type: "certification",
+                    institution: cert.issuer,
+                    title: cert.name,
+                    start_date: cert.date || null
+                }))
+            ];
+            if (qualificationsData.length > 0) {
+                const { error: qualError } = await supabase.from("qualifications").insert(qualificationsData);
+                if (qualError) throw new Error(`Qualifications Save Error: ${qualError.message}`);
+            }
+
+            // Backup to LocalStorage (Legacy support)
+            localStorage.setItem("user_basic_info", JSON.stringify(basicInfo));
+            localStorage.setItem("user_skills_list", JSON.stringify(skills));
+
+            alert("Master Profile Saved! Your Talent Profile has been updated.");
+            router.push("/profile");
+
+        } catch (error: any) {
+            console.error("Save failed:", error);
+            alert(`Failed to save profile: ${error.message}`);
+        }
     };
 
     // Experience

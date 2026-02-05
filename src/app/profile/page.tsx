@@ -493,9 +493,9 @@ export default function ProfilePage() {
             setUser(newData);
             setIsEditing(false);
             alert("Profile updated successfully!");
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving profile:", error);
-            alert("Failed to save changes. Please try again.");
+            alert(`Failed to save changes: ${error.message || "Unknown error"}`);
         }
     };
 
@@ -1231,10 +1231,9 @@ export default function ProfilePage() {
 
                             setUser(prev => ({ ...prev, summary: newSummary }));
                             alert("Summary updated!");
-                            setIsEditSummaryOpen(false);
-                        } catch (error) {
+                        } catch (error: any) {
                             console.error("Error saving summary:", error);
-                            alert("Failed to save summary.");
+                            alert(`Error saving summary: ${error.message || "Unknown error"}`);
                         }
                     }}
                 />
@@ -1305,9 +1304,9 @@ export default function ProfilePage() {
                                                     setNewLanguage({ language: "", proficiency: "Fluent" });
                                                     setIsAddLanguageOpen(false);
                                                     setEditingLanguage(null);
-                                                } catch (error) {
+                                                } catch (error: any) {
                                                     console.error("Error adding/updating language:", error);
-                                                    alert("Failed to save language.");
+                                                    alert(`Error saving language: ${error.message || "Unknown error"}`);
                                                 }
                                             }
                                         }}
@@ -1392,7 +1391,7 @@ export default function ProfilePage() {
                             }
                         } catch (error: any) {
                             console.error("Error saving qualification:", error);
-                            alert(`Failed to save qualification. ${error.message}`);
+                            alert(`Error saving qualification: ${error.message || "Unknown error"}`);
                         }
 
                         setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
