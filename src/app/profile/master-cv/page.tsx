@@ -115,10 +115,14 @@ export default function UploadCVPage() {
             }
 
             const userId = session.user.id;
+            const accessToken = session.access_token;
 
             const res = await fetch('/api/profile/fill', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                },
                 body: JSON.stringify({ parsedCv: parsedCvData, userId }),
             });
 

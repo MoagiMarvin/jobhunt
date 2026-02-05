@@ -5,17 +5,47 @@ export async function POST(req: NextRequest) {
     console.log("Profile Fill: Request received");
 
     try {
-        const { parsedCv, userId } = await req.json();
+        const { parsedCv, userId: requestUserId } = await req.json();
 
-        if (!parsedCv || !userId) {
+        if (!parsedCv || !requestUserId) {
             return NextResponse.json({ error: "Missing parsed CV data or user ID." }, { status: 400 });
         }
 
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-        const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-        const supabase = createClient(supabaseUrl, supabaseKey);
+        // 1. Get Authentication Token from headers
+        const authHeader = req.headers.get("Authorization");
+        const token = authHeader?.split(" ")[1];
 
-        console.log("Profile Fill: Starting database sync for user:", userId);
+        if (!token) {
+            return NextResponse.json({ error: "Unauthorized: Missing auth token." }, { status: 401 });
+        }
+
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+        // 2. Create an authenticated client using the user's token
+        const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+            global: {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        });
+
+        // 3. Verify that the authenticated user matches the userId being updated
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+        if (authError || !user) {
+            return NextResponse.json({ error: "Invalid session or user not found." }, { status: 401 });
+        }
+
+        if (user.id !== requestUserId) {
+            console.error(`Security Warning: User ${user.id} tried to update profile for ${requestUserId}`);
+            return NextResponse.json({ error: "Forbidden: You can only update your own profile." }, { status: 403 });
+        }
+
+        const userId = user.id;
+
+        console.log("Profile Fill: Starting secure database sync for user:", userId);
         console.log("Profile Fill: Received parsedCv data:", JSON.stringify(parsedCv, null, 2));
 
         // 1. Update Basic Profile Info
