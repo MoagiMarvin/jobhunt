@@ -173,8 +173,17 @@ function InterviewScreen({ config, profileData, onComplete }: { config: any, pro
 
             // Speak the feedback summary
             if (analysis.feedback) {
+                const strengthsText = analysis.strengths?.length > 0
+                    ? ". Your strengths include: " + analysis.strengths.join(", ")
+                    : "";
+                const improvementsText = analysis.improvements?.length > 0
+                    ? ". Areas for improvement are: " + analysis.improvements.join(", ")
+                    : "";
+
+                const fullFeedback = "Analysis ready. " + analysis.feedback + strengthsText + improvementsText;
+
                 setTimeout(() => {
-                    speakQuestion("Analysis ready. " + analysis.feedback);
+                    speakQuestion(fullFeedback);
                 }, 500);
             }
         } catch (err) {
@@ -282,7 +291,15 @@ function InterviewScreen({ config, profileData, onComplete }: { config: any, pro
 
                     <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
                         <button
-                            onClick={() => speakQuestion(feedback.feedback)}
+                            onClick={() => {
+                                const strengthsText = feedback.strengths?.length > 0
+                                    ? ". Your strengths include: " + feedback.strengths.join(", ")
+                                    : "";
+                                const improvementsText = feedback.improvements?.length > 0
+                                    ? ". Areas for improvement are: " + feedback.improvements.join(", ")
+                                    : "";
+                                speakQuestion(feedback.feedback + strengthsText + improvementsText);
+                            }}
                             className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors"
                         >
                             <Volume2 className="w-5 h-5" />
