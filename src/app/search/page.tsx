@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Briefcase, ExternalLink, Loader2, AlertCircle, Copy, Check } from "lucide-react";
+import { Search, MapPin, Briefcase, ExternalLink, Loader2, AlertCircle, Copy, Check, Mic } from "lucide-react";
 
 export default function SearchPage() {
     const router = useRouter();
@@ -208,14 +208,22 @@ function JobCard({ job, router }: { job: any; router: any }) {
                         <span>Open</span>
                     </a>
                 </div>
-                <button
-                    onClick={handleUseForCV}
-                    className="flex-[1.5] px-6 py-3.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100 active:scale-[0.98]"
-                >
-                    <Briefcase className="w-4 h-4" />
-                    <span className="sm:hidden">Optimize My CV</span>
-                    <span className="hidden sm:inline">Scrape & Optimize CV</span>
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2 flex-[2]">
+                    <button
+                        onClick={handleUseForCV}
+                        className="flex-1 px-6 py-3.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100 active:scale-[0.98]"
+                    >
+                        <Briefcase className="w-4 h-4" />
+                        <span>Optimize CV</span>
+                    </button>
+                    <button
+                        onClick={() => router.push(`/interview/practice?title=${encodeURIComponent(job.title)}&link=${encodeURIComponent(job.link)}`)}
+                        className="flex-1 px-6 py-3.5 rounded-xl bg-slate-900 text-white hover:bg-black text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
+                    >
+                        <Mic className="w-4 h-4" />
+                        <span>Practice Interview</span>
+                    </button>
+                </div>
             </div>
 
             {/* Masked Indicator */}

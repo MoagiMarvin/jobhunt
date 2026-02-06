@@ -1,11 +1,34 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Mic, Video, Play, Square, RefreshCw, Send, AlertCircle, Loader2, Sparkles, Volume2, ChevronRight, CheckCircle2 } from "lucide-react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { Mic, Video, Play, Square, RefreshCw, Send, AlertCircle, Loader2, Sparkles, Volume2, ChevronRight, CheckCircle2, Search, MapPin, Briefcase, ExternalLink, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+
+/** Voice Waveform Component **/
+function VoiceWaveform({ isActive }: { isActive: boolean }) {
+    return (
+        <div className="flex items-center justify-center gap-1 h-8">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div
+                    key={i}
+                    className={cn(
+                        "w-1 bg-blue-500 rounded-full transition-all duration-300",
+                        isActive ? "animate-bounce" : "h-1 opacity-30"
+                    )}
+                    style={{
+                        height: isActive ? `${Math.random() * 100 + 20}%` : "4px",
+                        animationDelay: `${i * 0.1}s`
+                    }}
+                />
+            ))}
+        </div>
+    );
+}
 
 /** Step 2: Interview Mode & Feedback **/
-function InterviewScreen({ config, onComplete }: { config: any, onComplete: (results: any) => void }) {
+function InterviewScreen({ config, profileData, onComplete }: { config: any, profileData: any, onComplete: (results: any) => void }) {
     const [questions, setQuestions] = useState<any[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isRecording, setIsRecording] = useState(false);
@@ -27,7 +50,10 @@ function InterviewScreen({ config, onComplete }: { config: any, onComplete: (res
                 const res = await fetch('/api/interview/generate-questions', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(config)
+                    body: JSON.stringify({
+                        ...config,
+                        userProfile: profileData
+                    })
                 });
                 const data = await res.json();
                 if (data.questions) {
@@ -144,6 +170,13 @@ function InterviewScreen({ config, onComplete }: { config: any, onComplete: (res
             const analysis = await res.json();
 
             setFeedback(analysis); // Show feedback screen
+
+            // Speak the feedback summary
+            if (analysis.feedback) {
+                setTimeout(() => {
+                    speakQuestion("Analysis ready. " + analysis.feedback);
+                }, 500);
+            }
         } catch (err) {
             console.error("Analysis failed:", err);
             alert("Failed to analyze answer. Please try again.");
@@ -247,7 +280,14 @@ function InterviewScreen({ config, onComplete }: { config: any, onComplete: (res
                         </div>
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
+                    <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
+                        <button
+                            onClick={() => speakQuestion(feedback.feedback)}
+                            className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors"
+                        >
+                            <Volume2 className="w-5 h-5" />
+                            Read Analysis Aloud
+                        </button>
                         <button
                             onClick={handleNext}
                             className="px-8 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
@@ -317,69 +357,95 @@ function InterviewScreen({ config, onComplete }: { config: any, onComplete: (res
                 </div>
             </div>
 
-            {/* Right: Camera & Controls */}
-            <div className="bg-black rounded-2xl overflow-hidden relative aspect-[3/4] md:aspect-auto shadow-2xl flex flex-col">
-                <div className="flex-1 relative bg-slate-900 border-b border-white/10">
-                    {hasPermission ? (
-                        <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover transform scale-x-[-1]" />
-                    ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-white/50">
-                            <p>Camera access required</p>
-                        </div>
-                    )}
+            {/* Right: Dual View (Side-by-Side) */}
+            <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-[350px] sm:h-[400px]">
+                    {/* Local Camera View */}
+                    <div className="bg-black rounded-2xl overflow-hidden relative border-2 border-slate-100 shadow-lg">
+                        {hasPermission ? (
+                            <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover transform scale-x-[-1]" />
+                        ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-white/50 text-xs">
+                                Camera Off
+                            </div>
+                        )}
+                        <div className="absolute top-3 left-3 bg-black/60 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">REHEARSAL VIEW</div>
 
-                    {/* Recording Indicator */}
-                    {isRecording && (
-                        <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500/90 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-                            <div className="w-2 h-2 bg-white rounded-full" />
-                            RECORDING
-                        </div>
-                    )}
+                        {isRecording && (
+                            <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-red-500 text-white px-2 py-0.5 rounded-full text-[10px] font-black animate-pulse">
+                                <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                                REC
+                            </div>
+                        )}
+                    </div>
 
-                    {/* Analyzing overlay */}
-                    {isAnalyzing && (
-                        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center text-white z-10">
-                            <Loader2 className="w-12 h-12 animate-spin text-blue-500 mb-4" />
-                            <p className="font-bold text-lg">Analyzing Answer...</p>
-                            <p className="text-sm text-white/50">Checking confidence & content</p>
-                        </div>
-                    )}
+                    {/* AI Avatar View */}
+                    <div className="bg-slate-50 rounded-2xl overflow-hidden relative border-2 border-slate-100 shadow-lg">
+                        <Image
+                            src="/ai_recruiter_avatar_1770340592984.png"
+                            alt="AI Recruiter"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                        <div className="absolute top-3 left-3 bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">RECRUITER</div>
 
-                    {/* Timer */}
-                    <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs font-mono backdrop-blur-md">
-                        {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                        {/* Speech Bubble (When speaking) */}
+                        {!isRecording && !isAnalyzing && (
+                            <div className="absolute top-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3 rounded-xl shadow-lg border border-slate-200 animate-in fade-in slide-in-from-top-2">
+                                <p className="text-[10px] font-bold text-blue-600 mb-1 uppercase tracking-widest">Speaking...</p>
+                                <p className="text-sm font-medium text-slate-700 leading-tight">
+                                    {currentQuestion.text}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Control Bar */}
-                <div className="p-6 bg-slate-900 border-t border-white/10">
-                    {!isRecording ? (
-                        <button
-                            onClick={handleStartRecording}
-                            disabled={isAnalyzing || !hasPermission}
-                            className="w-full py-4 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white rounded-xl font-bold flex items-center justify-center gap-3 transition-all"
-                        >
-                            {!hasPermission ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    Starting Camera...
-                                </>
-                            ) : (
-                                <>
-                                    <Mic className="w-4 h-4" />
-                                    Start Recording Answer
-                                </>
-                            )}
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handleStopRecording}
-                            className="w-full py-4 bg-white hover:bg-slate-100 text-slate-900 rounded-xl font-bold flex items-center justify-center gap-3 transition-all"
-                        >
-                            <Square className="w-4 h-4 fill-current" />
-                            Stop & Submit
-                        </button>
+                {/* Control Panel */}
+                <div className="bg-white rounded-2xl border-2 border-slate-100 shadow-lg overflow-hidden">
+                    {/* Analyzing overlay */}
+                    {isAnalyzing && (
+                        <div className="p-12 absolute inset-0 bg-blue-600/90 backdrop-blur-sm flex flex-col items-center justify-center text-white z-50 rounded-2xl">
+                            <Loader2 className="w-12 h-12 animate-spin text-white mb-4" />
+                            <p className="font-black text-xl">Evaluating your answer...</p>
+                        </div>
                     )}
+
+                    <div className="p-5 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className={cn("w-2 h-2 rounded-full", isRecording ? "bg-red-500 animate-pulse" : "bg-slate-300")} />
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                    {isRecording ? "Listening" : "System Ready"}
+                                </span>
+                            </div>
+                            <div className="px-3 py-1 bg-slate-100 rounded-full text-[10px] font-mono font-black text-slate-600">
+                                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                            </div>
+                        </div>
+
+                        <VoiceWaveform isActive={isRecording} />
+
+                        {!isRecording ? (
+                            <button
+                                onClick={handleStartRecording}
+                                disabled={isAnalyzing || !hasPermission}
+                                className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl font-black text-sm tracking-widest shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3"
+                            >
+                                <Mic className="w-5 h-5" />
+                                START ANSWERING
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleStopRecording}
+                                className="w-full py-4 bg-slate-900 hover:bg-black text-white rounded-xl font-black text-sm tracking-widest shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 border-b-4 border-slate-700"
+                            >
+                                <Square className="w-4 h-4 fill-white" />
+                                STOP & SUBMIT
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
@@ -388,10 +454,36 @@ function InterviewScreen({ config, onComplete }: { config: any, onComplete: (res
 
 /** Step 1: Configuration Screen **/
 function SetupScreen({ onStart }: { onStart: (config: any) => void }) {
-    const [jobTitle, setJobTitle] = useState("");
+    const searchParams = useSearchParams();
+    const initialTitle = searchParams.get("title") || "";
+    const initialLink = searchParams.get("link") || "";
+
+    const [jobTitle, setJobTitle] = useState(initialTitle);
     const [jobDescription, setJobDescription] = useState("");
     const [questionCount, setQuestionCount] = useState<3 | 5 | 10>(5);
+    const [isScraping, setIsScraping] = useState(false);
 
+    // Auto-scrape if link is provided
+    useEffect(() => {
+        if (initialLink && !jobDescription) {
+            handleScrape(initialLink);
+        }
+    }, [initialLink]);
+
+    const handleScrape = async (url: string) => {
+        setIsScraping(true);
+        try {
+            const res = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`);
+            const data = await res.json();
+            if (data.requirements) {
+                setJobDescription(data.requirements);
+            }
+        } catch (err) {
+            console.error("Scrape failed:", err);
+        } finally {
+            setIsScraping(false);
+        }
+    };
     const handleStart = async () => {
         if (!jobTitle || !jobDescription) {
             alert("Please enter a job title and description");
@@ -426,12 +518,22 @@ function SetupScreen({ onStart }: { onStart: (config: any) => void }) {
 
                     <div className="space-y-2">
                         <label className="font-bold text-slate-700">Job Description</label>
-                        <textarea
-                            className="w-full h-32 bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none resize-none"
-                            placeholder="Paste the job requirements here..."
-                            value={jobDescription}
-                            onChange={(e) => setJobDescription(e.target.value)}
-                        />
+                        <div className="relative">
+                            <textarea
+                                className="w-full h-32 bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 font-medium focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none resize-none"
+                                placeholder="Paste the job requirements here..."
+                                value={jobDescription}
+                                onChange={(e) => setJobDescription(e.target.value)}
+                            />
+                            {isScraping && (
+                                <div className="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded-xl">
+                                    <div className="flex items-center gap-2 text-blue-600 font-bold">
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                        <span>AI is reading the job link...</span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     <div className="space-y-2">
@@ -578,9 +680,55 @@ function ReportScreen({ results, onRestart }: { results: any[], onRestart: () =>
 }
 
 export default function InterviewPracticePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+            </div>
+        }>
+            <InterviewPracticeContent />
+        </Suspense>
+    );
+}
+
+function InterviewPracticeContent() {
     const [step, setStep] = useState<"setup" | "interview" | "report">("setup");
     const [config, setConfig] = useState<any>(null);
     const [sessionResults, setSessionResults] = useState<any[]>([]);
+    const [profileData, setProfileData] = useState<any>(null);
+
+    // Load Profile Data from localStorage (same as Generate page)
+    useEffect(() => {
+        const basicInfo = localStorage.getItem("user_basic_info");
+        const skills = localStorage.getItem("user_skills_list");
+        const experience = localStorage.getItem("user_experience_list");
+        const credentials = localStorage.getItem("user_credentials_list");
+        const projects = localStorage.getItem("user_projects_list");
+        const languages = localStorage.getItem("user_languages_list");
+        const references = localStorage.getItem("user_references_list");
+        const matric = localStorage.getItem("user_matric_data");
+
+        const safeParse = (item: string | null, fallback: any) => {
+            if (!item) return fallback;
+            try {
+                const parsed = JSON.parse(item);
+                return (Array.isArray(parsed) && parsed.length === 0) ? fallback : parsed;
+            } catch { return fallback; }
+        };
+
+        const data = {
+            user: safeParse(basicInfo, null),
+            skills: safeParse(skills, []),
+            experiences: safeParse(experience, []),
+            credentials: safeParse(credentials, []),
+            projectsList: safeParse(projects, []),
+            languages: safeParse(languages, []),
+            references: safeParse(references, []),
+            matricData: safeParse(matric, null),
+        };
+
+        setProfileData(data);
+    }, []);
 
     return (
         <main className="min-h-screen bg-slate-50 py-12 px-4">
@@ -591,6 +739,7 @@ export default function InterviewPracticePage() {
             {step === "interview" && config && (
                 <InterviewScreen
                     config={config}
+                    profileData={profileData}
                     onComplete={(results) => {
                         setSessionResults(results.results);
                         setStep("report");

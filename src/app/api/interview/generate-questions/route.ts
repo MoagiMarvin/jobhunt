@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const { jobTitle, jobDescription, questionCount } = await req.json();
+        const { jobTitle, jobDescription, questionCount, userProfile } = await req.json();
 
         if (!jobTitle || !jobDescription) {
             return NextResponse.json(
@@ -36,13 +36,19 @@ export async function POST(req: NextRequest) {
             ${jobDescription.slice(0, 5000)}
             """
 
+            CANDIDATE PROFILE:
+            """
+            ${JSON.stringify(userProfile).slice(0, 5000)}
+            """
+
             Generate ${questionCount} challenging interview questions.
-            - Focus on identifying if the candidate has actual experience, not just theory.
-            - Ask specific questions about the tech stack or responsibilities mentioned in the JD.
-            - Use the STAR method for behavioral questions (e.g., "Describe a time when...").
-            - Include technical deep dives or scenario-based situational questions.
-            - These should be questions that separate top-tier candidates from average ones.
-            - Keep questions concise (under 25 words).
+            - FOCUS: How the candidate's specific background (from their PROFILE) qualifies them for the new ROLE.
+            - REFERENCE: Mention specific companies, roles, or skills from the PROFILE when asking behavioral questions.
+            - SCENARIOS: Ask about specific South African industry scenarios (e.g., SA Labour Law, CCMA, B-BBEE, or local logistics routes like the N3) if applicable to the role.
+            - STAR: Use the STAR method for behavioral questions.
+            - LEVEL: These should be questions that separate top-tier candidates from average ones.
+            - STYLE: Professional, direct, and conversational (like a real recruiter).
+            - Keep questions under 30 words.
             
             RETURN ONLY A JSON OBJECT (no markdown) with this structure:
             {
