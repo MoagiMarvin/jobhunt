@@ -77,8 +77,8 @@ export default function JobCard({ job, router }: JobCardProps) {
                     {/* Badge Row */}
                     <div className="flex items-center gap-2 mb-6">
                         <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border flex items-center gap-1.5 ${job.source.toLowerCase().includes('linkedin') ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                                job.source.toLowerCase().includes('pnet') ? 'bg-red-50 text-red-700 border-red-100' :
-                                    'bg-slate-50 text-slate-600 border-slate-200'
+                            job.source.toLowerCase().includes('pnet') ? 'bg-red-50 text-red-700 border-red-100' :
+                                'bg-slate-50 text-slate-600 border-slate-200'
                             }`}>
                             <Globe className="w-3 h-3" />
                             {job.source}
@@ -101,15 +101,22 @@ export default function JobCard({ job, router }: JobCardProps) {
                             Tailor CV
                         </button>
 
-                        <a
-                            href={job.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            onClick={() => {
+                                const params = new URLSearchParams({
+                                    url: job.link,
+                                    title: job.title,
+                                    company: job.company,
+                                    location: job.location,
+                                    source: job.source
+                                });
+                                router.push(`/jobs/view?${params.toString()}`);
+                            }}
                             className="px-5 py-3 rounded-xl border-2 border-slate-100 text-slate-700 font-bold text-sm hover:border-slate-200 hover:bg-slate-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                         >
                             View Job
-                            <ExternalLink className="w-4 h-4" />
-                        </a>
+                            {/* <ExternalLink className="w-4 h-4" /> */}
+                        </button>
                     </div>
                 </div>
             </div>
