@@ -18,6 +18,7 @@ function JobViewContent() {
     const [content, setContent] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [directUrl, setDirectUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchContent = async () => {
@@ -35,6 +36,7 @@ function JobViewContent() {
                 if (!res.ok) throw new Error(data.error || 'Failed to fetch');
 
                 setContent(data.content);
+                if (data.directApplyUrl) setDirectUrl(data.directApplyUrl);
             } catch (err) {
                 console.error("Failed to load job:", err);
                 setError("We couldn't load the full description here. Please view it on the original site.");
@@ -162,13 +164,21 @@ function JobViewContent() {
                         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
                             <h3 className="font-bold text-slate-900 mb-2">Ready to Apply?</h3>
                             <p className="text-slate-500 text-xs mb-4">Once your CV is tailored, go to the official site.</p>
+
+                            {directUrl && (
+                                <div className="mb-3 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-700 text-xs font-medium flex items-center gap-2">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    Direct Link Found
+                                </div>
+                            )}
+
                             <a
-                                href={jobUrl}
+                                href={directUrl || jobUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full bg-blue-600 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100"
+                                className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${directUrl ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-100' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100'}`}
                             >
-                                Apply on {jobSource}
+                                {directUrl ? "Apply on Company Site" : `Apply on ${jobSource}`}
                                 <ExternalLink className="w-4 h-4" />
                             </a>
                         </div>

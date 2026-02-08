@@ -47,6 +47,59 @@ export async function POST(request: NextRequest) {
         }
         const $ = cheerio.load(html);
 
+        // --- SMART DEEP LINKING: EXTRACT DIRECT APPLY LINK ---
+        let directApplyUrl: string | null = null;
+
+        // Strategy 1: JSON-LD Schema (Most Reliable)
+        try {
+            $('script[type="application/ld+json"]').each((i, el) => {
+                const jsonText = $(el).html();
+                if (jsonText) {
+                    try {
+                        const data = JSON.parse(jsonText);
+                        console.log(`[JOB_CONTENT] Found JSON-LD type: ${data['@type']}`);
+
+                        // Check if it's a JobPosting and has a URL
+                        if (data['@type'] === 'JobPosting') {
+                            console.log(`[JOB_CONTENT] JobPosting URL: ${data.url}`);
+                            if (data.url && !data.url.includes('linkedin.com') && !data.url.includes('pnet.co.za')) {
+                                directApplyUrl = data.url;
+                            }
+                        }
+                    } catch (jsonErr) {
+                        console.log(`[JOB_CONTENT] JSON parse error: ${jsonErr}`);
+                    }
+                }
+            });
+        } catch (err) {
+            console.log("JSON-LD parse error", err);
+        }
+
+        // Strategy 2: HTML Link Scan (Fallback)
+        if (!directApplyUrl) {
+            console.log("[JOB_CONTENT] No JSON-LD link. Scanning <a> tags...");
+            $('a').each((i, el) => {
+                const href = $(el).attr('href');
+                if (href && !href.startsWith('#') && !href.startsWith('mailto:')) {
+                    const lowerHref = href.toLowerCase();
+                    // Log potentially interesting links for debugging
+                    if (lowerHref.includes('apply') || lowerHref.includes('job') || lowerHref.includes('career')) {
+                        // console.log(`[JOB_CONTENT] Potential Link: ${href}`);
+                    }
+
+                    // Prioritize known ATS domains (Vodacom/Eightfold, MTN/Workday, PNet specific)
+                    if (lowerHref.includes('eightfold.ai') || lowerHref.includes('myworkdayjobs.com') || lowerHref.includes('breezy.hr') || lowerHref.includes('greenhouse.io') || lowerHref.includes('lever.co')) {
+                        console.log(`[JOB_CONTENT] Found ATS Link: ${href}`);
+                        if (!directApplyUrl) directApplyUrl = href;
+                        // If we found a generic one but this is a specific ATS, upgrade
+                        else if ((lowerHref.includes('eightfold.ai') || lowerHref.includes('myworkdayjobs.com')) && !directApplyUrl.includes('eightfold') && !directApplyUrl.includes('workday')) {
+                            directApplyUrl = href;
+                        }
+                    }
+                }
+            });
+        }
+
         // Aggressive Cleanup: Remove ALL media, scripts, styles, and interactive elements
         $('script, style, noscript, iframe, svg, img, picture, video, audio, canvas, map, object, form, input, button, select, textarea, nav, footer, header, aside, .ad, .advert, .cookie-banner, .popup, .modal, .social-share, .related-jobs').remove();
 
@@ -106,7 +159,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             content: content,
-            url: url
+            url: url,
+            directApplyUrl: directApplyUrl
         });
 
     } catch (error: any) {
