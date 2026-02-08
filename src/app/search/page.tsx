@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, Briefcase, ExternalLink, Loader2, AlertCircle, Copy, Check, Mic } from "lucide-react";
+import JobCard from "@/components/JobCard";
 
 export default function SearchPage() {
     const router = useRouter();
@@ -186,96 +187,3 @@ export default function SearchPage() {
     );
 }
 
-function JobCard({ job, router }: { job: any; router: any }) {
-    const [copied, setCopied] = useState(false);
-
-    const handleCopyLink = () => {
-        navigator.clipboard.writeText(job.link);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
-
-    const handleUseForCV = () => {
-        // Redirect to generate and pass the link
-        router.push(`/generate?link=${encodeURIComponent(job.link)}`);
-    };
-
-    return (
-        <div className="p-5 bg-white border-2 border-slate-100 rounded-2xl hover:border-blue-300 hover:shadow-xl transition-all group relative overflow-hidden">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
-                <div className="flex-1">
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-1">
-                        {job.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border shrink-0 ${job.isNiche
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                            : job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'
-                            }`}>
-                            {job.source}
-                        </span>
-                        <span className="font-medium">{job.company}</span>
-                        <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {job.location}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
-                <div className="flex gap-2 flex-1">
-                    <button
-                        onClick={handleCopyLink}
-                        className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-100 text-slate-600 hover:bg-slate-50 text-[11px] font-bold transition-all flex items-center justify-center gap-2"
-                    >
-                        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                        <span className="hidden xs:inline">{copied ? "Link Copied!" : "Copy Link"}</span>
-                        <span className="xs:hidden">{copied ? "Copied" : "Copy"}</span>
-                    </button>
-                    <a
-                        href={job.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-900 hover:bg-slate-200 text-[11px] font-bold transition-all flex items-center justify-center gap-2"
-                    >
-                        <ExternalLink className="w-4 h-4" />
-                        <span>Open</span>
-                    </a>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 flex-[2]">
-                    <button
-                        onClick={handleUseForCV}
-                        className="flex-1 px-6 py-3.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100 active:scale-[0.98]"
-                    >
-                        <Briefcase className="w-4 h-4" />
-                        <span>Optimize CV</span>
-                    </button>
-                    <button
-                        onClick={() => router.push(`/interview/practice?title=${encodeURIComponent(job.title)}&link=${encodeURIComponent(job.link)}`)}
-                        className="flex-1 px-6 py-3.5 rounded-xl bg-slate-900 text-white hover:bg-black text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]"
-                    >
-                        <Mic className="w-4 h-4" />
-                        <span>Practice Interview</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Direct Opportunity Badge */}
-            {job.isNiche && (
-                <div className="absolute top-0 right-0">
-                    <div className="bg-emerald-600 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl shadow-md uppercase tracking-tighter">
-                        Direct Index
-                    </div>
-                </div>
-            )}
-            {/* Masked Indicator */}
-            {job.title.includes('*') && (
-                <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 text-[9px] font-bold rounded-full border border-amber-100">
-                    <AlertCircle className="w-3 h-3" />
-                    MASKED DATA
-                </div>
-            )}
-        </div>
-    );
-}
