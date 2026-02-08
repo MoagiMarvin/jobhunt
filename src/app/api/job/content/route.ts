@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
                     'Referer': 'https://www.google.com/',
                     'Cache-Control': 'no-cache'
                 },
-                signal: AbortSignal.timeout(10000) // 10s timeout
+                signal: AbortSignal.timeout(15000) // 15s timeout
             });
             if (!response.ok) throw new Error(`Status ${response.status}`);
             html = await response.text();
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
                 headers: {
                     'User-Agent': 'JobHunt/1.0 (Education/Research)'
                 },
-                signal: AbortSignal.timeout(10000)
+                signal: AbortSignal.timeout(15000)
             });
 
             if (!response.ok) {
@@ -165,6 +165,15 @@ export async function POST(request: NextRequest) {
 
     } catch (error: any) {
         console.error('[JOB_CONTENT] Error:', error);
+
+        // Handle Timeout explicitly
+        if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+            return NextResponse.json(
+                { error: 'The job site took too long to respond. Please try again or view on the original site.' },
+                { status: 504 }
+            );
+        }
+
         return NextResponse.json(
             { error: 'Failed to load job details. The site might be blocking our preview.', details: error.message },
             { status: 500 }
