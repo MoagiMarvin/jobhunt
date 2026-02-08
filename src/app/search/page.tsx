@@ -11,6 +11,7 @@ export default function SearchPage() {
     const [loading, setLoading] = useState(false);
     const [loadingSources, setLoadingSources] = useState<string[]>([]);
     const [hasSearched, setHasSearched] = useState(false);
+    const [category, setCategory] = useState("all");
 
     const handleSearch = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -20,24 +21,27 @@ export default function SearchPage() {
         setHasSearched(true);
         setJobs([]);
 
-        // Sources we scan: PNet is immediate, others are background
-        const allSources = ['pnet', 'linkedin', 'careers24', 'indeed'];
+        // Sources we scan
+        const primarySources = ['pnet', 'vodacom', 'mtn', 'standardbank', 'fnb'];
+        const backSources = ['linkedin', 'careers24', 'indeed'];
+        const allSources = [...primarySources, ...backSources];
         setLoadingSources(allSources);
 
         try {
-            // 1. Fetch PNet IMMEDIATELY (Primary Source)
-            const pnetRes = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=pnet`);
-            const pnetData = await pnetRes.json();
-
-            if (pnetData.jobs && pnetData.jobs.length > 0) {
-                setJobs(pnetData.jobs);
-            }
-
-            setLoading(false); // Stop main spinner as we have results
-            setLoadingSources(prev => prev.filter(s => s !== 'pnet'));
+            // 1. Fetch PRIMARY Sources (Direct Tech)
+            primarySources.forEach(async (src) => {
+                try {
+                    const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=${src}`);
+                    const data = await res.json();
+                    if (data.jobs) setJobs(prev => [...prev, ...data.jobs]);
+                } finally {
+                    setLoadingSources(prev => prev.filter(s => s !== src));
+                    setLoading(false);
+                }
+            });
 
             // 2. Fetch others in BACKGROUND
-            const backgroundSources = ['linkedin', 'careers24', 'indeed'];
+            const backgroundSources = backSources;
 
             backgroundSources.forEach(async (src) => {
                 const controller = new AbortController();
@@ -106,19 +110,41 @@ export default function SearchPage() {
                 </form>
 
                 {/* Loading Status Bar */}
+                {/* Tech Categories */}
+                <div className="flex flex-wrap gap-2 mb-8">
+                    {[
+                        { id: "all", label: "Everything Tech", icon: Briefcase },
+                        { id: "tester", label: "Software Testers", icon: Check },
+                        { id: "technician", label: "IT Technicians", icon: MapPin },
+                        { id: "consultant", label: "Tech Consultants", icon: Search },
+                    ].map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setCategory(cat.id)}
+                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 border-2 ${category === cat.id
+                                ? "bg-blue-600 text-white border-blue-600 shadow-lg"
+                                : "bg-white text-slate-600 border-slate-100 hover:border-blue-200"
+                                }`}
+                        >
+                            <cat.icon className="w-3.5 h-3.5" />
+                            {cat.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Loading Status Bar */}
                 {hasSearched && loadingSources.length > 0 && (
                     <div className="mb-6 flex flex-wrap gap-2 items-center">
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Scanning:</span>
-                        {['pnet', 'linkedin', 'careers24', 'indeed'].map(source => (
+                        {['pnet', 'linkedin', 'careers24', 'indeed', 'vodacom', 'mtn', 'standardbank', 'fnb'].map(source => (
                             <div
                                 key={source}
-                                className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all border ${loadingSources.includes(source)
+                                className={`px-2 py-1 rounded-lg text-[9px] font-bold transition-all border ${loadingSources.includes(source)
                                     ? 'bg-blue-50 text-blue-500 border-blue-200 animate-pulse'
                                     : 'bg-green-50 text-green-600 border-green-200 opacity-60'
                                     }`}
                             >
-                                {source.toUpperCase()}
-                                {loadingSources.includes(source) ? '...' : ' ✓'}
+                                {source === 'standardbank' ? 'STANDARD BANK' : source.toUpperCase()}
                             </div>
                         ))}
                     </div>
@@ -134,9 +160,15 @@ export default function SearchPage() {
 
                 {/* Results Container */}
                 <div className="space-y-4 mb-12">
-                    {!loading && jobs.map((job) => (
-                        <JobCard key={job.id} job={job} router={router} />
-                    ))}
+                    {!loading && jobs
+                        .filter(job => {
+                            if (category === "all") return true;
+                            const title = job.title.toLowerCase();
+                            return title.includes(category);
+                        })
+                        .map((job) => (
+                            <JobCard key={job.id} job={job} router={router} />
+                        ))}
                 </div>
 
                 {/* No Results Message */}
@@ -176,7 +208,10 @@ function JobCard({ job, router }: { job: any; router: any }) {
                         {job.title}
                     </h3>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border shrink-0 ${job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
+                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase border shrink-0 ${job.isNiche
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                            : job.source === 'PNet' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'
+                            }`}>
                             {job.source}
                         </span>
                         <span className="font-medium">{job.company}</span>
@@ -226,6 +261,14 @@ function JobCard({ job, router }: { job: any; router: any }) {
                 </div>
             </div>
 
+            {/* Direct Opportunity Badge */}
+            {job.isNiche && (
+                <div className="absolute top-0 right-0">
+                    <div className="bg-emerald-600 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl shadow-md uppercase tracking-tighter">
+                        Direct Index
+                    </div>
+                </div>
+            )}
             {/* Masked Indicator */}
             {job.title.includes('*') && (
                 <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 text-[9px] font-bold rounded-full border border-amber-100">
