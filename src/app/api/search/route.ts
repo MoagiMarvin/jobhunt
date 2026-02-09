@@ -95,7 +95,12 @@ export async function GET(request: NextRequest) {
 /**
  * TECH-ONLY GUARD: Ensures the role is actually in the Tech Industry.
  */
-function isRelevant(title: string, company: string, query: string): boolean {
+function isRelevant(title: string, company: string, query: string, job?: any): boolean {
+    // BYPASS: Recruiter jobs are pre-vetted by the recruiter search
+    if (job && job.bypassTechGuard) {
+        return true;
+    }
+
     const titleLower = title.toLowerCase();
     const queryLower = query.toLowerCase();
     const companyLower = company.toLowerCase();
@@ -541,10 +546,12 @@ async function scrapeRecruiters(query: string) {
         topRecruiters.map(async (recruiter) => {
             try {
                 const jobs = await scrapeLinkedIn(`${recruiter} South Africa ${query}`);
+                console.log(`[RECRUITER] ${recruiter}: Found ${jobs.length} jobs`);
                 return jobs.map(j => ({
                     ...j,
-                    source: `${recruiter} (via LinkedIn)`,
-                    isNiche: false // Recruiters are aggregators, not direct employers
+                    source: `${recruiter}`,
+                    isNiche: false, // Recruiters are aggregators, not direct employers
+                    bypassTechGuard: true // CRITICAL: Skip relevance filtering for recruiter jobs
                 }));
             } catch (e) {
                 console.error(`[RECRUITER] ${recruiter} failed:`, e);
@@ -553,5 +560,7 @@ async function scrapeRecruiters(query: string) {
         })
     );
 
-    return results.flat();
+    const totalRecruiterJobs = results.flat();
+    console.log(`[RECRUITER] Total jobs from all recruiters: ${totalRecruiterJobs.length}`);
+    return totalRecruiterJobs;
 }
