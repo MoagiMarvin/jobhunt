@@ -49,7 +49,8 @@ export async function GET(request: NextRequest) {
         scrapeFNB(query).catch(e => { console.error("[FNB] Fail:", e.message); return []; }),
         scrapeAbsa(query).catch(e => { console.error("[ABSA] Fail:", e.message); return []; }),
         scrapeDiscovery(query).catch(e => { console.error("[DISC] Fail:", e.message); return []; }),
-        scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; })
+        scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; }),
+        scrapeRecruiters(query).catch(e => { console.error("[RECRUITERS] Fail:", e.message); return []; })
     ]);
 
     let allJobs = results.flat();
@@ -519,4 +520,38 @@ async function scrapeDiscovery(query: string) {
 async function scrapeCapitec(query: string) {
     // Capitec is NOT Workday, so we strictly use LinkedIn/PNet for now as "Direct" isn't easy via API
     return scrapePNet(`Capitec Bank ${query}`).then(js => js.map(j => ({ ...j, source: 'Capitec (PNet Mirror)' })));
+}
+
+// --- RECRUITER SHADOW INDEXING ---
+async function scrapeRecruiters(query: string) {
+    const topRecruiters = [
+        'OfferZen',
+        'e-Merge',
+        'Network Recruitment',
+        'Kontak Recruitment',
+        'Hire Resolve',
+        'First Point Group',
+        'iO Associates',
+        'Armstrong Appointments',
+        'Greys Recruitment',
+        'Let\'s Recruit'
+    ];
+
+    const results = await Promise.all(
+        topRecruiters.map(async (recruiter) => {
+            try {
+                const jobs = await scrapeLinkedIn(`${recruiter} South Africa ${query}`);
+                return jobs.map(j => ({
+                    ...j,
+                    source: `${recruiter} (via LinkedIn)`,
+                    isNiche: false // Recruiters are aggregators, not direct employers
+                }));
+            } catch (e) {
+                console.error(`[RECRUITER] ${recruiter} failed:`, e);
+                return [];
+            }
+        })
+    );
+
+    return results.flat();
 }

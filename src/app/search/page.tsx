@@ -71,14 +71,15 @@ export default function SearchPage() {
 
             backgroundSources.forEach(async (src) => {
                 const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 12000); // 12s safety timeout per board
+                const timer = setTimeout(() => controller.abort(), 15000); // 15s timeout for slower scrapers
 
                 try {
                     const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=${src}`, {
                         signal: controller.signal
                     });
-                    const data = await res.json();
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
+                    const data = await res.json();
                     if (data.jobs && data.jobs.length > 0) {
                         setJobs(prev => {
                             const newJobs = [...prev, ...data.jobs];
@@ -86,12 +87,15 @@ export default function SearchPage() {
                             return newJobs;
                         });
                     }
-                } catch (err) {
-                    console.error(`[Search] Background source ${src} failed or timed out:`, err);
+                } catch (err: any) {
+                    if (err.name === 'AbortError') {
+                        console.warn(`[Search] Source ${src} timed out after 15s.`);
+                    } else {
+                        console.error(`[Search] Background source ${src} failed:`, err);
+                    }
                 } finally {
                     clearTimeout(timer);
                     setLoadingSources(prev => prev.filter(s => s !== src));
-                    setLoading(false); // Ensure loading stops eventually
                 }
             });
 
