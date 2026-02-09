@@ -519,1111 +519,1109 @@ export default function ProfilePage() {
     };
 
     return (
-        <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-            <div className="max-w-6xl mx-auto px-2.5 py-4 md:px-6 md:py-12">
-                {/* New Profile Header */}
-                <div className="mb-8">
-                    <ProfileHeader
-                        name={user.name}
-                        headline={user.headline}
-                        email={user.email}
-                        phone={user.phone}
-                        location={user.location}
-                        avatar={user.avatar}
-                        availabilityStatus={user.availabilityStatus}
-                        github={user.github}
-                        linkedin={user.linkedin}
-                        portfolio={user.portfolio}
-                        haveLicense={user.haveLicense}
-                        licenseCode={user.licenseCode}
-                        haveCar={user.haveCar}
-                        onEdit={() => setIsEditing(true)}
-                        downloadAction={<DownloadResumeButton showCustomize={false} data={{
-                            user,
-                            experiences,
-                            educationList,
-                            certificationsList,
-                            skills,
-                            projectsList,
-                            languages,
-                            references,
-                            matricData
-                        }} />}
-                        targetRoles={user.targetRoles}
-                        isOwner={true}
-                        userId={currentUserId || undefined}
-                        onShare={handleShare}
-                        isEditMode={isEditMode}
-                    />
+        <div className="max-w-6xl mx-auto px-4 py-8 md:px-8 md:py-12">
+            {/* New Profile Header */}
+            <div className="mb-8">
+                <ProfileHeader
+                    name={user.name}
+                    headline={user.headline}
+                    email={user.email}
+                    phone={user.phone}
+                    location={user.location}
+                    avatar={user.avatar}
+                    availabilityStatus={user.availabilityStatus}
+                    github={user.github}
+                    linkedin={user.linkedin}
+                    portfolio={user.portfolio}
+                    haveLicense={user.haveLicense}
+                    licenseCode={user.licenseCode}
+                    haveCar={user.haveCar}
+                    onEdit={() => setIsEditing(true)}
+                    downloadAction={<DownloadResumeButton showCustomize={false} data={{
+                        user,
+                        experiences,
+                        educationList,
+                        certificationsList,
+                        skills,
+                        projectsList,
+                        languages,
+                        references,
+                        matricData
+                    }} />}
+                    targetRoles={user.targetRoles}
+                    isOwner={true}
+                    userId={currentUserId || undefined}
+                    onShare={handleShare}
+                    isEditMode={isEditMode}
+                />
+            </div>
+
+            {/* Upload CV Button (Only in Edit Mode) */}
+            {isEditMode && (
+                <div className="mb-6 flex justify-end">
+                    <Link href="/profile/master-cv" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all border border-blue-700 shadow-sm">
+                        <Upload className="w-3.5 h-3.5" />
+                        Upload CV
+                    </Link>
                 </div>
+            )}
 
-                {/* Upload CV Button (Only in Edit Mode) */}
-                {isEditMode && (
-                    <div className="mb-6 flex justify-end">
-                        <Link href="/profile/master-cv" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all border border-blue-700 shadow-sm">
-                            <Upload className="w-3.5 h-3.5" />
-                            Upload CV
-                        </Link>
-                    </div>
-                )}
-
-                {/* Professional Summary Section (New) */}
-                {/* Professional Summary Section (New) */}
-                <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-5 md:p-8 shadow-sm relative group">
-                    <div className="flex items-center justify-between gap-4 mb-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                <FileText className="w-4 h-4" />
-                            </div>
-                            <h2 className="text-base md:text-lg font-semibold text-slate-800 tracking-tight">Professional Summary</h2>
+            {/* Professional Summary Section (New) */}
+            {/* Professional Summary Section (New) */}
+            <div className="mb-8 bg-white rounded-2xl border border-slate-100 p-5 md:p-8 shadow-sm relative group">
+                <div className="flex items-center justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                            <FileText className="w-4 h-4" />
                         </div>
-                        {isEditMode && !user.summary && (
-                            <button
-                                onClick={() => setIsEditSummaryOpen(true)}
-                                className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                            >
-                                <Plus className="w-3 h-3" />
-                                Add
-                            </button>
-                        )}
-                        {isEditMode && user.summary && (
-                            <button
-                                onClick={() => setIsEditSummaryOpen(true)}
-                                className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-2"
-                                title="Edit Summary"
-                            >
-                                <Edit2 className="w-4 h-4" />
-                                <span className="text-xs font-bold md:hidden">Edit</span>
-                            </button>
-                        )}
+                        <h2 className="text-base md:text-lg font-semibold text-slate-800 tracking-tight">Professional Summary</h2>
                     </div>
-
-                    {user.summary ? (
-                        <p className="text-slate-600 leading-relaxed whitespace-pre-line">
-                            {user.summary}
-                        </p>
-                    ) : (
-                        <div className="text-center py-8 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                            <p className="text-slate-400 text-sm italic">No professional summary added yet. Click 'Add Summary' above to get started.</p>
-                        </div>
+                    {isEditMode && !user.summary && (
+                        <button
+                            onClick={() => setIsEditSummaryOpen(true)}
+                            className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                        >
+                            <Plus className="w-3 h-3" />
+                            Add
+                        </button>
+                    )}
+                    {isEditMode && user.summary && (
+                        <button
+                            onClick={() => setIsEditSummaryOpen(true)}
+                            className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-2"
+                            title="Edit Summary"
+                        >
+                            <Edit2 className="w-4 h-4" />
+                            <span className="text-xs font-bold md:hidden">Edit</span>
+                        </button>
                     )}
                 </div>
 
-                {/* Talent Profile */}
-                <div>
-                    <div className="space-y-8">
-                        {/* Projects Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <FolderKanban className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Projects</h2>
+                {user.summary ? (
+                    <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                        {user.summary}
+                    </p>
+                ) : (
+                    <div className="text-center py-8 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                        <p className="text-slate-400 text-sm italic">No professional summary added yet. Click 'Add Summary' above to get started.</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Talent Profile */}
+            <div>
+                <div className="space-y-8">
+                    {/* Projects Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <FolderKanban className="w-4 h-4" />
                                 </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => {
-                                            if (projectsList.length >= 4) {
-                                                alert("Maximum of 4 projects allowed for a focused profile.");
-                                            } else {
-                                                setIsAddProjectOpen(true);
-                                            }
-                                        }}
-                                        disabled={projectsList.length >= 4}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest disabled:text-slate-400"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        {projectsList.length >= 4 ? "Limit Reached" : "Add"}
-                                    </button>
-                                )}
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Projects</h2>
                             </div>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project: UIProject, idx: number) => (
-                                    <ProjectCard
-                                        key={idx}
-                                        {...project}
-                                        onDelete={async () => {
-                                            if (currentUserId && project.id) {
-                                                const { error } = await supabase.from("projects").delete().eq("id", project.id);
-                                                if (error) {
-                                                    alert("Failed to delete project.");
-                                                    return;
-                                                }
-                                            }
-                                            setProjectsList(projectsList.filter((_: UIProject, i: number) => i !== idx));
-                                        }}
-                                        onEdit={() => {
-                                            setEditingProject(project);
-                                            setIsAddProjectOpen(true);
-                                        }}
-                                        isOwner={isEditMode}
-                                    />
-                                ))}
-                            </div>
-                            {projectsList.length > 2 && (
+                            {isEditMode && (
                                 <button
-                                    onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
-                                    className="w-full py-2 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                                    onClick={() => {
+                                        if (projectsList.length >= 4) {
+                                            alert("Maximum of 4 projects allowed for a focused profile.");
+                                        } else {
+                                            setIsAddProjectOpen(true);
+                                        }
+                                    }}
+                                    disabled={projectsList.length >= 4}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest disabled:text-slate-400"
                                 >
-                                    {isProjectsExpanded ? "Show Less" : `Show More (${projectsList.length - 2} more)`}
+                                    <Plus className="w-3 h-3" />
+                                    {projectsList.length >= 4 ? "Limit Reached" : "Add"}
                                 </button>
                             )}
                         </div>
-
-                        {/* Experience Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <Building2 className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Experience</h2>
-                                </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => setIsAddExperienceOpen(true)}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-                            <div className="space-y-4">
-                                {experiences.map((exp: UIExperience, idx: number) => (
-                                    <ExperienceCard
-                                        key={idx}
-                                        {...exp}
-                                        onDelete={async () => {
-                                            if (currentUserId && exp.id) {
-                                                const { error } = await supabase.from("work_experiences").delete().eq("id", exp.id);
-                                                if (error) {
-                                                    alert("Failed to delete experience.");
-                                                    return;
-                                                }
-                                            }
-                                            setExperiences(experiences.filter((_: UIExperience, i: number) => i !== idx));
-                                        }}
-                                        onEdit={() => {
-                                            setEditingExperience(exp);
-                                            setIsAddExperienceOpen(true);
-                                        }}
-                                        isOwner={isEditMode}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* 1. Technical Skills Section */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <Layers className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Technical Skills</h2>
-                                </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => {
-                                            setAddSkillMode("technical");
-                                            setIsAddSkillOpen(true);
-                                        }}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-
-                            {skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").length === 0 ? (
-                                <div className="text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
-                                    <Layers className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-                                    <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No technical skills added yet.</p>
-                                </div>
-                            ) : (
-                                <div className="p-4 md:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                                    <div className="space-y-6">
-                                        {(() => {
-                                            const technicalGrouped = skills.filter((s: TalentSkill) => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, TalentSkill[]>, skill: TalentSkill) => {
-                                                const cat = skill.category || "Other Skills";
-                                                if (!acc[cat]) acc[cat] = [];
-                                                acc[cat].push(skill);
-                                                return acc;
-                                            }, {} as Record<string, TalentSkill[]>);
-
-                                            return Object.entries(technicalGrouped).map(([category, categorySkills], catIdx) => (
-                                                <div key={catIdx} className={catIdx > 0 ? "pt-6 border-t border-slate-50" : ""}>
-                                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                                        {category}
-                                                    </h4>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {categorySkills.map((skill: TalentSkill, idx: number) => {
-                                                            const originalIdx = skills.indexOf(skill);
-                                                            return (
-                                                                <div
-                                                                    key={idx}
-                                                                    className="group relative flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all font-medium"
-                                                                >
-                                                                    <span className="text-sm text-slate-700">{skill.name}</span>
-                                                                    {(skill.minYears ?? 0) > 0 && (
-                                                                        <span className="text-[10px] text-blue-600 font-black bg-blue-100/50 px-1.5 rounded tracking-tighter">
-                                                                            {skill.minYears}Y
-                                                                        </span>
-                                                                    )}
-                                                                    {isEditMode && (
-                                                                        <div>
-                                                                            <ItemActionMenu
-                                                                                onEdit={() => {
-                                                                                    setEditingSkill(skill);
-                                                                                    setAddSkillMode("technical");
-                                                                                    setIsAddSkillOpen(true);
-                                                                                }}
-                                                                                onDelete={async () => {
-                                                                                    if (currentUserId && skill.id) {
-                                                                                        await supabase.from("skills").delete().eq("id", skill.id);
-                                                                                    } else if (currentUserId) {
-                                                                                        await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                                                    }
-                                                                                    const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
-                                                                                    setSkills(updated);
-                                                                                }}
-                                                                            />
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-                                            ));
-                                        })()}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 2. Soft Skills Section */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <MessageSquare className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Soft Skills</h2>
-                                </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => {
-                                            setAddSkillMode("soft");
-                                            setIsAddSkillOpen(true);
-                                        }}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-
-                            {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length === 0 ? (
-                                <div className="text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
-                                    <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-                                    <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No soft skills added yet.</p>
-                                </div>
-                            ) : (
-                                <div className="p-4 md:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition-all">
-                                    <div className="space-y-3">
-                                        {skills.filter((s: TalentSkill) => s.isSoftSkill || s.category === "Soft Skills")
-                                            .slice(0, isSoftSkillsExpanded ? undefined : 3)
-                                            .map((skill: TalentSkill, idx: number) => {
-                                                const originalIdx = skills.indexOf(skill);
-                                                return (
-                                                    <div key={idx} className="group relative flex items-center gap-3 -ml-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                                                        <div className="mt-2 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-                                                        <p className="text-sm text-slate-700 leading-relaxed font-medium flex-1">
-                                                            {skill.name}
-                                                        </p>
-                                                        {isEditMode && (
-                                                            <div>
-                                                                <ItemActionMenu
-                                                                    onEdit={() => {
-                                                                        setEditingSkill(skill);
-                                                                        setAddSkillMode("soft");
-                                                                        setIsAddSkillOpen(true);
-                                                                    }}
-                                                                    onDelete={async () => {
-                                                                        if (currentUserId && skill.id) {
-                                                                            await supabase.from("skills").delete().eq("id", skill.id);
-                                                                        } else if (currentUserId) {
-                                                                            await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
-                                                                        }
-                                                                        const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
-                                                                        setSkills(updated);
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                    </div>
-                                    {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length > 3 && (
-                                        <div className="mt-4 pt-4 border-t border-slate-50">
-                                            <button
-                                                onClick={() => setIsSoftSkillsExpanded(!isSoftSkillsExpanded)}
-                                                className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
-                                            >
-                                                {isSoftSkillsExpanded ? "Show Less" : `Show ${skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length - 3} More`}
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Languages Section (New) */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                                        <Languages className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Languages</h2>
-                                </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => setIsAddLanguageOpen(true)}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-                            <div className="bg-white rounded-xl border-2 border-slate-100 p-4 md:p-6 shadow-sm">
-                                <div className="grid md:grid-cols-3 gap-4">
-                                    {languages.map((lang: Language, idx: number) => (
-                                        <div key={idx} className="group relative flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-200 transition-all">
-                                            <div>
-                                                <p className="font-semibold text-slate-800 text-sm">{lang.language}</p>
-                                                <p className="text-[10px] text-slate-500">{lang.proficiency}</p>
-                                            </div>
-                                            <div>
-                                                {isEditMode && (
-                                                    <ItemActionMenu
-                                                        onEdit={() => {
-                                                            setEditingLanguage({ ...lang, idx });
-                                                            setNewLanguage({ language: lang.language, proficiency: lang.proficiency });
-                                                            setIsAddLanguageOpen(true);
-                                                        }}
-                                                        onDelete={async () => {
-                                                            if (currentUserId && lang.id) {
-                                                                await supabase.from("languages").delete().eq("id", lang.id);
-                                                            }
-                                                            const updated = languages.filter((_: Language, i: number) => i !== idx);
-                                                            setLanguages(updated);
-                                                            localStorage.setItem("user_languages_list", JSON.stringify(updated));
-                                                        }}
-                                                    />
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Education Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <GraduationCap className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Tertiary Education</h2>
-                                </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-                            <div className="space-y-4">
-                                {educationList.map((edu: UIQualification, idx: number) => (
-                                    <CredentialCard
-                                        key={idx}
-                                        type="education"
-                                        title={edu.title}
-                                        issuer={edu.issuer}
-                                        date={edu.date}
-                                        qualification_level={edu.qualification_level || undefined}
-                                        document_url={edu.document_url || undefined}
-                                        viewerRole="owner"
-                                        onDelete={async () => {
-                                            if (currentUserId && edu.id) {
-                                                const { error } = await supabase.from("qualifications").delete().eq("id", edu.id);
-                                                if (error) {
-                                                    alert("Failed to delete education.");
-                                                    return;
-                                                }
-                                            }
-                                            const updated = educationList.filter((_: UIQualification, i: number) => i !== idx);
-                                            setEducationList(updated);
-                                            // Save combined credentials to localStorage
-                                            const allCredentials = [...updated.map((e: UIQualification) => ({ ...e, type: 'education' })), ...certificationsList.map((c: UIQualification) => ({ ...c, type: 'certification' }))];
-                                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
-                                        }}
-                                        onEdit={() => {
-                                            setEditingCredential(edu);
-                                            setIsAddCredentialOpen({ open: true, type: "education" });
-                                        }}
-                                        isOwner={isEditMode}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Matric Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <School className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Matric</h2>
-                                </div>
-                                {isEditMode && !matricData && (
-                                    <button
-                                        onClick={() => setIsAddMatricOpen(true)}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-                            {matricData ? (
-                                <SecondaryEducationCard
-                                    {...matricData}
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {projectsList.slice(0, isProjectsExpanded ? undefined : 2).map((project: UIProject, idx: number) => (
+                                <ProjectCard
+                                    key={idx}
+                                    {...project}
                                     onDelete={async () => {
-                                        if (currentUserId && matricData.id) {
-                                            const { error } = await supabase.from("qualifications").delete().eq("id", matricData.id);
+                                        if (currentUserId && project.id) {
+                                            const { error } = await supabase.from("projects").delete().eq("id", project.id);
                                             if (error) {
-                                                alert("Failed to delete matric data.");
+                                                alert("Failed to delete project.");
                                                 return;
                                             }
                                         }
-                                        setMatricData(null);
-                                        localStorage.removeItem("user_matric_data");
+                                        setProjectsList(projectsList.filter((_: UIProject, i: number) => i !== idx));
                                     }}
                                     onEdit={() => {
-                                        setEditingMatric(matricData);
-                                        setIsAddMatricOpen(true);
+                                        setEditingProject(project);
+                                        setIsAddProjectOpen(true);
                                     }}
                                     isOwner={isEditMode}
                                 />
-                            ) : (
-                                <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-xl">
-                                    <p className="text-slate-400 text-sm italic">High school details are important for graduate programs. Add yours now.</p>
-                                </div>
-                            )}
+                            ))}
                         </div>
-
-                        {/* Certifications Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <Award className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Certifications</h2>
-                                </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-                            <div className="space-y-4">
-                                {certificationsList.map((cert: UIQualification, idx: number) => (
-                                    <CredentialCard
-                                        key={idx}
-                                        type="certification"
-                                        title={cert.title}
-                                        issuer={cert.issuer}
-                                        date={cert.date}
-                                        document_url={cert.document_url || undefined}
-                                        viewerRole="owner"
-                                        onDelete={async () => {
-                                            if (currentUserId && cert.id) {
-                                                const { error } = await supabase.from("qualifications").delete().eq("id", cert.id);
-                                                if (error) {
-                                                    alert("Failed to delete certification.");
-                                                    return;
-                                                }
-                                            }
-                                            const updated = certificationsList.filter((_: UIQualification, i: number) => i !== idx);
-                                            setCertificationsList(updated);
-                                            // Save combined credentials to localStorage
-                                            const allCredentials = [...educationList.map((e: UIQualification) => ({ ...e, type: 'education' })), ...updated.map((c: UIQualification) => ({ ...c, type: 'certification' }))];
-                                            localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
-                                        }}
-                                        onEdit={() => {
-                                            setEditingCredential(cert);
-                                            setIsAddCredentialOpen({ open: true, type: "certification" });
-                                        }}
-                                        isOwner={isEditMode}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* References Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between gap-3 md:gap-0">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                        <User className="w-4 h-4" />
-                                    </div>
-                                    <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Professional References</h2>
-                                </div>
-                                {isEditMode && (
-                                    <button
-                                        onClick={() => setIsAddReferenceOpen(true)}
-                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
-                                    >
-                                        <Plus className="w-3 h-3" />
-                                        Add
-                                    </button>
-                                )}
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-4">
-                                {references.map((ref: Reference, idx: number) => (
-                                    <ReferenceCard
-                                        key={idx}
-                                        {...ref}
-                                        onDelete={async () => {
-                                            if (currentUserId && ref.id) {
-                                                const { error } = await supabase.from("references").delete().eq("id", ref.id);
-                                                if (error) {
-                                                    alert("Failed to delete reference.");
-                                                    return;
-                                                }
-                                            }
-                                            const updated = references.filter((_: Reference, i: number) => i !== idx);
-                                            setReferences(updated);
-                                            localStorage.setItem("user_references_list", JSON.stringify(updated));
-                                        }}
-                                        onEdit={() => {
-                                            setEditingReference(ref);
-                                            setIsAddReferenceOpen(true);
-                                        }}
-                                        isOwner={isEditMode}
-                                    />
-                                ))}
-                            </div>
-                            {references.length === 0 && (
-                                <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-xl">
-                                    <p className="text-slate-400 text-sm italic">Recruiters often require 2-3 references. Add them here.</p>
-                                </div>
-                            )}
-                        </div>
+                        {projectsList.length > 2 && (
+                            <button
+                                onClick={() => setIsProjectsExpanded(!isProjectsExpanded)}
+                                className="w-full py-2 text-sm font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100"
+                            >
+                                {isProjectsExpanded ? "Show Less" : `Show More (${projectsList.length - 2} more)`}
+                            </button>
+                        )}
                     </div>
-                </div>
 
-                {/* Modals */}
-                <EditProfileModal
-                    isOpen={isEditing}
-                    onClose={() => setIsEditing(false)}
-                    onSave={handleSaveProfile}
-                    initialData={user}
-                />
-                <AddSkillModal
-                    isOpen={isAddSkillOpen}
-                    initialMode={addSkillMode}
-                    onClose={() => {
-                        setIsAddSkillOpen(false);
-                        setEditingSkill(null);
-                    }}
-                    initialData={editingSkill || undefined}
-                    onAdd={async (newSkills: any[]) => {
-                        if (!currentUserId) return;
-                        try {
-                            if (editingSkill && newSkills.length > 0) {
-                                // Update existing
-                                const s = newSkills[0];
-                                const { error } = await supabase
-                                    .from("skills")
-                                    .update({
-                                        name: s.name,
-                                        min_experience_years: s.minYears || 0,
-                                        category: s.category || (s.isSoftSkill ? "Soft Skills" : "Other Skills"),
-                                        is_soft_skill: s.isSoftSkill || false
-                                    })
-                                    .eq("id", editingSkill.id);
-
-                                if (error) throw error;
-
-                                setSkills(skills.map((skill: TalentSkill) => skill.id === editingSkill.id ? { ...s, id: editingSkill.id } : skill));
-                                alert("Skill updated!");
-                            } else {
-                                // Insert new
-                                const insertData = newSkills.map((s: TalentSkill) => ({
-                                    user_id: currentUserId,
-                                    name: s.name,
-                                    min_experience_years: s.minYears || 0,
-                                    category: s.category || "Other Skills",
-                                    is_soft_skill: s.isSoftSkill || false
-                                }));
-
-                                const { data, error } = await supabase
-                                    .from("skills")
-                                    .insert(insertData)
-                                    .select();
-
-                                if (error) throw error;
-
-                                const formattedNewSkills = (data || []).map((s: any) => ({
-                                    id: s.id,
-                                    name: s.name,
-                                    minYears: s.min_experience_years || 0,
-                                    category: s.category || (s.is_soft_skill ? "Soft Skills" : "Other Skills"),
-                                    isSoftSkill: s.is_soft_skill || false
-                                }));
-
-                                setSkills([...skills, ...formattedNewSkills]);
-                                alert(`${newSkills.length > 1 ? newSkills.length + " skills" : "Skill"} added successfully!`);
-                            }
-                            setIsAddSkillOpen(false);
-                            setEditingSkill(null);
-                        } catch (error: any) {
-                            console.error("Error saving skills:", error);
-                            alert(`Failed to save skills. ${error.message}`);
-                        }
-                    }}
-                />
-                <EditSummaryModal
-                    isOpen={isEditSummaryOpen}
-                    initialSummary={user.summary}
-                    onClose={() => setIsEditSummaryOpen(false)}
-                    onSave={async (newSummary: string) => {
-                        if (!currentUserId) return;
-
-                        try {
-                            const { error } = await supabase
-                                .from("profiles")
-                                .update({ summary: newSummary })
-                                .eq("id", currentUserId);
-
-                            if (error) throw error;
-
-                            setUser(prev => ({ ...prev, summary: newSummary }));
-                            alert("Summary updated!");
-                        } catch (error: any) {
-                            console.error("Error saving summary:", error);
-                            alert(`Error saving summary: ${error.message || "Unknown error"}`);
-                        }
-                    }}
-                />
-                {/* Simple Inline Language Modal (For speed) */}
-                {isAddLanguageOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                        <div className="bg-white rounded-2xl w-full max-sm p-6 shadow-xl animate-in fade-in zoom-in">
-                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                                <Languages className="w-5 h-5 text-blue-600" /> Add Language
-                            </h3>
-                            <div className="space-y-3">
-                                <input
-                                    type="text"
-                                    placeholder="Language (e.g. French)"
-                                    className="w-full px-4 py-2 border rounded-lg"
-                                    value={newLanguage.language}
-                                    onChange={e => setNewLanguage({ ...newLanguage, language: e.target.value })}
+                    {/* Experience Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <Building2 className="w-4 h-4" />
+                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Experience</h2>
+                            </div>
+                            {isEditMode && (
+                                <button
+                                    onClick={() => setIsAddExperienceOpen(true)}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                >
+                                    <Plus className="w-3 h-3" />
+                                    Add
+                                </button>
+                            )}
+                        </div>
+                        <div className="space-y-4">
+                            {experiences.map((exp: UIExperience, idx: number) => (
+                                <ExperienceCard
+                                    key={idx}
+                                    {...exp}
+                                    onDelete={async () => {
+                                        if (currentUserId && exp.id) {
+                                            const { error } = await supabase.from("work_experiences").delete().eq("id", exp.id);
+                                            if (error) {
+                                                alert("Failed to delete experience.");
+                                                return;
+                                            }
+                                        }
+                                        setExperiences(experiences.filter((_: UIExperience, i: number) => i !== idx));
+                                    }}
+                                    onEdit={() => {
+                                        setEditingExperience(exp);
+                                        setIsAddExperienceOpen(true);
+                                    }}
+                                    isOwner={isEditMode}
                                 />
-                                <select
-                                    className="w-full px-4 py-2 border rounded-lg"
-                                    value={newLanguage.proficiency}
-                                    onChange={e => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
-                                >
-                                    <option value="Native">Native</option>
-                                    <option value="Fluent">Fluent</option>
-                                    <option value="Intermediate">Intermediate</option>
-                                    <option value="Basic">Basic</option>
-                                </select>
-                                <div className="flex gap-2 mt-4">
-                                    <button
-                                        onClick={() => setIsAddLanguageOpen(false)}
-                                        className="flex-1 py-2 rounded-lg bg-slate-100 font-semibold text-slate-600"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={async () => {
-                                            if (newLanguage.language && currentUserId) {
-                                                try {
-                                                    const langData = {
-                                                        user_id: currentUserId,
-                                                        language: newLanguage.language,
-                                                        proficiency: newLanguage.proficiency,
-                                                    };
+                            ))}
+                        </div>
+                    </div>
 
-                                                    if (editingLanguage) {
-                                                        const { error } = await supabase
-                                                            .from("languages")
-                                                            .update(langData)
-                                                            .eq("id", editingLanguage.id);
-                                                        if (error) throw error;
-
-                                                        const updated = languages.map((l: Language, i: number) => i === editingLanguage.idx ? { ...l, ...langData } : l);
-                                                        setLanguages(updated);
-                                                        alert("Language updated!");
-                                                    } else {
-                                                        const { data, error } = await supabase
-                                                            .from("languages")
-                                                            .insert(langData)
-                                                            .select();
-                                                        if (error) throw error;
-
-                                                        const updated = [...languages, { ...langData, id: data[0].id }];
-                                                        setLanguages(updated);
-                                                        alert("Language added!");
-                                                    }
-
-                                                    setNewLanguage({ language: "", proficiency: "Fluent" });
-                                                    setIsAddLanguageOpen(false);
-                                                    setEditingLanguage(null);
-                                                } catch (error: any) {
-                                                    console.error("Error adding/updating language:", error);
-                                                    alert(`Error saving language: ${error.message || "Unknown error"}`);
-                                                }
-                                            }
-                                        }}
-                                        className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
-                                    >
-                                        {editingLanguage ? "Update" : "Add"}
-                                    </button>
+                    {/* 1. Technical Skills Section */}
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <Layers className="w-4 h-4" />
                                 </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Technical Skills</h2>
+                            </div>
+                            {isEditMode && (
+                                <button
+                                    onClick={() => {
+                                        setAddSkillMode("technical");
+                                        setIsAddSkillOpen(true);
+                                    }}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                >
+                                    <Plus className="w-3 h-3" />
+                                    Add
+                                </button>
+                            )}
+                        </div>
+
+                        {skills.filter(s => !s.isSoftSkill && s.category !== "Soft Skills").length === 0 ? (
+                            <div className="text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
+                                <Layers className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                                <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No technical skills added yet.</p>
+                            </div>
+                        ) : (
+                            <div className="p-4 md:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="space-y-6">
+                                    {(() => {
+                                        const technicalGrouped = skills.filter((s: TalentSkill) => !s.isSoftSkill && s.category !== "Soft Skills").reduce((acc: Record<string, TalentSkill[]>, skill: TalentSkill) => {
+                                            const cat = skill.category || "Other Skills";
+                                            if (!acc[cat]) acc[cat] = [];
+                                            acc[cat].push(skill);
+                                            return acc;
+                                        }, {} as Record<string, TalentSkill[]>);
+
+                                        return Object.entries(technicalGrouped).map(([category, categorySkills], catIdx) => (
+                                            <div key={catIdx} className={catIdx > 0 ? "pt-6 border-t border-slate-50" : ""}>
+                                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                                                    {category}
+                                                </h4>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {categorySkills.map((skill: TalentSkill, idx: number) => {
+                                                        const originalIdx = skills.indexOf(skill);
+                                                        return (
+                                                            <div
+                                                                key={idx}
+                                                                className="group relative flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all font-medium"
+                                                            >
+                                                                <span className="text-sm text-slate-700">{skill.name}</span>
+                                                                {(skill.minYears ?? 0) > 0 && (
+                                                                    <span className="text-[10px] text-blue-600 font-black bg-blue-100/50 px-1.5 rounded tracking-tighter">
+                                                                        {skill.minYears}Y
+                                                                    </span>
+                                                                )}
+                                                                {isEditMode && (
+                                                                    <div>
+                                                                        <ItemActionMenu
+                                                                            onEdit={() => {
+                                                                                setEditingSkill(skill);
+                                                                                setAddSkillMode("technical");
+                                                                                setIsAddSkillOpen(true);
+                                                                            }}
+                                                                            onDelete={async () => {
+                                                                                if (currentUserId && skill.id) {
+                                                                                    await supabase.from("skills").delete().eq("id", skill.id);
+                                                                                } else if (currentUserId) {
+                                                                                    await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                                }
+                                                                                const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
+                                                                                setSkills(updated);
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ));
+                                    })()}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 2. Soft Skills Section */}
+                    <div className="space-y-6">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <MessageSquare className="w-4 h-4" />
+                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Soft Skills</h2>
+                            </div>
+                            {isEditMode && (
+                                <button
+                                    onClick={() => {
+                                        setAddSkillMode("soft");
+                                        setIsAddSkillOpen(true);
+                                    }}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                >
+                                    <Plus className="w-3 h-3" />
+                                    Add
+                                </button>
+                            )}
+                        </div>
+
+                        {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length === 0 ? (
+                            <div className="text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200">
+                                <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                                <p className="text-slate-400 font-bold uppercase tracking-wider text-xs">No soft skills added yet.</p>
+                            </div>
+                        ) : (
+                            <div className="p-4 md:p-6 bg-white rounded-2xl border border-slate-100 shadow-sm hover:border-blue-200 transition-all">
+                                <div className="space-y-3">
+                                    {skills.filter((s: TalentSkill) => s.isSoftSkill || s.category === "Soft Skills")
+                                        .slice(0, isSoftSkillsExpanded ? undefined : 3)
+                                        .map((skill: TalentSkill, idx: number) => {
+                                            const originalIdx = skills.indexOf(skill);
+                                            return (
+                                                <div key={idx} className="group relative flex items-center gap-3 -ml-2 p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                                                    <div className="mt-2 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                                                    <p className="text-sm text-slate-700 leading-relaxed font-medium flex-1">
+                                                        {skill.name}
+                                                    </p>
+                                                    {isEditMode && (
+                                                        <div>
+                                                            <ItemActionMenu
+                                                                onEdit={() => {
+                                                                    setEditingSkill(skill);
+                                                                    setAddSkillMode("soft");
+                                                                    setIsAddSkillOpen(true);
+                                                                }}
+                                                                onDelete={async () => {
+                                                                    if (currentUserId && skill.id) {
+                                                                        await supabase.from("skills").delete().eq("id", skill.id);
+                                                                    } else if (currentUserId) {
+                                                                        await supabase.from("skills").delete().eq("user_id", currentUserId).eq("name", skill.name);
+                                                                    }
+                                                                    const updated = skills.filter((_: TalentSkill, i: number) => i !== originalIdx);
+                                                                    setSkills(updated);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                                {skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length > 3 && (
+                                    <div className="mt-4 pt-4 border-t border-slate-50">
+                                        <button
+                                            onClick={() => setIsSoftSkillsExpanded(!isSoftSkillsExpanded)}
+                                            className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline"
+                                        >
+                                            {isSoftSkillsExpanded ? "Show Less" : `Show ${skills.filter(s => s.isSoftSkill || s.category === "Soft Skills").length - 3} More`}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Languages Section (New) */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                                    <Languages className="w-4 h-4" />
+                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Languages</h2>
+                            </div>
+                            {isEditMode && (
+                                <button
+                                    onClick={() => setIsAddLanguageOpen(true)}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                >
+                                    <Plus className="w-3 h-3" />
+                                    Add
+                                </button>
+                            )}
+                        </div>
+                        <div className="bg-white rounded-xl border-2 border-slate-100 p-4 md:p-6 shadow-sm">
+                            <div className="grid md:grid-cols-3 gap-4">
+                                {languages.map((lang: Language, idx: number) => (
+                                    <div key={idx} className="group relative flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-200 hover:border-blue-200 transition-all">
+                                        <div>
+                                            <p className="font-semibold text-slate-800 text-sm">{lang.language}</p>
+                                            <p className="text-[10px] text-slate-500">{lang.proficiency}</p>
+                                        </div>
+                                        <div>
+                                            {isEditMode && (
+                                                <ItemActionMenu
+                                                    onEdit={() => {
+                                                        setEditingLanguage({ ...lang, idx });
+                                                        setNewLanguage({ language: lang.language, proficiency: lang.proficiency });
+                                                        setIsAddLanguageOpen(true);
+                                                    }}
+                                                    onDelete={async () => {
+                                                        if (currentUserId && lang.id) {
+                                                            await supabase.from("languages").delete().eq("id", lang.id);
+                                                        }
+                                                        const updated = languages.filter((_: Language, i: number) => i !== idx);
+                                                        setLanguages(updated);
+                                                        localStorage.setItem("user_languages_list", JSON.stringify(updated));
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
-                )}
 
-                <AddCredentialModal
-                    isOpen={isAddCredentialOpen.open}
-                    type={isAddCredentialOpen.type}
-                    onClose={() => {
-                        setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
-                        setEditingCredential(null);
-                    }}
-                    initialData={editingCredential}
-                    onAdd={async (newCredential: any) => {
-                        if (!currentUserId) return;
-
-                        // Map UI type to Database Type
-                        let dbType: 'high_school' | 'tertiary' | 'certification' = 'certification';
-                        if (isAddCredentialOpen.type === 'education') {
-                            dbType = newCredential.title.toLowerCase().includes('matric') ? 'high_school' : 'tertiary';
-                        }
-
-                        try {
-                            const qualificationData = {
-                                user_id: currentUserId,
-                                type: dbType,
-                                title: newCredential.title,
-                                institution: newCredential.issuer,
-                                qualification_level: newCredential.qualification_level,
-                                year: parseInt(newCredential.year) || null,
-                                start_date: newCredential.start_date || null,
-                                end_date: newCredential.end_date || null,
-                                document_url: newCredential.document_url || null,
-                                is_verified: newCredential.isVerified || false
-                            };
-
-                            if (newCredential.id) {
-                                const { error } = await supabase
-                                    .from("qualifications")
-                                    .update(qualificationData)
-                                    .eq("id", newCredential.id);
-                                if (error) throw error;
-
-                                if (dbType === 'high_school') {
-                                    setMatricData({ ...newCredential, id: newCredential.id, schoolName: newCredential.issuer, completionYear: parseInt(newCredential.year) });
-                                } else if (isAddCredentialOpen.type === "education") {
-                                    setEducationList(educationList.map((e: UIQualification) => e.id === newCredential.id ? newCredential : e));
-                                } else {
-                                    setCertificationsList(certificationsList.map((c: UIQualification) => c.id === newCredential.id ? newCredential : c));
-                                }
-                                alert("Qualification updated!");
-                            } else {
-                                const { data, error } = await supabase
-                                    .from("qualifications")
-                                    .insert(qualificationData)
-                                    .select();
-
-                                if (error) throw error;
-
-                                const addedCredential = { ...newCredential, id: data[0].id };
-
-                                if (dbType === 'high_school') {
-                                    setMatricData({
-                                        id: data[0].id,
-                                        schoolName: newCredential.issuer,
-                                        completionYear: parseInt(newCredential.year) || new Date().getFullYear(),
-                                    });
-                                } else if (isAddCredentialOpen.type === "education") {
-                                    setEducationList([...educationList, addedCredential]);
-                                } else {
-                                    setCertificationsList([...certificationsList, addedCredential]);
-                                }
-                                alert("Qualification added!");
-                            }
-                        } catch (error: any) {
-                            console.error("Error saving qualification:", error);
-                            alert(`Error saving qualification: ${error.message || "Unknown error"}`);
-                        }
-
-                        setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
-                        setEditingCredential(null);
-                    }}
-                />
-
-                <AddProjectModal
-                    isOpen={isAddProjectOpen}
-                    onClose={() => setIsAddProjectOpen(false)}
-                    onAdd={async (newProject: any) => {
-                        if (!currentUserId) return;
-                        try {
-                            const projectData = {
-                                user_id: currentUserId,
-                                title: newProject.title,
-                                description: newProject.description,
-                                technologies: newProject.technologies,
-                                link: newProject.github_url || newProject.link_url,
-                                image_url: newProject.image_url || null,
-                            };
-
-                            if (newProject.id) {
-                                const { error } = await supabase
-                                    .from("projects")
-                                    .update(projectData)
-                                    .eq("id", newProject.id);
-                                if (error) throw error;
-                                setProjectsList(projectsList.map((p: UIProject) => p.id === newProject.id ? newProject : p));
-                                alert("Project updated!");
-                            } else {
-                                const { data, error } = await supabase
-                                    .from("projects")
-                                    .insert(projectData)
-                                    .select();
-                                if (error) throw error;
-                                setProjectsList([...projectsList, { ...newProject, id: data[0].id }]);
-                                alert("Project added!");
-                            }
-                            setIsAddProjectOpen(false);
-                            setEditingProject(null);
-                        } catch (error) {
-                            console.error("Error adding project:", error);
-                            alert("Failed to add project.");
-                        }
-                    }}
-                    initialData={editingProject}
-                />
-
-                <AddReferenceModal
-                    isOpen={isAddReferenceOpen}
-                    onClose={() => {
-                        setIsAddReferenceOpen(false);
-                        setEditingReference(null);
-                    }}
-                    initialData={editingReference}
-                    onAdd={async (newRef: any) => {
-                        if (!currentUserId) return;
-                        try {
-                            const refData = {
-                                user_id: currentUserId,
-                                name: newRef.name,
-                                relationship: newRef.relationship,
-                                company: newRef.company,
-                                phone: newRef.phone,
-                                email: newRef.email
-                            };
-
-                            if (newRef.id) {
-                                const { error } = await supabase
-                                    .from("references")
-                                    .update(refData)
-                                    .eq("id", newRef.id);
-                                if (error) throw error;
-                                setReferences(references.map((r: Reference) => r.id === newRef.id ? newRef : r));
-                                alert("Reference updated!");
-                            } else {
-                                const { data, error } = await supabase
-                                    .from("references")
-                                    .insert(refData)
-                                    .select();
-                                if (error) throw error;
-                                setReferences([...references, { ...newRef, id: data[0].id }]);
-                                alert("Reference added!");
-                            }
-                            setIsAddReferenceOpen(false);
-                            setEditingReference(null);
-                        } catch (error) {
-                            console.error("Error saving reference:", error);
-                            alert("Failed to save reference.");
-                        }
-                    }}
-                />
-
-                <AddSecondaryEducationModal
-                    isOpen={isAddMatricOpen}
-                    onClose={() => {
-                        setIsAddMatricOpen(false);
-                        setEditingMatric(null);
-                    }}
-                    initialData={editingMatric}
-                    onAdd={async (data) => {
-                        if (!currentUserId) return;
-                        try {
-                            const matricDataPayload = {
-                                user_id: currentUserId,
-                                type: 'high_school',
-                                title: "Matric",
-                                institution: data.schoolName || data.school,
-                                year: data.completionYear || parseInt(data.year) || null,
-                            };
-
-                            if (data.id) {
-                                const { error } = await supabase
-                                    .from("qualifications")
-                                    .update(matricDataPayload)
-                                    .eq("id", data.id);
-                                if (error) throw error;
-                                setMatricData(data);
-                                alert("Matric data updated!");
-                            } else {
-                                const { data: dbData, error } = await supabase
-                                    .from("qualifications")
-                                    .insert(matricDataPayload)
-                                    .select();
-                                if (error) throw error;
-                                setMatricData({ ...data, id: dbData[0].id });
-                                alert("Matric data saved!");
-                            }
-                            setIsAddMatricOpen(false);
-                            setEditingMatric(null);
-                        } catch (error) {
-                            console.error("Error saving matric data:", error);
-                            alert("Failed to save matric data.");
-                        }
-                    }}
-                />
-
-                <AddExperienceModal
-                    isOpen={isAddExperienceOpen}
-                    initialData={editingExperience}
-                    onClose={() => {
-                        setIsAddExperienceOpen(false);
-                        setEditingExperience(null);
-                    }}
-                    onAdd={async (newExp: any) => {
-                        if (!currentUserId) return;
-                        try {
-                            const experienceData = {
-                                user_id: currentUserId,
-                                company: newExp.company,
-                                position: newExp.role,
-                                description: newExp.description,
-                                start_date: newExp.start_date,
-                                end_date: newExp.end_date,
-                                is_current: newExp.is_current,
-                            };
-
-                            if (newExp.id) {
-                                // Update existing
-                                const { error } = await supabase
-                                    .from("work_experiences")
-                                    .update(experienceData)
-                                    .eq("id", newExp.id);
-                                if (error) throw error;
-
-                                setExperiences(experiences.map((e: UIExperience) => e.id === newExp.id ? newExp : e));
-                                alert("Experience updated!");
-                            } else {
-                                // Insert new
-                                const { data, error } = await supabase
-                                    .from("work_experiences")
-                                    .insert(experienceData)
-                                    .select();
-                                if (error) throw error;
-
-                                setExperiences([...experiences, { ...newExp, id: data[0].id }]);
-                                alert("Experience added!");
-                            }
-
-                            setIsAddExperienceOpen(false);
-                            setEditingExperience(null);
-                        } catch (error: any) {
-                            console.error("Error saving experience:", JSON.stringify(error, null, 2));
-                            alert(`Failed to save experience: ${error.message || 'Check console for details'}`);
-                        }
-                    }}
-                />
-
-                {/* Settings Menu Button - Bottom Right */}
-                <div className="fixed bottom-8 right-8 z-40">
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                            className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all hover:shadow-xl"
-                            title="Settings"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                        </button>
-
-                        {/* Dropdown Menu */}
-                        {isSettingsOpen && (
-                            <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+                    {/* Education Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <GraduationCap className="w-4 h-4" />
+                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Tertiary Education</h2>
+                            </div>
+                            {isEditMode && (
                                 <button
-                                    onClick={() => {
-                                        setIsSettingsOpen(false);
-                                        setIsEditing(true);
-                                    }}
-                                    className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                    onClick={() => setIsAddCredentialOpen({ open: true, type: "education" })}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
                                 >
-                                    <Edit2 className="w-4 h-4" />
-                                    Edit Profile
+                                    <Plus className="w-3 h-3" />
+                                    Add
                                 </button>
-                                <div className="border-t border-slate-100"></div>
+                            )}
+                        </div>
+                        <div className="space-y-4">
+                            {educationList.map((edu: UIQualification, idx: number) => (
+                                <CredentialCard
+                                    key={idx}
+                                    type="education"
+                                    title={edu.title}
+                                    issuer={edu.issuer}
+                                    date={edu.date}
+                                    qualification_level={edu.qualification_level || undefined}
+                                    document_url={edu.document_url || undefined}
+                                    viewerRole="owner"
+                                    onDelete={async () => {
+                                        if (currentUserId && edu.id) {
+                                            const { error } = await supabase.from("qualifications").delete().eq("id", edu.id);
+                                            if (error) {
+                                                alert("Failed to delete education.");
+                                                return;
+                                            }
+                                        }
+                                        const updated = educationList.filter((_: UIQualification, i: number) => i !== idx);
+                                        setEducationList(updated);
+                                        // Save combined credentials to localStorage
+                                        const allCredentials = [...updated.map((e: UIQualification) => ({ ...e, type: 'education' })), ...certificationsList.map((c: UIQualification) => ({ ...c, type: 'certification' }))];
+                                        localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+                                    }}
+                                    onEdit={() => {
+                                        setEditingCredential(edu);
+                                        setIsAddCredentialOpen({ open: true, type: "education" });
+                                    }}
+                                    isOwner={isEditMode}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Matric Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <School className="w-4 h-4" />
+                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Matric</h2>
+                            </div>
+                            {isEditMode && !matricData && (
                                 <button
-                                    onClick={() => {
-                                        setIsSettingsOpen(false);
-                                        handleLogout();
-                                    }}
-                                    className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                                    onClick={() => setIsAddMatricOpen(true)}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
                                 >
-                                    <LogOut className="w-4 h-4" />
-                                    Logout
+                                    <Plus className="w-3 h-3" />
+                                    Add
                                 </button>
+                            )}
+                        </div>
+                        {matricData ? (
+                            <SecondaryEducationCard
+                                {...matricData}
+                                onDelete={async () => {
+                                    if (currentUserId && matricData.id) {
+                                        const { error } = await supabase.from("qualifications").delete().eq("id", matricData.id);
+                                        if (error) {
+                                            alert("Failed to delete matric data.");
+                                            return;
+                                        }
+                                    }
+                                    setMatricData(null);
+                                    localStorage.removeItem("user_matric_data");
+                                }}
+                                onEdit={() => {
+                                    setEditingMatric(matricData);
+                                    setIsAddMatricOpen(true);
+                                }}
+                                isOwner={isEditMode}
+                            />
+                        ) : (
+                            <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-xl">
+                                <p className="text-slate-400 text-sm italic">High school details are important for graduate programs. Add yours now.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Certifications Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <Award className="w-4 h-4" />
+                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Certifications</h2>
+                            </div>
+                            {isEditMode && (
+                                <button
+                                    onClick={() => setIsAddCredentialOpen({ open: true, type: "certification" })}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                >
+                                    <Plus className="w-3 h-3" />
+                                    Add
+                                </button>
+                            )}
+                        </div>
+                        <div className="space-y-4">
+                            {certificationsList.map((cert: UIQualification, idx: number) => (
+                                <CredentialCard
+                                    key={idx}
+                                    type="certification"
+                                    title={cert.title}
+                                    issuer={cert.issuer}
+                                    date={cert.date}
+                                    document_url={cert.document_url || undefined}
+                                    viewerRole="owner"
+                                    onDelete={async () => {
+                                        if (currentUserId && cert.id) {
+                                            const { error } = await supabase.from("qualifications").delete().eq("id", cert.id);
+                                            if (error) {
+                                                alert("Failed to delete certification.");
+                                                return;
+                                            }
+                                        }
+                                        const updated = certificationsList.filter((_: UIQualification, i: number) => i !== idx);
+                                        setCertificationsList(updated);
+                                        // Save combined credentials to localStorage
+                                        const allCredentials = [...educationList.map((e: UIQualification) => ({ ...e, type: 'education' })), ...updated.map((c: UIQualification) => ({ ...c, type: 'certification' }))];
+                                        localStorage.setItem("user_credentials_list", JSON.stringify(allCredentials));
+                                    }}
+                                    onEdit={() => {
+                                        setEditingCredential(cert);
+                                        setIsAddCredentialOpen({ open: true, type: "certification" });
+                                    }}
+                                    isOwner={isEditMode}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* References Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 md:gap-0">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                    <User className="w-4 h-4" />
+                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-tight">Professional References</h2>
+                            </div>
+                            {isEditMode && (
+                                <button
+                                    onClick={() => setIsAddReferenceOpen(true)}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-widest"
+                                >
+                                    <Plus className="w-3 h-3" />
+                                    Add
+                                </button>
+                            )}
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                            {references.map((ref: Reference, idx: number) => (
+                                <ReferenceCard
+                                    key={idx}
+                                    {...ref}
+                                    onDelete={async () => {
+                                        if (currentUserId && ref.id) {
+                                            const { error } = await supabase.from("references").delete().eq("id", ref.id);
+                                            if (error) {
+                                                alert("Failed to delete reference.");
+                                                return;
+                                            }
+                                        }
+                                        const updated = references.filter((_: Reference, i: number) => i !== idx);
+                                        setReferences(updated);
+                                        localStorage.setItem("user_references_list", JSON.stringify(updated));
+                                    }}
+                                    onEdit={() => {
+                                        setEditingReference(ref);
+                                        setIsAddReferenceOpen(true);
+                                    }}
+                                    isOwner={isEditMode}
+                                />
+                            ))}
+                        </div>
+                        {references.length === 0 && (
+                            <div className="p-8 text-center bg-white border border-dashed border-slate-200 rounded-xl">
+                                <p className="text-slate-400 text-sm italic">Recruiters often require 2-3 references. Add them here.</p>
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-        </main >
+
+            {/* Modals */}
+            <EditProfileModal
+                isOpen={isEditing}
+                onClose={() => setIsEditing(false)}
+                onSave={handleSaveProfile}
+                initialData={user}
+            />
+            <AddSkillModal
+                isOpen={isAddSkillOpen}
+                initialMode={addSkillMode}
+                onClose={() => {
+                    setIsAddSkillOpen(false);
+                    setEditingSkill(null);
+                }}
+                initialData={editingSkill || undefined}
+                onAdd={async (newSkills: any[]) => {
+                    if (!currentUserId) return;
+                    try {
+                        if (editingSkill && newSkills.length > 0) {
+                            // Update existing
+                            const s = newSkills[0];
+                            const { error } = await supabase
+                                .from("skills")
+                                .update({
+                                    name: s.name,
+                                    min_experience_years: s.minYears || 0,
+                                    category: s.category || (s.isSoftSkill ? "Soft Skills" : "Other Skills"),
+                                    is_soft_skill: s.isSoftSkill || false
+                                })
+                                .eq("id", editingSkill.id);
+
+                            if (error) throw error;
+
+                            setSkills(skills.map((skill: TalentSkill) => skill.id === editingSkill.id ? { ...s, id: editingSkill.id } : skill));
+                            alert("Skill updated!");
+                        } else {
+                            // Insert new
+                            const insertData = newSkills.map((s: TalentSkill) => ({
+                                user_id: currentUserId,
+                                name: s.name,
+                                min_experience_years: s.minYears || 0,
+                                category: s.category || "Other Skills",
+                                is_soft_skill: s.isSoftSkill || false
+                            }));
+
+                            const { data, error } = await supabase
+                                .from("skills")
+                                .insert(insertData)
+                                .select();
+
+                            if (error) throw error;
+
+                            const formattedNewSkills = (data || []).map((s: any) => ({
+                                id: s.id,
+                                name: s.name,
+                                minYears: s.min_experience_years || 0,
+                                category: s.category || (s.is_soft_skill ? "Soft Skills" : "Other Skills"),
+                                isSoftSkill: s.is_soft_skill || false
+                            }));
+
+                            setSkills([...skills, ...formattedNewSkills]);
+                            alert(`${newSkills.length > 1 ? newSkills.length + " skills" : "Skill"} added successfully!`);
+                        }
+                        setIsAddSkillOpen(false);
+                        setEditingSkill(null);
+                    } catch (error: any) {
+                        console.error("Error saving skills:", error);
+                        alert(`Failed to save skills. ${error.message}`);
+                    }
+                }}
+            />
+            <EditSummaryModal
+                isOpen={isEditSummaryOpen}
+                initialSummary={user.summary}
+                onClose={() => setIsEditSummaryOpen(false)}
+                onSave={async (newSummary: string) => {
+                    if (!currentUserId) return;
+
+                    try {
+                        const { error } = await supabase
+                            .from("profiles")
+                            .update({ summary: newSummary })
+                            .eq("id", currentUserId);
+
+                        if (error) throw error;
+
+                        setUser(prev => ({ ...prev, summary: newSummary }));
+                        alert("Summary updated!");
+                    } catch (error: any) {
+                        console.error("Error saving summary:", error);
+                        alert(`Error saving summary: ${error.message || "Unknown error"}`);
+                    }
+                }}
+            />
+            {/* Simple Inline Language Modal (For speed) */}
+            {isAddLanguageOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl w-full max-sm p-6 shadow-xl animate-in fade-in zoom-in">
+                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                            <Languages className="w-5 h-5 text-blue-600" /> Add Language
+                        </h3>
+                        <div className="space-y-3">
+                            <input
+                                type="text"
+                                placeholder="Language (e.g. French)"
+                                className="w-full px-4 py-2 border rounded-lg"
+                                value={newLanguage.language}
+                                onChange={e => setNewLanguage({ ...newLanguage, language: e.target.value })}
+                            />
+                            <select
+                                className="w-full px-4 py-2 border rounded-lg"
+                                value={newLanguage.proficiency}
+                                onChange={e => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
+                            >
+                                <option value="Native">Native</option>
+                                <option value="Fluent">Fluent</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Basic">Basic</option>
+                            </select>
+                            <div className="flex gap-2 mt-4">
+                                <button
+                                    onClick={() => setIsAddLanguageOpen(false)}
+                                    className="flex-1 py-2 rounded-lg bg-slate-100 font-semibold text-slate-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={async () => {
+                                        if (newLanguage.language && currentUserId) {
+                                            try {
+                                                const langData = {
+                                                    user_id: currentUserId,
+                                                    language: newLanguage.language,
+                                                    proficiency: newLanguage.proficiency,
+                                                };
+
+                                                if (editingLanguage) {
+                                                    const { error } = await supabase
+                                                        .from("languages")
+                                                        .update(langData)
+                                                        .eq("id", editingLanguage.id);
+                                                    if (error) throw error;
+
+                                                    const updated = languages.map((l: Language, i: number) => i === editingLanguage.idx ? { ...l, ...langData } : l);
+                                                    setLanguages(updated);
+                                                    alert("Language updated!");
+                                                } else {
+                                                    const { data, error } = await supabase
+                                                        .from("languages")
+                                                        .insert(langData)
+                                                        .select();
+                                                    if (error) throw error;
+
+                                                    const updated = [...languages, { ...langData, id: data[0].id }];
+                                                    setLanguages(updated);
+                                                    alert("Language added!");
+                                                }
+
+                                                setNewLanguage({ language: "", proficiency: "Fluent" });
+                                                setIsAddLanguageOpen(false);
+                                                setEditingLanguage(null);
+                                            } catch (error: any) {
+                                                console.error("Error adding/updating language:", error);
+                                                alert(`Error saving language: ${error.message || "Unknown error"}`);
+                                            }
+                                        }
+                                    }}
+                                    className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
+                                >
+                                    {editingLanguage ? "Update" : "Add"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <AddCredentialModal
+                isOpen={isAddCredentialOpen.open}
+                type={isAddCredentialOpen.type}
+                onClose={() => {
+                    setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
+                    setEditingCredential(null);
+                }}
+                initialData={editingCredential}
+                onAdd={async (newCredential: any) => {
+                    if (!currentUserId) return;
+
+                    // Map UI type to Database Type
+                    let dbType: 'high_school' | 'tertiary' | 'certification' = 'certification';
+                    if (isAddCredentialOpen.type === 'education') {
+                        dbType = newCredential.title.toLowerCase().includes('matric') ? 'high_school' : 'tertiary';
+                    }
+
+                    try {
+                        const qualificationData = {
+                            user_id: currentUserId,
+                            type: dbType,
+                            title: newCredential.title,
+                            institution: newCredential.issuer,
+                            qualification_level: newCredential.qualification_level,
+                            year: parseInt(newCredential.year) || null,
+                            start_date: newCredential.start_date || null,
+                            end_date: newCredential.end_date || null,
+                            document_url: newCredential.document_url || null,
+                            is_verified: newCredential.isVerified || false
+                        };
+
+                        if (newCredential.id) {
+                            const { error } = await supabase
+                                .from("qualifications")
+                                .update(qualificationData)
+                                .eq("id", newCredential.id);
+                            if (error) throw error;
+
+                            if (dbType === 'high_school') {
+                                setMatricData({ ...newCredential, id: newCredential.id, schoolName: newCredential.issuer, completionYear: parseInt(newCredential.year) });
+                            } else if (isAddCredentialOpen.type === "education") {
+                                setEducationList(educationList.map((e: UIQualification) => e.id === newCredential.id ? newCredential : e));
+                            } else {
+                                setCertificationsList(certificationsList.map((c: UIQualification) => c.id === newCredential.id ? newCredential : c));
+                            }
+                            alert("Qualification updated!");
+                        } else {
+                            const { data, error } = await supabase
+                                .from("qualifications")
+                                .insert(qualificationData)
+                                .select();
+
+                            if (error) throw error;
+
+                            const addedCredential = { ...newCredential, id: data[0].id };
+
+                            if (dbType === 'high_school') {
+                                setMatricData({
+                                    id: data[0].id,
+                                    schoolName: newCredential.issuer,
+                                    completionYear: parseInt(newCredential.year) || new Date().getFullYear(),
+                                });
+                            } else if (isAddCredentialOpen.type === "education") {
+                                setEducationList([...educationList, addedCredential]);
+                            } else {
+                                setCertificationsList([...certificationsList, addedCredential]);
+                            }
+                            alert("Qualification added!");
+                        }
+                    } catch (error: any) {
+                        console.error("Error saving qualification:", error);
+                        alert(`Error saving qualification: ${error.message || "Unknown error"}`);
+                    }
+
+                    setIsAddCredentialOpen({ ...isAddCredentialOpen, open: false });
+                    setEditingCredential(null);
+                }}
+            />
+
+            <AddProjectModal
+                isOpen={isAddProjectOpen}
+                onClose={() => setIsAddProjectOpen(false)}
+                onAdd={async (newProject: any) => {
+                    if (!currentUserId) return;
+                    try {
+                        const projectData = {
+                            user_id: currentUserId,
+                            title: newProject.title,
+                            description: newProject.description,
+                            technologies: newProject.technologies,
+                            link: newProject.github_url || newProject.link_url,
+                            image_url: newProject.image_url || null,
+                        };
+
+                        if (newProject.id) {
+                            const { error } = await supabase
+                                .from("projects")
+                                .update(projectData)
+                                .eq("id", newProject.id);
+                            if (error) throw error;
+                            setProjectsList(projectsList.map((p: UIProject) => p.id === newProject.id ? newProject : p));
+                            alert("Project updated!");
+                        } else {
+                            const { data, error } = await supabase
+                                .from("projects")
+                                .insert(projectData)
+                                .select();
+                            if (error) throw error;
+                            setProjectsList([...projectsList, { ...newProject, id: data[0].id }]);
+                            alert("Project added!");
+                        }
+                        setIsAddProjectOpen(false);
+                        setEditingProject(null);
+                    } catch (error) {
+                        console.error("Error adding project:", error);
+                        alert("Failed to add project.");
+                    }
+                }}
+                initialData={editingProject}
+            />
+
+            <AddReferenceModal
+                isOpen={isAddReferenceOpen}
+                onClose={() => {
+                    setIsAddReferenceOpen(false);
+                    setEditingReference(null);
+                }}
+                initialData={editingReference}
+                onAdd={async (newRef: any) => {
+                    if (!currentUserId) return;
+                    try {
+                        const refData = {
+                            user_id: currentUserId,
+                            name: newRef.name,
+                            relationship: newRef.relationship,
+                            company: newRef.company,
+                            phone: newRef.phone,
+                            email: newRef.email
+                        };
+
+                        if (newRef.id) {
+                            const { error } = await supabase
+                                .from("references")
+                                .update(refData)
+                                .eq("id", newRef.id);
+                            if (error) throw error;
+                            setReferences(references.map((r: Reference) => r.id === newRef.id ? newRef : r));
+                            alert("Reference updated!");
+                        } else {
+                            const { data, error } = await supabase
+                                .from("references")
+                                .insert(refData)
+                                .select();
+                            if (error) throw error;
+                            setReferences([...references, { ...newRef, id: data[0].id }]);
+                            alert("Reference added!");
+                        }
+                        setIsAddReferenceOpen(false);
+                        setEditingReference(null);
+                    } catch (error) {
+                        console.error("Error saving reference:", error);
+                        alert("Failed to save reference.");
+                    }
+                }}
+            />
+
+            <AddSecondaryEducationModal
+                isOpen={isAddMatricOpen}
+                onClose={() => {
+                    setIsAddMatricOpen(false);
+                    setEditingMatric(null);
+                }}
+                initialData={editingMatric}
+                onAdd={async (data) => {
+                    if (!currentUserId) return;
+                    try {
+                        const matricDataPayload = {
+                            user_id: currentUserId,
+                            type: 'high_school',
+                            title: "Matric",
+                            institution: data.schoolName || data.school,
+                            year: data.completionYear || parseInt(data.year) || null,
+                        };
+
+                        if (data.id) {
+                            const { error } = await supabase
+                                .from("qualifications")
+                                .update(matricDataPayload)
+                                .eq("id", data.id);
+                            if (error) throw error;
+                            setMatricData(data);
+                            alert("Matric data updated!");
+                        } else {
+                            const { data: dbData, error } = await supabase
+                                .from("qualifications")
+                                .insert(matricDataPayload)
+                                .select();
+                            if (error) throw error;
+                            setMatricData({ ...data, id: dbData[0].id });
+                            alert("Matric data saved!");
+                        }
+                        setIsAddMatricOpen(false);
+                        setEditingMatric(null);
+                    } catch (error) {
+                        console.error("Error saving matric data:", error);
+                        alert("Failed to save matric data.");
+                    }
+                }}
+            />
+
+            <AddExperienceModal
+                isOpen={isAddExperienceOpen}
+                initialData={editingExperience}
+                onClose={() => {
+                    setIsAddExperienceOpen(false);
+                    setEditingExperience(null);
+                }}
+                onAdd={async (newExp: any) => {
+                    if (!currentUserId) return;
+                    try {
+                        const experienceData = {
+                            user_id: currentUserId,
+                            company: newExp.company,
+                            position: newExp.role,
+                            description: newExp.description,
+                            start_date: newExp.start_date,
+                            end_date: newExp.end_date,
+                            is_current: newExp.is_current,
+                        };
+
+                        if (newExp.id) {
+                            // Update existing
+                            const { error } = await supabase
+                                .from("work_experiences")
+                                .update(experienceData)
+                                .eq("id", newExp.id);
+                            if (error) throw error;
+
+                            setExperiences(experiences.map((e: UIExperience) => e.id === newExp.id ? newExp : e));
+                            alert("Experience updated!");
+                        } else {
+                            // Insert new
+                            const { data, error } = await supabase
+                                .from("work_experiences")
+                                .insert(experienceData)
+                                .select();
+                            if (error) throw error;
+
+                            setExperiences([...experiences, { ...newExp, id: data[0].id }]);
+                            alert("Experience added!");
+                        }
+
+                        setIsAddExperienceOpen(false);
+                        setEditingExperience(null);
+                    } catch (error: any) {
+                        console.error("Error saving experience:", JSON.stringify(error, null, 2));
+                        alert(`Failed to save experience: ${error.message || 'Check console for details'}`);
+                    }
+                }}
+            />
+
+            {/* Settings Menu Button - Bottom Right */}
+            <div className="fixed bottom-8 right-8 z-40">
+                <div className="relative">
+                    <button
+                        onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                        className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all hover:shadow-xl"
+                        title="Settings"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isSettingsOpen && (
+                        <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
+                            <button
+                                onClick={() => {
+                                    setIsSettingsOpen(false);
+                                    setIsEditing(true);
+                                }}
+                                className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                            >
+                                <Edit2 className="w-4 h-4" />
+                                Edit Profile
+                            </button>
+                            <div className="border-t border-slate-100"></div>
+                            <button
+                                onClick={() => {
+                                    setIsSettingsOpen(false);
+                                    handleLogout();
+                                }}
+                                className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }

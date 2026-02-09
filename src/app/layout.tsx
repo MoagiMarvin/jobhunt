@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Tailor your CV for any job in seconds.",
 };
 
+import Sidebar from "@/components/Sidebar";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,9 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
-        <Navbar />
-        {children}
+      <body className={`${inter.className} antialiased bg-slate-50/50 flex`}>
+        <Sidebar />
+        <main className="flex-1 min-h-screen overflow-y-auto">
+          {children}
+        </main>
       </body>
     </html>
   );

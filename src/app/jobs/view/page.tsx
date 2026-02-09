@@ -51,26 +51,24 @@ function JobViewContent() {
     if (!jobUrl) return <div className="p-10 text-center">Invalid Job Link</div>;
 
     return (
-        <main className="min-h-screen bg-slate-50 pb-20">
-            {/* Header / Nav */}
-            <div className="bg-white border-b border-slate-200 sticky top-0 z-50">
-                <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="p-4 sm:p-8 max-w-6xl mx-auto">
+            {/* Action Bar */}
+            <div className="flex items-center justify-between mb-8">
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-bold text-xs uppercase tracking-widest transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back
+                </button>
+                <div className="flex gap-2">
                     <button
-                        onClick={() => router.back()}
-                        className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-medium text-sm px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors"
+                        onClick={() => router.push(`/generate?link=${encodeURIComponent(jobUrl || '')}`)}
+                        className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-black transition-all flex items-center gap-2 shadow-sm"
                     >
-                        <ArrowLeft className="w-4 h-4" />
-                        Back to Search
+                        <Briefcase className="w-3.5 h-3.5" />
+                        Tailor My CV
                     </button>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => router.push(`/generate?link=${encodeURIComponent(jobUrl)}`)}
-                            className="bg-slate-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-black transition-all flex items-center gap-2"
-                        >
-                            <Briefcase className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">Tailor CV</span>
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -116,7 +114,7 @@ function JobViewContent() {
                                 </div>
                                 <br />
                                 <a
-                                    href={jobUrl}
+                                    href={jobUrl || undefined}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors"
@@ -143,7 +141,7 @@ function JobViewContent() {
 
                             <div className="space-y-3">
                                 <button
-                                    onClick={() => router.push(`/generate?link=${encodeURIComponent(jobUrl)}`)}
+                                    onClick={() => router.push(`/generate?link=${encodeURIComponent(jobUrl || '')}`)}
                                     className="w-full bg-white text-slate-900 py-3.5 rounded-xl font-bold text-sm hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Briefcase className="w-4 h-4" />
@@ -151,7 +149,7 @@ function JobViewContent() {
                                 </button>
 
                                 <button
-                                    onClick={() => router.push(`/interview/practice?title=${encodeURIComponent(jobTitle)}&link=${encodeURIComponent(jobUrl)}`)}
+                                    onClick={() => router.push(`/interview/practice?title=${encodeURIComponent(jobTitle || '')}&link=${encodeURIComponent(jobUrl || '')}`)}
                                     className="w-full bg-slate-800 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition-all flex items-center justify-center gap-2 border border-slate-700"
                                 >
                                     <Mic className="w-4 h-4" />
@@ -173,7 +171,7 @@ function JobViewContent() {
                             )}
 
                             <a
-                                href={directUrl || jobUrl}
+                                href={directUrl || jobUrl || undefined}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${directUrl ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-100' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100'}`}
@@ -186,7 +184,7 @@ function JobViewContent() {
                 </div>
 
             </div>
-        </main>
+        </div>
     );
 }
 
