@@ -152,32 +152,6 @@ export default function SearchPage() {
                 </form>
 
                 {/* Loading Status Bar */}
-                {/* Tech Categories */}
-                <div className="flex flex-wrap gap-2 mb-8">
-                    {[
-                        { id: "all", label: "Everything Tech", icon: Briefcase },
-                        { id: "tester", label: "Software Testers", icon: Check },
-                        { id: "technician", label: "IT Technicians", icon: MapPin },
-                        { id: "consultant", label: "Tech Consultants", icon: Search },
-                    ].map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => {
-                                setCategory(cat.id);
-                                sessionStorage.setItem('job_search_category', cat.id);
-                            }}
-                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 border-2 ${category === cat.id
-                                ? "bg-blue-600 text-white border-blue-600 shadow-lg"
-                                : "bg-white text-slate-600 border-slate-100 hover:border-blue-200"
-                                }`}
-                        >
-                            <cat.icon className="w-3.5 h-3.5" />
-                            {cat.label}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Loading Status Bar */}
                 {hasSearched && loadingSources.length > 0 && (
                     <div className="mb-6 flex flex-wrap gap-2 items-center">
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Scanning:</span>
@@ -291,11 +265,6 @@ export default function SearchPage() {
                                 </div>
                                 <div className="grid gap-4 mb-12">
                                     {jobs
-                                        .filter(job => {
-                                            if (category === "all") return true;
-                                            const title = job.title.toLowerCase();
-                                            return title.includes(category);
-                                        })
                                         .filter(job => {
                                             const locationMatch = locationFilter === 'all' ||
                                                 job.location?.toLowerCase().includes(locationFilter.toLowerCase());
