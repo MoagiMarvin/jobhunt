@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (source) {
         let jobs: any[] = [];
         try {
-            console.log(`[SEARCH] Targeting single source: ${source}`);
+            // 1. Fetch PRIMARY Sources (Direct Tech)
             switch (source.toLowerCase()) {
                 case 'pnet': jobs = await scrapePNet(query); break;
                 case 'linkedin': jobs = await scrapeLinkedIn(query); break;
@@ -27,6 +27,9 @@ export async function GET(request: NextRequest) {
                 case 'indeed': jobs = await scrapeAdzuna(query); break;
                 case 'standardbank': jobs = await scrapeStandardBank(query); break;
                 case 'fnb': jobs = await scrapeFNB(query); break;
+                case 'absa': jobs = await scrapeAbsa(query); break;
+                case 'discovery': jobs = await scrapeDiscovery(query); break;
+                case 'capitec': jobs = await scrapeCapitec(query); break;
             }
             console.log(`[SEARCH] Source ${source} returned ${jobs.length} jobs`);
         } catch (e) {
@@ -43,7 +46,10 @@ export async function GET(request: NextRequest) {
         scrapeVodacom(query).catch(e => { console.error("[VODA] Fail:", e.message); return []; }),
         scrapeMTN(query).catch(e => { console.error("[MTN] Fail:", e.message); return []; }),
         scrapeStandardBank(query).catch(e => { console.error("[SB] Fail:", e.message); return []; }),
-        scrapeFNB(query).catch(e => { console.error("[FNB] Fail:", e.message); return []; })
+        scrapeFNB(query).catch(e => { console.error("[FNB] Fail:", e.message); return []; }),
+        scrapeAbsa(query).catch(e => { console.error("[ABSA] Fail:", e.message); return []; }),
+        scrapeDiscovery(query).catch(e => { console.error("[DISC] Fail:", e.message); return []; }),
+        scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; })
     ]);
 
     let allJobs = results.flat();
@@ -95,14 +101,45 @@ function isRelevant(title: string, company: string, query: string): boolean {
 
     // 1. Tech Mandatory Keywords
     const techKeywords = [
-        'software', 'developer', 'engineer', 'technician', 'it support',
-        'data', 'cyber', 'network', 'cloud', 'sap', 'oracle', 'pc',
-        'computer', 'hardware', 'voip', 'telecom', 'systems', 'infrastructure',
-        'tester', 'qa', 'analyst', 'security'
+        // Core Tech
+        'software', 'developer', 'engineer', 'technician', 'architect', 'consultant',
+        'programmer', 'coding', 'scripting', 'application', 'platform', 'integration',
+
+        // Infrastructure & Support
+        'support', 'network', 'systems', 'infrastructure', 'server', 'admin', 'administrator',
+        'desktop', 'helpdesk', 'service desk', 'computer', 'pc', 'hardware',
+        'telecom', 'voip', 'wireless', 'connectivity',
+
+        // Data & Analytics
+        'data', 'analyst', 'analytics', 'bi', 'business intelligence', 'science', 'scientist',
+        'sql', 'database', 'warehouse', 'etl', 'reporting', 'modeling',
+
+        // Cyber & Security
+        'cyber', 'security', 'infosec', 'risk', 'compliance', 'audit', 'penetration',
+
+        // Cloud & DevOps
+        'cloud', 'aws', 'azure', 'gcp', 'devops', 'sre', 'site reliability', 'automation',
+        'docker', 'kubernetes', 'linux', 'unix', 'windows',
+
+        // Product & Design
+        'product', 'owner', 'manager', 'scrum', 'agile', 'kanban', 'design', 'ui', 'ux',
+        'interface', 'experience', 'graphic', 'digital',
+
+        // Enterprise Systems
+        'sap', 'oracle', 'erp', 'crm', 'salesforce', 'dynamics', 'sage',
+
+        // Modern Tech
+        'ai', 'artificial intelligence', 'ml', 'machine learning', 'robotics', 'iot',
+        'blockchain', 'crypto', 'fintech', 'mobile', 'android', 'ios', 'web',
+        'frontend', 'backend', 'fullstack',
+
+        // Academic & Graduate
+        'technology', 'ict', 'computer science', 'information systems', 'stem',
+        'informatics', 'information technology', 'engineering'
     ];
 
     // 2. Tech Companies (Priority)
-    const techCompanies = ['vodacom', 'mtn', 'telkom', 'dimension data', 'eoh', 'liquid', 'altron', 'standard bank', 'fnb', 'nedbank'];
+    const techCompanies = ['vodacom', 'mtn', 'telkom', 'dimension data', 'eoh', 'liquid', 'altron', 'standard bank', 'fnb', 'nedbank', 'absa', 'discovery', 'capitec'];
 
     // 3. Technical Consultant Check
     const isTechConsultant = titleLower.includes('consultant') &&
@@ -401,17 +438,17 @@ async function scrapeVodacom(query: string) {
     }
 }
 
-async function scrapeMTN(query: string) {
+// --- UNIVERSAL WORKDAY SCRAPER ---
+async function scrapeWorkday(tenant: string, companyName: string, query: string) {
     try {
-        const url = `https://mtn.wd3.myworkdayjobs.com/wday/cxs/mtn_careers/jobs`;
+        const url = `https://${tenant}.wd3.myworkdayjobs.com/wday/cxs/${tenant}/${companyName}/jobs`;
         const res = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
-                'Accept-Language': 'en-US',
-                'Origin': 'https://mtn.wd3.myworkdayjobs.com',
-                'Referer': `https://mtn.wd3.myworkdayjobs.com/mtn_careers`,
+                'Origin': `https://${tenant}.wd3.myworkdayjobs.com`,
+                // 'Referer': `https://${tenant}.wd3.myworkdayjobs.com/${companyName}`, // Often not strictly needed but good practice
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0'
             },
             body: JSON.stringify({ appliedFacets: {}, limit: 20, offset: 0, searchText: query }),
@@ -419,130 +456,67 @@ async function scrapeMTN(query: string) {
         });
 
         if (!res.ok) {
-            console.error(`[MTN] API Error: ${res.status}`);
-            return scrapeLinkedIn("MTN South Africa").then(js => js.map(j => ({ ...j, company: "MTN", source: 'MTN (via LinkedIn)' })));
+            console.error(`[${companyName.toUpperCase()}] API Error: ${res.status}`);
+            return scrapeLinkedIn(`${companyName} South Africa ${query}`).then(js => js.map(j => ({ ...j, company: companyName, source: `${companyName} (via LinkedIn)` })));
         }
 
         const data = await res.json();
         const jobs: any[] = [];
         (data.jobPostings || []).forEach((p: any, i: number) => {
             const title = p.title;
-            const company = "MTN";
-            const link = `https://mtn.wd3.myworkdayjobs.com/mtn_careers${p.externalPath}`;
-            if (title && isRelevant(title, company, query)) {
+            const link = `https://${tenant}.wd3.myworkdayjobs.com/${companyName}${p.externalPath}`;
+
+            if (title && isRelevant(title, companyName, query)) {
                 jobs.push({
-                    id: `mtn-${Date.now()}-${i}`,
+                    id: `${companyName.substring(0, 3).toLowerCase()}-${Date.now()}-${i}`,
                     title,
-                    company: "MTN",
+                    company: companyName,
                     location: p.locationsText || "South Africa",
                     link,
-                    source: 'MTN Career Site',
-                    isNiche: true
+                    source: `${companyName} Careers`,
+                    isNiche: true,
+                    // Workday sometimes provides a logo in the metadata, but usually not in this endpoint.
+                    // We rely on the JobCard fallback or we could hardcode logos if we wanted.
                 });
             }
         });
 
         if (jobs.length === 0) {
-            console.log(`[MTN] No direct jobs. Falling back...`);
-            const fallback = await scrapeLinkedIn("MTN South Africa");
-            return fallback.map(j => ({ ...j, company: "MTN", source: 'MTN (Backup)' }));
+            console.log(`[${companyName.toUpperCase()}] No direct jobs. Falling back...`);
+            const fallback = await scrapeLinkedIn(`${companyName} South Africa ${query}`);
+            return fallback.map(j => ({ ...j, company: companyName, source: `${companyName} (Backup)` }));
         }
 
         return jobs;
     } catch (e) {
-        return scrapeLinkedIn("MTN South Africa").then(js => js.map(j => ({ ...j, company: "MTN", source: 'MTN (Backup)' })));
+        return scrapeLinkedIn(`${companyName} South Africa ${query}`).then(js => js.map(j => ({ ...j, company: companyName, source: `${companyName} (Backup)` })));
     }
+}
+
+// Implementations using the Universal Scraper
+async function scrapeMTN(query: string) {
+    return scrapeWorkday('mtn', 'mtn_careers', query);
 }
 
 async function scrapeStandardBank(query: string) {
-    try {
-        const url = `https://standardbank.wd3.myworkdayjobs.com/wday/cxs/standardbank_careers/StandardBank_SouthAfrica/jobs`;
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Origin': 'https://standardbank.wd3.myworkdayjobs.com',
-                'Referer': `https://standardbank.wd3.myworkdayjobs.com/standardbank_careers`,
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0'
-            },
-            body: JSON.stringify({ appliedFacets: {}, limit: 15, offset: 0, searchText: query }),
-            signal: AbortSignal.timeout(10000)
-        });
-        if (!res.ok) {
-            return scrapeLinkedIn("Standard Bank South Africa").then(js => js.map(j => ({ ...j, company: "Standard Bank", source: 'Standard Bank (Backup)' })));
-        }
-        const data = await res.json();
-        const jobs: any[] = [];
-        (data.jobPostings || []).forEach((p: any, i: number) => {
-            const title = p.title;
-            const company = "Standard Bank";
-            const link = `https://standardbank.wd3.myworkdayjobs.com/standardbank_careers${p.externalPath}`;
-            if (title && isRelevant(title, company, query)) {
-                jobs.push({
-                    id: `sb-${Date.now()}-${i}`,
-                    title,
-                    company,
-                    location: p.locationsText || "South Africa",
-                    link,
-                    source: 'Standard Bank',
-                    isNiche: true
-                });
-            }
-        });
-
-        if (jobs.length === 0) {
-            const fallback = await scrapeLinkedIn("Standard Bank South Africa");
-            return fallback.map(j => ({ ...j, company: "Standard Bank", source: 'Standard Bank (Backup)' }));
-        }
-        return jobs;
-    } catch {
-        return scrapeLinkedIn("Standard Bank South Africa").then(js => js.map(j => ({ ...j, company: "Standard Bank", source: 'Standard Bank (Backup)' })));
-    }
+    return scrapeWorkday('standardbank', 'StandardBank_SouthAfrica', query);
 }
 
 async function scrapeFNB(query: string) {
-    try {
-        const url = `https://firstrand.wd3.myworkdayjobs.com/wday/cxs/firstrand/FirstRand/jobs`;
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Origin': 'https://firstrand.wd3.myworkdayjobs.com',
-                'Referer': `https://firstrand.wd3.myworkdayjobs.com/firstrand`,
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0'
-            },
-            body: JSON.stringify({ appliedFacets: {}, limit: 15, offset: 0, searchText: query }),
-            signal: AbortSignal.timeout(10000)
-        });
-        if (!res.ok) {
-            return scrapeLinkedIn("FNB South Africa").then(js => js.map(j => ({ ...j, company: "FNB", source: 'FNB (Backup)' })));
-        }
-        const data = await res.json();
-        const jobs: any[] = [];
-        (data.jobPostings || []).forEach((p: any, i: number) => {
-            const title = p.title;
-            const company = "FNB";
-            const link = `https://firstrand.wd3.myworkdayjobs.com/firstrand${p.externalPath}`;
-            if (title && isRelevant(title, company, query)) {
-                jobs.push({
-                    id: `fnb-${Date.now()}-${i}`,
-                    title,
-                    company,
-                    location: p.locationsText || "South Africa",
-                    link,
-                    source: 'FirstRand Group',
-                    isNiche: true
-                });
-            }
-        });
-        if (jobs.length === 0) {
-            const fallback = await scrapeLinkedIn("FNB South Africa");
-            return fallback.map(j => ({ ...j, company: "FNB", source: 'FNB (Backup)' }));
-        }
-        return jobs;
-    } catch {
-        return scrapeLinkedIn("FNB South Africa").then(js => js.map(j => ({ ...j, company: "FNB", source: 'FNB (Backup)' })));
-    }
+    return scrapeWorkday('firstrand', 'FirstRand', query);
+}
+
+async function scrapeAbsa(query: string) {
+    // Absa Tenant: 'absa', Site: 'ABSAcareersite' (Verified)
+    return scrapeWorkday('absa', 'ABSAcareersite', query);
+}
+
+async function scrapeDiscovery(query: string) {
+    // Discovery Tenant: 'discovery' 
+    return scrapeWorkday('discovery', 'Discovery_Careers', query);
+}
+
+async function scrapeCapitec(query: string) {
+    // Capitec is NOT Workday, so we strictly use LinkedIn/PNet for now as "Direct" isn't easy via API
+    return scrapePNet(`Capitec Bank ${query}`).then(js => js.map(j => ({ ...j, source: 'Capitec (PNet Mirror)' })));
 }
