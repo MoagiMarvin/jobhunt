@@ -14,6 +14,7 @@ function JobViewContent() {
     const jobCompany = searchParams.get('company') || 'Company';
     const jobLocation = searchParams.get('location') || 'South Africa';
     const jobSource = searchParams.get('source') || 'External';
+    const jobLogo = searchParams.get('logo');
 
     const [content, setContent] = useState<string>('');
     const [loading, setLoading] = useState(true);
@@ -80,19 +81,27 @@ function JobViewContent() {
                     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
-                        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 relative z-10">{jobTitle}</h1>
-
-                        <div className="flex flex-wrap gap-4 text-sm text-slate-600 relative z-10">
-                            <div className="flex items-center gap-1.5 font-medium text-slate-900">
-                                <Building2 className="w-4 h-4 text-blue-500" />
-                                {jobCompany}
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <MapPin className="w-4 h-4 text-slate-400" />
-                                {jobLocation}
-                            </div>
-                            <div className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold uppercase">
-                                {jobSource}
+                        <div className="flex gap-5 items-start relative z-10 mb-4">
+                            {jobLogo && (
+                                <div className="w-16 h-16 shrink-0 rounded-xl bg-white border border-slate-100 p-2 shadow-sm">
+                                    <img src={jobLogo} alt={jobCompany} className="w-full h-full object-contain" />
+                                </div>
+                            )}
+                            <div>
+                                <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight">{jobTitle}</h1>
+                                <div className="flex flex-wrap gap-4 text-sm text-slate-600 mt-2">
+                                    <div className="flex items-center gap-1.5 font-medium text-slate-900">
+                                        <Building2 className="w-4 h-4 text-blue-500" />
+                                        {jobCompany}
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <MapPin className="w-4 h-4 text-slate-400" />
+                                        {jobLocation}
+                                    </div>
+                                    <div className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs font-bold uppercase">
+                                        {jobSource}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

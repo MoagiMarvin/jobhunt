@@ -14,6 +14,7 @@ interface JobCardProps {
         source: string;
         isNiche?: boolean;
         date?: string;
+        logo?: string;
     };
     router: any;
 }
@@ -79,7 +80,8 @@ export default function JobCard({ job, router }: JobCardProps) {
         domain = cleanName.replace(/\s+/g, '') + '.com';
     }
 
-    const logoUrl = `https://logo.clearbit.com/${domain}`;
+    const heuristicLogoUrl = `https://logo.clearbit.com/${domain}`;
+    const finalLogoUrl = (job.logo && !imgError) ? job.logo : heuristicLogoUrl;
 
     // Generate a consistent color for the placeholder based on company name
     const getGradient = (name: string) => {
@@ -104,7 +106,8 @@ export default function JobCard({ job, router }: JobCardProps) {
                     company: job.company,
                     location: job.location,
                     source: job.source,
-                    date: job.date || ''
+                    date: job.date || '',
+                    logo: job.logo || ''
                 });
                 router.push(`/jobs/view?${params.toString()}`);
             }}
@@ -123,7 +126,7 @@ export default function JobCard({ job, router }: JobCardProps) {
                 <div className="w-14 h-14 shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:scale-105 transition-transform p-1">
                     {!imgError ? (
                         <img
-                            src={logoUrl}
+                            src={finalLogoUrl}
                             alt={`${job.company} logo`}
                             className="w-full h-full object-contain"
                             onError={() => setImgError(true)}

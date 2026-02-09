@@ -82,22 +82,69 @@ export async function POST(request: NextRequest) {
                 const href = $(el).attr('href');
                 if (href && !href.startsWith('#') && !href.startsWith('mailto:')) {
                     const lowerHref = href.toLowerCase();
-                    // Log potentially interesting links for debugging
-                    if (lowerHref.includes('apply') || lowerHref.includes('job') || lowerHref.includes('career')) {
-                        // console.log(`[JOB_CONTENT] Potential Link: ${href}`);
-                    }
+                    const text = $(el).text().toLowerCase().trim();
 
-                    // Prioritize known ATS domains (Vodacom/Eightfold, MTN/Workday, PNet specific)
-                    if (lowerHref.includes('eightfold.ai') || lowerHref.includes('myworkdayjobs.com') || lowerHref.includes('breezy.hr') || lowerHref.includes('greenhouse.io') || lowerHref.includes('lever.co')) {
-                        console.log(`[JOB_CONTENT] Found ATS Link: ${href}`);
-                        if (!directApplyUrl) directApplyUrl = href;
-                        // If we found a generic one but this is a specific ATS, upgrade
-                        else if ((lowerHref.includes('eightfold.ai') || lowerHref.includes('myworkdayjobs.com')) && !directApplyUrl.includes('eightfold') && !directApplyUrl.includes('workday')) {
-                            directApplyUrl = href;
-                        }
+                    // Broad ATS and Career Portal Keywords
+                    const isAtsLink = lowerHref.includes('eightfold.ai') ||
+                        lowerHref.includes('myworkdayjobs.com') ||
+                        lowerHref.includes('breezy.hr') ||
+                        lowerHref.includes('greenhouse.io') ||
+                        lowerHref.includes('lever.co') ||
+                        lowerHref.includes('successfactors.com') ||
+                        lowerHref.includes('icims.com') ||
+                        lowerHref.includes('workable.com') ||
+                        lowerHref.includes('career-portal') ||
+                        lowerHref.includes('oraclecloud.com');
+
+                    // Prioritize links with "Apply" text that point to known ATS or external sites
+                    if (isAtsLink || text.includes('apply externally') || text.includes('apply on company site') || (text === 'apply' && !lowerHref.includes('pnet.co.za') && !lowerHref.includes('linkedin.com'))) {
+                        console.log(`[JOB_CONTENT] Found Potential Direct Link in <a>: ${href}`);
+                        directApplyUrl = href;
+                        return false; // break loop
                     }
                 }
             });
+        }
+
+        // --- DEEP REDIRECT RESOLUTION ---
+        // If we found a redirect link (like PNet/LinkedIn), try to find where it leads
+        const currentApplyUrl = directApplyUrl as string | null;
+        if (currentApplyUrl && (currentApplyUrl.includes('pnet.co.za') || currentApplyUrl.includes('linkedin.com/jobs/view') || currentApplyUrl.includes('adzuna.co.za') || currentApplyUrl.includes('bit.ly'))) {
+            console.log(`[JOB_CONTENT] Attempting to resolve redirect: ${currentApplyUrl}`);
+            try {
+                // Using GET with a short limit might be more successful than HEAD for some servers
+                const resolveRes = await fetch(currentApplyUrl, {
+                    method: 'GET',
+                    redirect: 'follow',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                        'Accept': 'text/html'
+                    },
+                    signal: AbortSignal.timeout(7000)
+                });
+
+                if (resolveRes.url && resolveRes.url !== currentApplyUrl) {
+                    console.log(`[JOB_CONTENT] Resolved to: ${resolveRes.url}`);
+                    // Only use it if it's not another aggregator or a login page
+                    const finalUrl = resolveRes.url.split('?')[0]; // Strip tracking for comparison
+                    if (!finalUrl.includes('pnet.co.za') && !finalUrl.includes('linkedin.com') && !finalUrl.includes('login')) {
+                        directApplyUrl = resolveRes.url;
+                        console.log(`[JOB_CONTENT] SUCCESSFULLY resolved to FINAL company link: ${directApplyUrl}`);
+                    }
+                }
+            } catch (e) {
+                console.log("[JOB_CONTENT] Redirect resolution failed, keeping original.");
+            }
+        }
+
+        // Final Pattern Decoding for PNet "Apply Externally"
+        if (url.includes('pnet.co.za') && !directApplyUrl) {
+            // Look for specific scripts or hidden inputs PNet uses for external redirects
+            const pnetExternalMatch = html.match(/externalApplicationUrl\s*:\s*["']([^"']+)["']/);
+            if (pnetExternalMatch && pnetExternalMatch[1]) {
+                directApplyUrl = pnetExternalMatch[1];
+                console.log(`[JOB_CONTENT] Found PNet External URL via Regex: ${directApplyUrl}`);
+            }
         }
 
         // Aggressive Cleanup: Remove ALL media, scripts, styles, and interactive elements
@@ -121,6 +168,7 @@ export async function POST(request: NextRequest) {
             '#job-details',
             '.job-description',
             '.description',
+            '.company-description', // Added for some corporate sites
             'main',
             'article',
             '#content'

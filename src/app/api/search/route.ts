@@ -91,6 +91,9 @@ export async function GET(request: NextRequest) {
  * RELEVANCE GUARD: Ensures the job title actually contains the search query.
  * Prevents "Junior Accountant" for "Driver" searches.
  */
+// 2. Tech Companies (Priority)
+const techCompanies = ['vodacom', 'mtn', 'telkom', 'dimension data', 'eoh', 'liquid', 'altron', 'standard bank', 'fnb', 'nedbank', 'absa', 'discovery', 'capitec'];
+
 /**
  * TECH-ONLY GUARD: Ensures the role is actually in the Tech Industry.
  */
@@ -143,8 +146,6 @@ function isRelevant(title: string, company: string, query: string, job?: any): b
         'informatics', 'information technology', 'engineering'
     ];
 
-    // 2. Tech Companies (Priority)
-    const techCompanies = ['vodacom', 'mtn', 'telkom', 'dimension data', 'eoh', 'liquid', 'altron', 'standard bank', 'fnb', 'nedbank', 'absa', 'discovery', 'capitec'];
 
     // 3. Technical Consultant Check
     const isTechConsultant = titleLower.includes('consultant') &&
@@ -237,11 +238,32 @@ async function scrapePNet(query: string) {
             const link = linkEl ? linkEl.attr('href') : null;
             const company = clean(companyEl.text());
             const location = clean(locationEl.text());
-            const logo = $(el).find('img[alt="Company logo"], .res-card__logo').attr('src');
+            let logo = $(el).find('img[alt="Company logo"], .res-card__logo, .job-item__logo img').attr('src');
+
+            // Ensure absolute logo URL for PNet
+            if (logo && !logo.startsWith('http')) {
+                logo = `https://www.pnet.co.za${logo.startsWith('/') ? '' : '/'}${logo}`;
+            }
 
             if (title && link && company && location) {
                 // Ensure link is direct to the job-ad if possible
                 const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
+                const companyLower = company.toLowerCase();
+                const isPriorityCompany = techCompanies.some(c => companyLower.includes(c));
+
+                // Hardcoded High-Quality Logos for SA Giants
+                const priorityLogos: { [key: string]: string } = {
+                    'vodacom': 'https://upload.wikimedia.org/wikipedia/commons/a/af/Vodacom_Logo.svg',
+                    'mtn': 'https://upload.wikimedia.org/wikipedia/commons/9/93/MTN_Logo.svg',
+                    'standard bank': 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Standard_Bank_Logo.svg',
+                    'fnb': 'https://upload.wikimedia.org/wikipedia/commons/d/df/FNB_Logo.svg',
+                    'absa': 'https://upload.wikimedia.org/wikipedia/commons/0/05/Absa_Logo.svg',
+                    'discovery': 'https://upload.wikimedia.org/wikipedia/en/1/1d/Discovery_Limited_Logo.svg',
+                    'capitec': 'https://upload.wikimedia.org/wikipedia/commons/3/30/Capitec_Bank_logo.svg'
+                };
+
+                const foundPriority = Object.keys(priorityLogos).find(key => companyLower.includes(key));
+                const finalLogo = foundPriority ? priorityLogos[foundPriority] : logo;
 
                 jobs.push({
                     id: `pnet-${Date.now()}-${i}`,
@@ -249,8 +271,9 @@ async function scrapePNet(query: string) {
                     company,
                     location,
                     link: fullLink,
-                    source: 'PNet',
-                    logo: logo || undefined
+                    source: isPriorityCompany ? `${company} (via PNet)` : 'PNet',
+                    isNiche: isPriorityCompany,
+                    logo: finalLogo || undefined
                 });
             }
         });
@@ -371,15 +394,30 @@ async function scrapeLinkedIn(query: string) {
             if (title && link && isRelevant(title, company, query)) {
                 // Remove tracking parameters for cleaner scraping
                 const cleanLink = link.split('?')[0];
+                const companyLower = company.toLowerCase();
+
+                // Hardcoded High-Quality Logos for SA Giants
+                const priorityLogos: { [key: string]: string } = {
+                    'vodacom': 'https://upload.wikimedia.org/wikipedia/commons/a/af/Vodacom_Logo.svg',
+                    'mtn': 'https://upload.wikimedia.org/wikipedia/commons/9/93/MTN_Logo.svg',
+                    'standard bank': 'https://upload.wikimedia.org/wikipedia/commons/c/c5/Standard_Bank_Logo.svg',
+                    'fnb': 'https://upload.wikimedia.org/wikipedia/commons/d/df/FNB_Logo.svg',
+                    'absa': 'https://upload.wikimedia.org/wikipedia/commons/0/05/Absa_Logo.svg',
+                    'discovery': 'https://upload.wikimedia.org/wikipedia/en/1/1d/Discovery_Limited_Logo.svg',
+                    'capitec': 'https://upload.wikimedia.org/wikipedia/commons/3/30/Capitec_Bank_logo.svg'
+                };
+
+                const foundPriority = Object.keys(priorityLogos).find(key => companyLower.includes(key));
+                const finalLogo = foundPriority ? priorityLogos[foundPriority] : logo;
 
                 jobs.push({
                     id: `li-${Date.now()}-${i}`,
                     title,
-                    company: $(el).find('.base-search-card__subtitle').text().trim() || "LinkedIn Employer",
-                    location: $(el).find('.job-search-card__location').text().trim() || "South Africa",
+                    company: company,
+                    location: $(el).find('.job-search-card__location, .base-search-card__metadata').text().trim() || "South Africa",
                     link: cleanLink,
                     source: 'LinkedIn',
-                    logo: logo || undefined
+                    logo: finalLogo || undefined
                 });
             }
         });
