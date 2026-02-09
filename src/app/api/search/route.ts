@@ -49,8 +49,7 @@ export async function GET(request: NextRequest) {
         scrapeFNB(query).catch(e => { console.error("[FNB] Fail:", e.message); return []; }),
         scrapeAbsa(query).catch(e => { console.error("[ABSA] Fail:", e.message); return []; }),
         scrapeDiscovery(query).catch(e => { console.error("[DISC] Fail:", e.message); return []; }),
-        scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; }),
-        scrapeRecruiters(query).catch(e => { console.error("[RECRUITERS] Fail:", e.message); return []; })
+        scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; })
     ]);
 
     let allJobs = results.flat();
@@ -155,7 +154,6 @@ function isRelevant(title: string, company: string, query: string, job?: any): b
     const nonTechKeywords = ['nurse', 'hospitality', 'waiter', 'retail', 'doctor', 'teacher', 'driver'];
     if (nonTechKeywords.some(k => titleLower.includes(k))) return false;
 
-    // Logic: Must match query AND be tech-related
     // SPECIAL BYPASS: If the user is specifically searching for a Tech Company, allow ALL results from that company.
     const isQueryATechCompany = techCompanies.some(c => queryLower === c);
     if (isQueryATechCompany && companyLower.includes(queryLower)) {
@@ -167,15 +165,16 @@ function isRelevant(title: string, company: string, query: string, job?: any): b
         return true;
     }
 
-    const matchesQuery = queryLower.split(/\s+/).some(word => word.length >= 2 && (titleLower.includes(word) || companyLower.includes(word)));
+    // RELAXED LOGIC: Pass if ANY of these conditions are true:
+    // 1. Title has a tech keyword
+    // 2. Company is a known tech company
+    // 3. Is a tech consultant
+    // 4. Query is very short (likely a specific tech term)
+    const hasTechKeyword = techKeywords.some(k => titleLower.includes(k));
+    const isTechCompany = techCompanies.some(c => companyLower.includes(c) || titleLower.includes(c));
+    const isShortQuery = queryLower.length < 3;
 
-    // Allow everything for now to avoid missing results during debugging
-    const isTechRelated = techKeywords.some(k => titleLower.includes(k)) ||
-        techCompanies.some(c => companyLower.includes(c) || titleLower.includes(c)) ||
-        isTechConsultant ||
-        queryLower.length < 3;
-
-    return matchesQuery && isTechRelated;
+    return hasTechKeyword || isTechCompany || isTechConsultant || isShortQuery;
 }
 
 // --- SCRAPERS ---
@@ -224,7 +223,7 @@ async function scrapePNet(query: string) {
             const location = locationEl.text().trim();
             const logo = $(el).find('img[alt="Company logo"], .res-card__logo').attr('src');
 
-            if (title && link && company && location && isRelevant(title, company, query)) {
+            if (title && link && company && location) {
                 // Ensure link is direct to the job-ad if possible
                 const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
 
@@ -525,42 +524,4 @@ async function scrapeDiscovery(query: string) {
 async function scrapeCapitec(query: string) {
     // Capitec is NOT Workday, so we strictly use LinkedIn/PNet for now as "Direct" isn't easy via API
     return scrapePNet(`Capitec Bank ${query}`).then(js => js.map(j => ({ ...j, source: 'Capitec (PNet Mirror)' })));
-}
-
-// --- RECRUITER SHADOW INDEXING ---
-async function scrapeRecruiters(query: string) {
-    const topRecruiters = [
-        'OfferZen',
-        'e-Merge',
-        'Network Recruitment',
-        'Kontak Recruitment',
-        'Hire Resolve',
-        'First Point Group',
-        'iO Associates',
-        'Armstrong Appointments',
-        'Greys Recruitment',
-        'Let\'s Recruit'
-    ];
-
-    const results = await Promise.all(
-        topRecruiters.map(async (recruiter) => {
-            try {
-                const jobs = await scrapeLinkedIn(`${recruiter} South Africa ${query}`);
-                console.log(`[RECRUITER] ${recruiter}: Found ${jobs.length} jobs`);
-                return jobs.map(j => ({
-                    ...j,
-                    source: `${recruiter}`,
-                    isNiche: false, // Recruiters are aggregators, not direct employers
-                    bypassTechGuard: true // CRITICAL: Skip relevance filtering for recruiter jobs
-                }));
-            } catch (e) {
-                console.error(`[RECRUITER] ${recruiter} failed:`, e);
-                return [];
-            }
-        })
-    );
-
-    const totalRecruiterJobs = results.flat();
-    console.log(`[RECRUITER] Total jobs from all recruiters: ${totalRecruiterJobs.length}`);
-    return totalRecruiterJobs;
 }
