@@ -66,6 +66,9 @@ export default function SearchPage() {
                 }
             });
 
+            // Stop main loading after primary sources start
+            setTimeout(() => setLoading(false), 2000);
+
             // 2. Fetch others in BACKGROUND
             const backgroundSources = backSources;
 

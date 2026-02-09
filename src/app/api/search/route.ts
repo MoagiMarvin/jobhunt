@@ -150,8 +150,8 @@ function isRelevant(title: string, company: string, query: string, job?: any): b
     const isTechConsultant = titleLower.includes('consultant') &&
         (techKeywords.some(k => titleLower.includes(k)) || titleLower.includes('technical'));
 
-    // 4. Exclusion List
-    const nonTechKeywords = ['nurse', 'hospitality', 'waiter', 'retail', 'doctor', 'teacher', 'driver'];
+    // 4. Exclusion List (ONLY block obvious non-tech)
+    const nonTechKeywords = ['nurse', 'hospitality', 'waiter', 'retail', 'doctor', 'teacher', 'driver', 'cleaner', 'security guard', 'cashier'];
     if (nonTechKeywords.some(k => titleLower.includes(k))) return false;
 
     // SPECIAL BYPASS: If the user is specifically searching for a Tech Company, allow ALL results from that company.
@@ -165,16 +165,12 @@ function isRelevant(title: string, company: string, query: string, job?: any): b
         return true;
     }
 
-    // RELAXED LOGIC: Pass if ANY of these conditions are true:
-    // 1. Title has a tech keyword
-    // 2. Company is a known tech company
-    // 3. Is a tech consultant
-    // 4. Query is very short (likely a specific tech term)
+    // SUPER INCLUSIVE LOGIC: Pass if ANY of these conditions are true
     const hasTechKeyword = techKeywords.some(k => titleLower.includes(k));
     const isTechCompany = techCompanies.some(c => companyLower.includes(c) || titleLower.includes(c));
-    const isShortQuery = queryLower.length < 3;
 
-    return hasTechKeyword || isTechCompany || isTechConsultant || isShortQuery;
+    // CRITICAL: If it's NOT explicitly non-tech AND has any tech indicator, show it
+    return hasTechKeyword || isTechCompany || isTechConsultant;
 }
 
 // --- SCRAPERS ---
