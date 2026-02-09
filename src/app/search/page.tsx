@@ -11,6 +11,10 @@ export default function SearchPage() {
     const [jobs, setJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [loadingSources, setLoadingSources] = useState<string[]>([]);
+
+    // Filter states
+    const [locationFilter, setLocationFilter] = useState('all');
+    const [experienceFilter, setExperienceFilter] = useState('all');
     const [hasSearched, setHasSearched] = useState(false);
     const [category, setCategory] = useState("all");
 
@@ -198,31 +202,126 @@ export default function SearchPage() {
                         <p className="text-slate-600 font-medium">Starting Search Engines...</p>
                     </div>
                 )}
+                {/* Filter and Results Section */}
+                <div className="flex gap-6">
+                    {/* Sidebar Filters */}
+                    <aside className="w-64 flex-shrink-0">
+                        <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
+                            <h3 className="font-semibold text-slate-900 mb-4">Filters</h3>
 
-                {/* Results Container */}
-                <div className="grid gap-4 mb-12">
-                    {/* Show saved results immediately if available */}
-                    {(loading || hasSearched || jobs.length > 0) && jobs
-                        .filter(job => {
-                            if (category === "all") return true;
-                            const title = job.title.toLowerCase();
-                            return title.includes(category);
-                        })
-                        .map((job) => (
-                            <JobCard key={job.id} job={job} router={router} />
-                        ))}
-                </div>
+                            {/* Location Filter */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Location
+                                </label>
+                                <select
+                                    value={locationFilter}
+                                    onChange={(e) => setLocationFilter(e.target.value)}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="all">All Locations</option>
+                                    <option value="johannesburg">Johannesburg</option>
+                                    <option value="cape town">Cape Town</option>
+                                    <option value="pretoria">Pretoria</option>
+                                    <option value="durban">Durban</option>
+                                    <option value="remote">Remote</option>
+                                    <option value="hybrid">Hybrid</option>
+                                </select>
+                            </div>
 
-                {/* No Results Message */}
-                {!loading && hasSearched && jobs.length === 0 && (
-                    <div className="text-center py-12 bg-white rounded-xl border border-red-100">
-                        <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
-                        <h3 className="font-bold text-slate-900">Scraping Restricted</h3>
-                        <p className="text-sm text-slate-500 max-w-xs mx-auto">
-                            The site might be blocking my robot. Try a different keyword or use the manual optimizer in the Generate page.
-                        </p>
+                            {/* Experience Level Filter */}
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-slate-700 mb-2">
+                                    Experience Level
+                                </label>
+                                <select
+                                    value={experienceFilter}
+                                    onChange={(e) => setExperienceFilter(e.target.value)}
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="all">All Levels</option>
+                                    <option value="internship">Internship</option>
+                                    <option value="graduate">Graduate Program</option>
+                                    <option value="junior">Junior</option>
+                                    <option value="mid">Mid-Level</option>
+                                    <option value="senior">Senior</option>
+                                </select>
+                            </div>
+
+                            {/* Clear Filters */}
+                            {(locationFilter !== 'all' || experienceFilter !== 'all') && (
+                                <button
+                                    onClick={() => {
+                                        setLocationFilter('all');
+                                        setExperienceFilter('all');
+                                    }}
+                                    className="w-full px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                >
+                                    Clear Filters
+                                </button>
+                            )}
+                        </div>
+                    </aside>
+
+                    {/* Results Section */}
+                    <div className="flex-1">
+                        {/* Loading State */}
+                        {loading && (
+                            <div className="text-center py-12">
+                                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                                <p className="mt-4 text-slate-600">Searching across multiple sources...</p>
+                            </div>
+                        )}
+
+                        {/* Results */}
+                        {!loading && jobs.length > 0 && (
+                            <>
+                                <div className="mb-4 flex items-center justify-between">
+                                    <p className="text-slate-600">
+                                        Found <span className="font-semibold text-slate-900">{
+                                            jobs.filter(job => {
+                                                const locationMatch = locationFilter === 'all' ||
+                                                    job.location?.toLowerCase().includes(locationFilter.toLowerCase());
+                                                const experienceMatch = experienceFilter === 'all' ||
+                                                    job.title?.toLowerCase().includes(experienceFilter.toLowerCase());
+                                                return locationMatch && experienceMatch;
+                                            }).length
+                                        }</span> jobs
+                                    </p>
+                                </div>
+                                <div className="grid gap-4 mb-12">
+                                    {jobs
+                                        .filter(job => {
+                                            if (category === "all") return true;
+                                            const title = job.title.toLowerCase();
+                                            return title.includes(category);
+                                        })
+                                        .filter(job => {
+                                            const locationMatch = locationFilter === 'all' ||
+                                                job.location?.toLowerCase().includes(locationFilter.toLowerCase());
+                                            const experienceMatch = experienceFilter === 'all' ||
+                                                job.title?.toLowerCase().includes(experienceFilter.toLowerCase());
+                                            return locationMatch && experienceMatch;
+                                        })
+                                        .map((job) => (
+                                            <JobCard key={job.id} job={job} router={router} />
+                                        ))}
+                                </div>
+                            </>
+                        )}
+
+                        {/* No Results Message */}
+                        {!loading && hasSearched && jobs.length === 0 && (
+                            <div className="text-center py-12 bg-white rounded-xl border border-red-100">
+                                <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" />
+                                <h3 className="font-bold text-slate-900">Scraping Restricted</h3>
+                                <p className="text-sm text-slate-500 max-w-xs mx-auto">
+                                    The site might be blocking my robot. Try a different keyword or use the manual optimizer in the Generate page.
+                                </p>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </main>
     );
