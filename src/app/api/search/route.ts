@@ -195,10 +195,18 @@ async function scrapePNet(query: string) {
 
         const html = await res.text();
         const $ = cheerio.load(html);
+
+        // GLOBAL SANITIZATION: Remove ALL style and script tags immediately
+        // PNet injects styles inside the body which Cheerio's .text() captures.
+        $('style, script, noscript').remove();
+
         const jobs: any[] = [];
 
         // Broad Selectors focusing on the job cards
         const articles = $('article, .job-item, .res-card, [data-at="job-item"]');
+
+        // Remove styles/scripts from cards to prevent CSS leakage in .text()
+        articles.find('style, script').remove();
 
         articles.each((i, el) => {
             const titleEl = $(el).find('h2, h3, [data-at="job-item-title"], .job-title, .res-card__title').first();
@@ -213,10 +221,22 @@ async function scrapePNet(query: string) {
             const companyEl = $(el).find('[data-at="job-item-company-name"], .res-card__subtitle, .company').first();
             const locationEl = $(el).find('[data-at="job-item-location"], .res-card__metadata--location, .location').first();
 
-            const title = titleEl.text().trim();
+            // AGGRESSIVE CLEANUP: Remove ANY residual CSS patterns if they somehow escaped removal
+            const clean = (txt: string) => {
+                let s = txt || '';
+                // Remove anything that looks like a CSS rule: .selector { ... } or @media ... { ... }
+                // We use a loop to handle potential nesting or multiple blocks
+                while (s.includes('{') && s.includes('}')) {
+                    s = s.replace(/[^{]*\{[^}]*\}/g, '');
+                }
+                // Strip lingering class-like prefixes (e.g. .res-123) and cleanup whitespace
+                return s.replace(/\.[a-z0-9_-]+/gi, '').replace(/\s+/g, ' ').trim();
+            };
+
+            const title = clean(titleEl.text());
             const link = linkEl ? linkEl.attr('href') : null;
-            const company = companyEl.text().trim();
-            const location = locationEl.text().trim();
+            const company = clean(companyEl.text());
+            const location = clean(locationEl.text());
             const logo = $(el).find('img[alt="Company logo"], .res-card__logo').attr('src');
 
             if (title && link && company && location) {
@@ -237,8 +257,17 @@ async function scrapePNet(query: string) {
 
         // "Plan B" Fallback Strategy from reference - only if standard cards fail
         if (jobs.length === 0) {
+            // Re-apply cleanup function for safety
+            const clean = (txt: string) => {
+                let s = txt || '';
+                while (s.includes('{') && s.includes('}')) {
+                    s = s.replace(/[^{]*\{[^}]*\}/g, '');
+                }
+                return s.replace(/\.[a-z0-9_-]+/gi, '').replace(/\s+/g, ' ').trim();
+            };
+
             $('a[href*="/job-ad/"]').each((i, el) => {
-                const title = $(el).text().trim();
+                const title = clean($(el).text());
                 const link = $(el).attr('href');
                 if (title.length > 5 && link && isRelevant(title, "PNet Listing", query) && !title.includes('Login')) {
                     const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
@@ -247,7 +276,7 @@ async function scrapePNet(query: string) {
                         title,
                         company: "PNet Listing",
                         location: "South Africa",
-                        link: link.startsWith('http') ? link : `https://www.pnet.co.za${link}`,
+                        link: fullLink,
                         source: 'PNet',
                         logo: undefined
                     });
