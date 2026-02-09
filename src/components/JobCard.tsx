@@ -28,9 +28,72 @@ export default function JobCard({ job, router }: JobCardProps) {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    // Heuristic for logo domain (not perfect, but good for demo)
-    const companyDomain = job.company.toLowerCase().replace(/\s+/g, '') + '.com';
-    const logoUrl = `https://logo.clearbit.com/${companyDomain}`;
+    // Precise Domain Mapping for SA Tech Companies
+    const companyMap: { [key: string]: string } = {
+        'vodacom': 'vodacom.co.za',
+        'mtn': 'mtn.com',
+        'fnb': 'fnb.co.za',
+        'standard bank': 'standardbank.co.za',
+        'capitec': 'capitecbank.co.za',
+        'absa': 'absa.co.za',
+        'nedbank': 'nedbank.co.za',
+        'investec': 'investec.com',
+        'discovery': 'discovery.co.za',
+        'multichoice': 'multichoice.com',
+        'takealot': 'takealot.com',
+        'amazon': 'amazon.com',
+        'microsoft': 'microsoft.com',
+        'google': 'google.com',
+        'bcx': 'bcx.co.za',
+        'eoh': 'eoh.co.za',
+        'boxer': 'boxer.co.za',
+        'pep': 'pepstores.com',
+        'shoprite': 'shoprite.co.za',
+        'checkers': 'checkers.co.za',
+        'spar': 'spar.co.za',
+        'woolworths': 'woolworths.co.za',
+        'mr price': 'mrpricegroup.com',
+        'truworths': 'truworths.co.za',
+        'foschini': 'tfg.co.za',
+        'clicks': 'clicks.co.za',
+        'dis-chem': 'dischem.co.za',
+        'sars': 'sars.gov.za',
+        'entelect': 'entelect.co.za',
+        'offerzen': 'offerzen.com',
+        'io': 'io.co.za',
+        'derivco': 'derivco.com'
+    };
+
+    const cleanName = job.company.toLowerCase().trim();
+    // Check map first, otherwise try heuristic
+    let domain = companyMap[cleanName];
+
+    // If not in map, try to find a partial match
+    if (!domain) {
+        const foundKey = Object.keys(companyMap).find(key => cleanName.includes(key));
+        if (foundKey) domain = companyMap[foundKey];
+    }
+
+    // Default to .com if still not found
+    if (!domain) {
+        domain = cleanName.replace(/\s+/g, '') + '.com';
+    }
+
+    const logoUrl = `https://logo.clearbit.com/${domain}`;
+
+    // Generate a consistent color for the placeholder based on company name
+    const getGradient = (name: string) => {
+        const colors = [
+            'from-blue-400 to-blue-600',
+            'from-emerald-400 to-emerald-600',
+            'from-violet-400 to-violet-600',
+            'from-amber-400 to-amber-600',
+            'from-rose-400 to-rose-600',
+            'from-cyan-400 to-cyan-600'
+        ];
+        const index = name.length % colors.length;
+        return colors[index];
+    };
 
     return (
         <div
@@ -57,7 +120,7 @@ export default function JobCard({ job, router }: JobCardProps) {
 
             <div className="flex gap-5 relative z-10">
                 {/* Company Logo / Avatar */}
-                <div className="w-14 h-14 shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:scale-105 transition-transform p-2">
+                <div className="w-14 h-14 shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:scale-105 transition-transform p-1">
                     {!imgError ? (
                         <img
                             src={logoUrl}
@@ -66,7 +129,7 @@ export default function JobCard({ job, router }: JobCardProps) {
                             onError={() => setImgError(true)}
                         />
                     ) : (
-                        <div className="w-full h-full bg-slate-50 flex items-center justify-center text-slate-400 font-bold text-xl">
+                        <div className={`w-full h-full rounded-lg bg-gradient-to-br ${getGradient(job.company)} flex items-center justify-center text-white font-bold text-xl shadow-inner`}>
                             {job.company.charAt(0)}
                         </div>
                     )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, Briefcase, ExternalLink, Loader2, AlertCircle, Copy, Check, Mic } from "lucide-react";
 import JobCard from "@/components/JobCard";
@@ -14,6 +14,20 @@ export default function SearchPage() {
     const [hasSearched, setHasSearched] = useState(false);
     const [category, setCategory] = useState("all");
 
+    // Load state from session storage on mount
+    useEffect(() => {
+        const savedQuery = sessionStorage.getItem('job_search_query');
+        const savedJobs = sessionStorage.getItem('job_search_results');
+        const savedCategory = sessionStorage.getItem('job_search_category');
+
+        if (savedQuery) setQuery(savedQuery);
+        if (savedCategory) setCategory(savedCategory);
+        if (savedJobs) {
+            setJobs(JSON.parse(savedJobs));
+            setHasSearched(true);
+        }
+    }, []);
+
     const handleSearch = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!query.trim()) return;
@@ -21,6 +35,10 @@ export default function SearchPage() {
         setLoading(true);
         setHasSearched(true);
         setJobs([]);
+
+        // Save current query to session immediately
+        sessionStorage.setItem('job_search_query', query);
+        sessionStorage.setItem('job_search_category', category); // Persist category too
 
         // Sources we scan
         const primarySources = ['pnet', 'vodacom', 'mtn', 'standardbank', 'fnb'];
@@ -34,10 +52,17 @@ export default function SearchPage() {
                 try {
                     const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=${src}`);
                     const data = await res.json();
-                    if (data.jobs) setJobs(prev => [...prev, ...data.jobs]);
+                    if (data.jobs && data.jobs.length > 0) {
+                        setJobs(prev => {
+                            const newJobs = [...prev, ...data.jobs];
+                            // Update session storage incrementally
+                            sessionStorage.setItem('job_search_results', JSON.stringify(newJobs));
+                            return newJobs;
+                        });
+                    }
                 } finally {
                     setLoadingSources(prev => prev.filter(s => s !== src));
-                    setLoading(false);
+                    // Check if this was the last primary source
                 }
             });
 
@@ -55,13 +80,18 @@ export default function SearchPage() {
                     const data = await res.json();
 
                     if (data.jobs && data.jobs.length > 0) {
-                        setJobs(prev => [...prev, ...data.jobs]);
+                        setJobs(prev => {
+                            const newJobs = [...prev, ...data.jobs];
+                            sessionStorage.setItem('job_search_results', JSON.stringify(newJobs));
+                            return newJobs;
+                        });
                     }
                 } catch (err) {
                     console.error(`[Search] Background source ${src} failed or timed out:`, err);
                 } finally {
                     clearTimeout(timer);
                     setLoadingSources(prev => prev.filter(s => s !== src));
+                    setLoading(false); // Ensure loading stops eventually
                 }
             });
 
@@ -121,7 +151,10 @@ export default function SearchPage() {
                     ].map((cat) => (
                         <button
                             key={cat.id}
-                            onClick={() => setCategory(cat.id)}
+                            onClick={() => {
+                                setCategory(cat.id);
+                                sessionStorage.setItem('job_search_category', cat.id);
+                            }}
                             className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 border-2 ${category === cat.id
                                 ? "bg-blue-600 text-white border-blue-600 shadow-lg"
                                 : "bg-white text-slate-600 border-slate-100 hover:border-blue-200"
@@ -152,7 +185,7 @@ export default function SearchPage() {
                 )}
 
                 {/* Main Spinner (Only for first load) */}
-                {loading && (
+                {loading && jobs.length === 0 && (
                     <div className="text-center py-20 bg-white/50 rounded-2xl border border-blue-100 mb-10">
                         <Loader2 className="w-10 h-10 text-blue-500 animate-spin mx-auto mb-4" />
                         <p className="text-slate-600 font-medium">Starting Search Engines...</p>
@@ -160,8 +193,9 @@ export default function SearchPage() {
                 )}
 
                 {/* Results Container */}
-                <div className="space-y-4 mb-12">
-                    {!loading && jobs
+                <div className="grid gap-4 mb-12">
+                    {/* Show saved results immediately if available */}
+                    {(loading || hasSearched || jobs.length > 0) && jobs
                         .filter(job => {
                             if (category === "all") return true;
                             const title = job.title.toLowerCase();

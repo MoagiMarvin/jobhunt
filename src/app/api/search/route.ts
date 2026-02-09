@@ -179,6 +179,7 @@ async function scrapePNet(query: string) {
             const link = linkEl ? linkEl.attr('href') : null;
             const company = companyEl.text().trim();
             const location = locationEl.text().trim();
+            const logo = $(el).find('img[alt="Company logo"], .res-card__logo').attr('src');
 
             if (title && link && company && location && isRelevant(title, company, query)) {
                 // Ensure link is direct to the job-ad if possible
@@ -190,7 +191,8 @@ async function scrapePNet(query: string) {
                     company,
                     location,
                     link: fullLink,
-                    source: 'PNet'
+                    source: 'PNet',
+                    logo: logo || undefined
                 });
             }
         });
@@ -208,7 +210,8 @@ async function scrapePNet(query: string) {
                         company: "PNet Listing",
                         location: "South Africa",
                         link: link.startsWith('http') ? link : `https://www.pnet.co.za${link}`,
-                        source: 'PNet'
+                        source: 'PNet',
+                        logo: undefined
                     });
                 }
             });
@@ -248,6 +251,7 @@ async function scrapeCareers24(query: string) {
 
             const companyEl = $(el).find('.company-name, .job-card-company, .c24-company-name').first();
             const locationEl = $(el).find('.location, .job-card-location, .c24-location').first();
+            const logo = $(el).find('img').attr('src');
 
             const title = titleEl.text().trim();
             const link = titleLink.attr('href');
@@ -263,7 +267,8 @@ async function scrapeCareers24(query: string) {
                     company: companyEl.text().trim() || "Careers24",
                     location: locationEl.text().trim() || "South Africa",
                     link: fullLink,
-                    source: 'Careers24'
+                    source: 'Careers24',
+                    logo: logo || undefined
                 });
             }
         });
@@ -290,6 +295,7 @@ async function scrapeLinkedIn(query: string) {
         $('.base-card, .job-search-card, .base-search-card').each((i, el) => {
             const title = $(el).find('.base-search-card__title, h3').first().text().trim();
             const company = $(el).find('.base-search-card__subtitle').text().trim() || "LinkedIn Employer";
+            const logo = $(el).find('.artdeco-entity-image, .job-search-card__logo-image, img').attr('src') || $(el).find('img').attr('data-delayed-url');
 
             // DEEP LINK LOGIC: Target the hidden full-link that contains the ad ID
             const linkEl = $(el).find('a.base-card__full-link, a.base-search-card__full-link, a').first();
@@ -305,7 +311,8 @@ async function scrapeLinkedIn(query: string) {
                     company: $(el).find('.base-search-card__subtitle').text().trim() || "LinkedIn Employer",
                     location: $(el).find('.job-search-card__location').text().trim() || "South Africa",
                     link: cleanLink,
-                    source: 'LinkedIn'
+                    source: 'LinkedIn',
+                    logo: logo || undefined
                 });
             }
         });
