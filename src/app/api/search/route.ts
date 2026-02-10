@@ -650,13 +650,14 @@ async function scrapeGoldmanTech(query: string) {
             const guid = item.guid?.[0]?._?.trim() || item.guid?.[0]?.trim() || '';
             const pubDate = item.pubDate?.[0]?.trim() || '';
 
-            // More inclusive matching for Goldman Tech as it's a pre-vetted tech recruiter
+            // User wants ALL jobs from Goldman Tech regardless of Tech Category
+            // So we bypass the isRelevant(title, "Goldman Tech", query) guard
             const matchesQuery = queryLower.split(' ').every(word =>
                 title.toLowerCase().includes(word) ||
                 description.toLowerCase().includes(word)
             );
 
-            if (matchesQuery || isRelevant(title, "Goldman Tech", query)) {
+            if (matchesQuery) {
                 jobs.push({
                     id: `goldman-${guid.split('/').pop() || Date.now()}-${i}`,
                     title,
@@ -670,8 +671,8 @@ async function scrapeGoldmanTech(query: string) {
             }
         });
 
-        console.log(`[GOLDMAN] Found ${jobs.length} jobs for "${query}"`);
-        return jobs.slice(0, 40); // Increased limit
+        console.log(`[GOLDMAN] Found ${jobs.length} total matches for "${query}"`);
+        return jobs.slice(0, 50); // Increased limit to show more potential matches
     } catch (e) {
         console.error("[GOLDMAN] Scrape fail:", e);
         return [];
