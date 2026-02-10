@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Aggressive Cleanup: Remove ALL media, scripts, styles, and interactive elements
-        $('script, style, noscript, iframe, svg, img, picture, video, audio, canvas, map, object, form, input, button, select, textarea, nav, footer, header, aside, .ad, .advert, .cookie-banner, .popup, .modal, .social-share, .related-jobs').remove();
+        $('script, style, noscript, iframe, svg, img, picture, video, audio, canvas, map, object, form, input, button, select, textarea, nav, footer, header, aside, .ad, .advert, .cookie-banner, .popup, .modal, .social-share, .related-jobs, .job-tools, #body_content_right, #advert_categories').remove();
 
         // Unwrap links (keep text, remove <a>) to prevent user clicking away accidentally
         // $('a').contents().unwrap(); // Optional: decided to keep links but maybe target=_blank in frontend? For now, let's keep basic links but strip classes.
@@ -182,6 +182,7 @@ export async function POST(request: NextRequest) {
             '#job-details',
             '.job-description',
             '.description',
+            '#body_content_left', // Goldman Tech specific
             '.company-description', // Added for some corporate sites
             'main',
             'article',
