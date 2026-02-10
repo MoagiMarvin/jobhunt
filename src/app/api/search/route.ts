@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
+import { parseString } from 'xml2js';
+import { promisify } from 'util';
+
+const parseXml = promisify(parseString);
 
 /**
  * Robust URL resolver for scraped links (logos and job ads).
@@ -48,6 +52,7 @@ export async function GET(request: NextRequest) {
                 case 'absa': jobs = await scrapeAbsa(query); break;
                 case 'discovery': jobs = await scrapeDiscovery(query); break;
                 case 'capitec': jobs = await scrapeCapitec(query); break;
+                case 'goldman': jobs = await scrapeGoldmanTech(query); break;
             }
             console.log(`[SEARCH] Source ${source} returned ${jobs.length} jobs`);
         } catch (e) {
@@ -67,7 +72,8 @@ export async function GET(request: NextRequest) {
         scrapeFNB(query).catch(e => { console.error("[FNB] Fail:", e.message); return []; }),
         scrapeAbsa(query).catch(e => { console.error("[ABSA] Fail:", e.message); return []; }),
         scrapeDiscovery(query).catch(e => { console.error("[DISC] Fail:", e.message); return []; }),
-        scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; })
+        scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; }),
+        scrapeGoldmanTech(query).catch(e => { console.error("[GOLDMAN] Fail:", e.message); return []; })
     ]);
 
     let allJobs = results.flat();
@@ -110,7 +116,7 @@ export async function GET(request: NextRequest) {
  * Prevents "Junior Accountant" for "Driver" searches.
  */
 // 2. Tech Companies (Priority)
-const techCompanies = ['vodacom', 'mtn', 'telkom', 'dimension data', 'eoh', 'liquid', 'altron', 'standard bank', 'fnb', 'nedbank', 'absa', 'discovery', 'capitec'];
+const techCompanies = ['vodacom', 'mtn', 'telkom', 'dimension data', 'eoh', 'liquid', 'altron', 'standard bank', 'fnb', 'nedbank', 'absa', 'discovery', 'capitec', 'goldman tech'];
 
 /**
  * TECH-ONLY GUARD: Ensures the role is actually in the Tech Industry.
@@ -620,4 +626,54 @@ async function scrapeDiscovery(query: string) {
 async function scrapeCapitec(query: string) {
     // Capitec is NOT Workday, so we strictly use LinkedIn/PNet for now as "Direct" isn't easy via API
     return scrapePNet(`Capitec Bank ${query}`).then(js => js.map(j => ({ ...j, source: 'Capitec (PNet Mirror)' })));
+}
+
+async function scrapeGoldmanTech(query: string) {
+    try {
+        const url = 'http://www.goldmantech.co.za/adverts.rss';
+        const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+        if (!res.ok) return [];
+
+        const xml = await res.text();
+        const result: any = await parseXml(xml);
+        const items = result.rss.channel[0].item;
+
+        console.log(`[GOLDMAN] Initial items count: ${items?.length || 0}`);
+
+        const jobs: any[] = [];
+        const queryLower = query.toLowerCase();
+
+        items.forEach((item: any, i: number) => {
+            const title = item.title?.[0]?.trim() || '';
+            const link = item.link?.[0]?.trim() || '';
+            const description = item.description?.[0]?.trim() || '';
+            const guid = item.guid?.[0]?._?.trim() || item.guid?.[0]?.trim() || '';
+            const pubDate = item.pubDate?.[0]?.trim() || '';
+
+            // More inclusive matching for Goldman Tech as it's a pre-vetted tech recruiter
+            const matchesQuery = queryLower.split(' ').every(word =>
+                title.toLowerCase().includes(word) ||
+                description.toLowerCase().includes(word)
+            );
+
+            if (matchesQuery || isRelevant(title, "Goldman Tech", query)) {
+                jobs.push({
+                    id: `goldman-${guid.split('/').pop() || Date.now()}-${i}`,
+                    title,
+                    company: "Goldman Tech",
+                    location: "South Africa",
+                    link,
+                    description,
+                    source: 'Goldman Tech',
+                    pubDate
+                });
+            }
+        });
+
+        console.log(`[GOLDMAN] Found ${jobs.length} jobs for "${query}"`);
+        return jobs.slice(0, 40); // Increased limit
+    } catch (e) {
+        console.error("[GOLDMAN] Scrape fail:", e);
+        return [];
+    }
 }
