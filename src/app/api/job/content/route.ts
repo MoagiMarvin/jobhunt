@@ -1,6 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 
+function resolveUrl(link: string | undefined | null, baseUrl: string): string | undefined {
+    if (!link) return undefined;
+    const s = link.trim();
+    if (s.startsWith('http')) return s;
+    if (s.startsWith('//')) return `https:${s}`;
+
+    try {
+        const base = new URL(baseUrl);
+        return new URL(s, base.origin).toString();
+    } catch (e) {
+        return s.startsWith('/') ? `${baseUrl.replace(/\/$/, '')}${s}` : s;
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         const { url } = await request.json();
@@ -97,9 +111,9 @@ export async function POST(request: NextRequest) {
                         lowerHref.includes('oraclecloud.com');
 
                     // Prioritize links with "Apply" text that point to known ATS or external sites
-                    if (isAtsLink || text.includes('apply externally') || text.includes('apply on company site') || (text === 'apply' && !lowerHref.includes('pnet.co.za') && !lowerHref.includes('linkedin.com'))) {
+                    if ((isAtsLink || text.includes('apply externally') || text.includes('apply on company site') || (text === 'apply' && !lowerHref.includes('pnet.co.za') && !lowerHref.includes('linkedin.com'))) && !lowerHref.includes('login')) {
                         console.log(`[JOB_CONTENT] Found Potential Direct Link in <a>: ${href}`);
-                        directApplyUrl = href;
+                        directApplyUrl = resolveUrl(href, url) || href;
                         return false; // break loop
                     }
                 }
@@ -109,7 +123,7 @@ export async function POST(request: NextRequest) {
         // --- DEEP REDIRECT RESOLUTION ---
         // If we found a redirect link (like PNet/LinkedIn), try to find where it leads
         const currentApplyUrl = directApplyUrl as string | null;
-        if (currentApplyUrl && (currentApplyUrl.includes('pnet.co.za') || currentApplyUrl.includes('linkedin.com/jobs/view') || currentApplyUrl.includes('adzuna.co.za') || currentApplyUrl.includes('bit.ly'))) {
+        if (currentApplyUrl && (currentApplyUrl.includes('pnet.co.za') || currentApplyUrl.includes('linkedin.com/jobs/view') || currentApplyUrl.includes('adzuna.co.za') || currentApplyUrl.includes('bit.ly') || currentApplyUrl.includes('careers24.com'))) {
             console.log(`[JOB_CONTENT] Attempting to resolve redirect: ${currentApplyUrl}`);
             try {
                 // Using GET with a short limit might be more successful than HEAD for some servers

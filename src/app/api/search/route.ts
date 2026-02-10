@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 
+/**
+ * Robust URL resolver for scraped links (logos and job ads).
+ * Handles relative (/path) and protocol-relative (//domain) URLs.
+ */
+function resolveUrl(link: string | undefined | null, baseUrl: string): string | undefined {
+    if (!link) return undefined;
+    const s = link.trim();
+    if (s.startsWith('http')) return s;
+    if (s.startsWith('//')) return `https:${s}`;
+
+    try {
+        const base = new URL(baseUrl);
+        return new URL(s, base.origin).toString();
+    } catch (e) {
+        return s.startsWith('/') ? `${baseUrl.replace(/\/$/, '')}${s}` : s;
+    }
+}
+
 // Search API for JobHunt (v3.0 - Integrated with User Reference Logic)
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -251,8 +269,9 @@ async function scrapePNet(query: string) {
             }
 
             if (title && link && company && location) {
-                // Ensure link is direct to the job-ad if possible
-                const fullLink = link.startsWith('http') ? link : `https://www.pnet.co.za${link}`;
+                // ROBUST URL RESOLUTION for PNet
+                const fullLink = resolveUrl(link, 'https://www.pnet.co.za');
+                const fullLogo = resolveUrl(logo, 'https://www.pnet.co.za');
                 const companyLower = company.toLowerCase();
                 const isPriorityCompany = techCompanies.some(c => companyLower.includes(c));
 
@@ -355,10 +374,9 @@ async function scrapeCareers24(query: string, retryCount = 0): Promise<any[]> {
             const company = companyEl.text().trim() || "Careers24 Employer";
 
             if (isRelevant(title, company, query)) {
-                let fullLink = link.trim();
-                if (!fullLink.startsWith('http')) {
-                    fullLink = fullLink.startsWith('//') ? `https:${fullLink}` : `https://www.careers24.com${fullLink.startsWith('/') ? '' : '/'}${fullLink}`;
-                }
+                // ROBUST URL RESOLUTION for Careers24
+                const fullLink = resolveUrl(link, 'https://www.careers24.com') || link;
+                const fullLogo = resolveUrl(logo, 'https://www.careers24.com');
 
                 jobs.push({
                     id: `c24-${Date.now()}-${i}`,
@@ -367,7 +385,7 @@ async function scrapeCareers24(query: string, retryCount = 0): Promise<any[]> {
                     location: locationEl.text().trim() || "South Africa",
                     link: fullLink,
                     source: 'Careers24',
-                    logo: logo || undefined
+                    logo: fullLogo
                 });
             }
         });
