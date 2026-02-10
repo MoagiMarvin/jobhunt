@@ -170,8 +170,13 @@ function isRelevant(title: string, company: string, query: string, job?: any): b
     const hasTechKeyword = techKeywords.some(k => titleLower.includes(k));
     const isTechCompany = techCompanies.some(c => companyLower.includes(c) || titleLower.includes(c));
 
+    const result = hasTechKeyword || isTechCompany || isTechConsultant;
+    if (!result) {
+        console.log(`[GUARD] Rejected: "${title}" at "${company}" (Keywords: ${hasTechKeyword}, TechCo: ${isTechCompany})`);
+    }
+
     // CRITICAL: If it's NOT explicitly non-tech AND has any tech indicator, show it
-    return hasTechKeyword || isTechCompany || isTechConsultant;
+    return result;
 }
 
 // --- SCRAPERS ---
@@ -311,50 +316,54 @@ async function scrapePNet(query: string) {
     } catch (e) { return []; }
 }
 
-async function scrapeCareers24(query: string) {
+async function scrapeCareers24(query: string, retryCount = 0): Promise<any[]> {
     try {
-        // Optimized URL Pattern from reference
         const q = query.trim().replace(/\s+/g, '-').toLowerCase();
         const url = `https://www.careers24.com/jobs/kw-${q}/m-true/`;
 
         const res = await fetch(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.1 Safari/537.36',
-                'Referer': 'https://www.careers24.com/',
-            },
-            signal: AbortSignal.timeout(12000)
+            headers: { 'User-Agent': 'Mozilla/5.0' },
+            signal: AbortSignal.timeout(15000)
         });
-        if (!res.ok) return [];
+
+        if (!res.ok) {
+            if (retryCount < 1 && (res.status === 524 || res.status === 504 || res.status === 503)) {
+                console.log(`[C24] Retry ${retryCount + 1} for status ${res.status}`);
+                return scrapeCareers24(query, retryCount + 1);
+            }
+            return [];
+        }
 
         const html = await res.text();
         const $ = cheerio.load(html);
         const jobs: any[] = [];
 
-        // Generic Bootstrap-like selectors from reference
-        const jobRows = $('.job-card, .c24-job-card, .job_search_results .row');
+        const jobRows = $('.job-card, .c24-job-card, .job_search_results .row, .page-content .row article, .job-item');
+        console.log(`[C24] Found ${jobRows.length} rows for "${query}"`);
 
         jobRows.each((i, el) => {
-            const titleEl = $(el).find('h2, h3, .job-title, .c24-job-title').first();
-
-            // DEEP LINK LOGIC: Prioritize the link attached to the title
+            const titleEl = $(el).find('h2, h3, .job-title, .c24-job-title, [data-at="job-title"]').first();
+            const title = titleEl.text().trim();
             const titleLink = titleEl.find('a').first().length > 0 ? titleEl.find('a').first() : (titleEl.is('a') ? titleEl : $(el).find('a').first());
+            const link = titleLink.attr('href');
+
+            if (!title || !link) return;
 
             const companyEl = $(el).find('.company-name, .job-card-company, .c24-company-name').first();
             const locationEl = $(el).find('.location, .job-card-location, .c24-location').first();
             const logo = $(el).find('img').attr('src');
+            const company = companyEl.text().trim() || "Careers24 Employer";
 
-            const title = titleEl.text().trim();
-            const link = titleLink.attr('href');
-            const company = companyEl.text().trim() || "Careers24";
-
-            if (title && link && isRelevant(title, company, query)) {
-                // Ensure link is a direct vacancy page
-                const fullLink = link.startsWith('http') ? link : `https://www.careers24.com${link}`;
+            if (isRelevant(title, company, query)) {
+                let fullLink = link.trim();
+                if (!fullLink.startsWith('http')) {
+                    fullLink = fullLink.startsWith('//') ? `https:${fullLink}` : `https://www.careers24.com${fullLink.startsWith('/') ? '' : '/'}${fullLink}`;
+                }
 
                 jobs.push({
                     id: `c24-${Date.now()}-${i}`,
                     title,
-                    company: companyEl.text().trim() || "Careers24",
+                    company,
                     location: locationEl.text().trim() || "South Africa",
                     link: fullLink,
                     source: 'Careers24',
@@ -364,7 +373,13 @@ async function scrapeCareers24(query: string) {
         });
 
         return jobs.slice(0, 15);
-    } catch (e) { return []; }
+    } catch (e: any) {
+        if (retryCount < 1 && (e.name === 'TimeoutError' || e.name === 'AbortError')) {
+            console.log(`[C24] Timeout retry ${retryCount + 1}`);
+            return scrapeCareers24(query, retryCount + 1);
+        }
+        return [];
+    }
 }
 
 async function scrapeLinkedIn(query: string) {

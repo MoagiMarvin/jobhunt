@@ -78,7 +78,7 @@ export default function SearchPage() {
 
             backgroundSources.forEach(async (src) => {
                 const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 15000); // 15s timeout for slower scrapers
+                const timer = setTimeout(() => controller.abort(), 30000); // Increased to 30s for slow scrapers
 
                 try {
                     const res = await fetch(`/api/search?query=${encodeURIComponent(query)}&source=${src}`, {
