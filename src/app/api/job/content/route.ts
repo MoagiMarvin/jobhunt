@@ -18,9 +18,41 @@ function resolveUrl(link: string | undefined | null, baseUrl: string): string | 
 export async function POST(request: NextRequest) {
     try {
         const { url } = await request.json();
-
         if (!url) {
             return NextResponse.json({ error: 'URL is required' }, { status: 400 });
+        }
+
+        // --- SPECIALIZED HANDLER: Network Recruitment (Native API bypass) ---
+        if (url.includes('networkrecruitmentinternational.com/job-details')) {
+            console.log(`[JOB_CONTENT] Detected Network Recruitment URL. Using direct API bypass...`);
+            try {
+                const urlObj = new URL(url);
+                const instance = urlObj.searchParams.get('instance') || 'network1';
+                const vacancyRef = urlObj.searchParams.get('vacancy_ref');
+
+                if (vacancyRef) {
+                    const baseUrl = "https://az-jhb-was-rescr-duda-api-prod-networkrecruitint.azurewebsites.net/PlacementPartnerXml";
+
+                    // Optional login
+                    await fetch(`${baseUrl}/api/login?apiAppSettingsId=98C4B8F6-6236-4490-9EDC-3FF76DB97D49`).catch(() => { });
+
+                    const apiRes = await fetch(`${baseUrl}/api/getadbyvacancyref?instance=${instance}&vacancyRef=${encodeURIComponent(vacancyRef)}`);
+                    if (apiRes.ok) {
+                        const jobData = await apiRes.json();
+                        if (jobData && jobData.detail_description) {
+                            console.log(`[JOB_CONTENT] Successfully retrieved native content for ${vacancyRef}`);
+                            return NextResponse.json({
+                                content: jobData.detail_description,
+                                url: url,
+                                directApplyUrl: `https://webapp.placementpartner.com/wi/application_form.php?id=${instance}&vacancy_ref=${encodeURIComponent(vacancyRef)}&source=JOBHUNT`
+                            });
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("[JOB_CONTENT] Network Recruitment API bypass failed:", err);
+                // Fallback to normal scraping if API fails
+            }
         }
 
         console.log(`[JOB_CONTENT] Fetching: ${url}`);

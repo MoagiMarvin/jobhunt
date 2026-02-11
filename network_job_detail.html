@@ -1,0 +1,2478 @@
+<!doctype html >
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      class="">
+<head>
+    <meta charset="utf-8">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    window._currentDevice = 'desktop';
+    window.Parameters = window.Parameters || {
+        HomeUrl: 'https://www.networkrecruitmentinternational.com/',
+        AccountUUID: 'f35a0a56108144ab9ca3fce47b437823',
+        SystemID: 'US_DIRECT_PRODUCTION',
+        SiteAlias: '7bd7e5e1',
+        SiteType: atob('RFVEQU9ORQ=='),
+        PublicationDate: 'Fri Jan 09 12:43:10 UTC 2026',
+        ExternalUid: null,
+        IsSiteMultilingual: false,
+        InitialPostAlias: '',
+        InitialPostPageUuid: '',
+        InitialDynamicItem: '',
+        DynamicPageInfo: {
+            isDynamicPage: false,
+            base64JsonRowData: 'null',
+        },
+        InitialPageAlias: 'job-details',
+        InitialPageUuid: '36963430ae8a4baca37acc2a58c9e7f4',
+        InitialPageId: '1190924455',
+        InitialEncodedPageAlias: 'am9iLWRldGFpbHM=',
+        InitialHeaderUuid: 'c10f4218a1bf4fd98ee6864491a63045',
+        CurrentPageUrl: '',
+        IsCurrentHomePage: false,
+        AllowAjax: false,
+        AfterAjaxCommand: null,
+        HomeLinkText: 'Back To Home',
+        UseGalleryModule: false,
+        CurrentThemeName: 'Layout Theme',
+        ThemeVersion: '500000',
+        DefaultPageAlias: '',
+        RemoveDID: true,
+        WidgetStyleID: null,
+        IsHeaderFixed: false,
+        IsHeaderSkinny: false,
+        IsBfs: true,
+        StorePageAlias: 'null',
+        StorePagesUrls: 'e30=',
+        IsNewStore: 'false',
+        StorePath: '',
+        StoreId: 'null',
+        StoreVersion: 0,
+        StoreBaseUrl: '',
+        StoreCleanUrl: true,
+        StoreDisableScrolling: true,
+        IsStoreSuspended: false,
+        HasCustomDomain: true,
+        SimpleSite: false,
+        showCookieNotification: true,
+        cookiesNotificationMarkup: ' <div> <p class=\"rteBlock\">We use cookies to give you the best possible browsing experience. By continuing to browse this website you agree to the terms outlined in our Privacy Notice. To find out more click <a type=\"url\" href=\"https:\/\/www.advtech.co.za\/privacy-notice\" target=\"_blank\" data-runtime-url=\"https:\/\/www.advtech.co.za\/privacy-notice\">here&nbsp;<\/a> \n<\/p> \n<\/div> \n',
+        translatedPageUrl: '',
+        isFastMigrationSite: false,
+        sidebarPosition: 'NA',
+        currentLanguage: 'en',
+        currentLocale: 'en-gb',
+        NavItems: '{}',
+        errors: {
+            general: 'There was an error connecting to the page.<br/> Make sure you are not offline.',
+            password: 'Incorrect name/password combination',
+            tryAgain: 'Try again'
+        },
+        NavigationAreaParams: {
+            ShowBackToHomeOnInnerPages: true,
+            NavbarSize: -1,
+            NavbarLiveHomePage: 'https://www.networkrecruitmentinternational.com/',
+            BlockContainerSelector: '.dmBody',
+            NavbarSelector: '#dmNav:has(a)',
+            SubNavbarSelector: '#subnav_main'
+        },
+        hasCustomCode: true,
+        planID: '7',
+        customTemplateId: 'null',
+        siteTemplateId: 'null',
+        productId: 'DM_DIRECT',
+        disableTracking: false,
+        pageType: 'FROM_SCRATCH',
+        isRuntimeServer: true,
+        isInEditor: false,
+        hasNativeStore: false,
+        defaultLang: 'en-gb',
+        hamburgerMigration: null,
+        isFlexSite: false
+    };
+
+    window.Parameters.LayoutID = {};
+    window.Parameters.LayoutID[window._currentDevice] = 6;
+    window.Parameters.LayoutVariationID = {};
+    window.Parameters.LayoutVariationID[window._currentDevice] = 5;
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Injecting site-wide to the head -->
+
+
+
+
+<!-- End Injecting site-wide to the head -->
+
+<!-- Inject secured cdn script -->
+
+
+<!-- ========= Meta Tags ========= -->
+<!-- PWA settings -->
+<script>
+    function toHash(str) {
+        var hash = 5381, i = str.length;
+        while (i) {
+            hash = hash * 33 ^ str.charCodeAt(--i)
+        }
+        return hash >>> 0
+    }
+</script>
+<script>
+    (function (global) {
+    //const cacheKey = global.cacheKey;
+    const isOffline = 'onLine' in navigator && navigator.onLine === false;
+    const hasServiceWorkerSupport = 'serviceWorker' in navigator;
+    if (isOffline) {
+        console.log('offline mode');
+    }
+    if (!hasServiceWorkerSupport) {
+        console.log('service worker is not supported');
+    }
+    if (hasServiceWorkerSupport && !isOffline) {
+        window.addEventListener('load', function () {
+            const serviceWorkerPath = '/runtime-service-worker.js?v=3';
+            navigator.serviceWorker
+                .register(serviceWorkerPath, { scope: './' })
+                .then(
+                    function (registration) {
+                        // Registration was successful
+                        console.log(
+                            'ServiceWorker registration successful with scope: ',
+                            registration.scope
+                        );
+                    },
+                    function (err) {
+                        // registration failed :(
+                        console.log('ServiceWorker registration failed: ', err);
+                    }
+                )
+                .catch(function (err) {
+                    console.log(err);
+                });
+        });
+
+        // helper function to refresh the page
+        var refreshPage = (function () {
+            var refreshing;
+            return function () {
+                if (refreshing) return;
+                // prevent multiple refreshes
+                var refreshkey = 'refreshed' + location.href;
+                var prevRefresh = localStorage.getItem(refreshkey);
+                if (prevRefresh) {
+                    localStorage.removeItem(refreshkey);
+                    if (Date.now() - prevRefresh < 30000) {
+                        return; // dont go into a refresh loop
+                    }
+                }
+                refreshing = true;
+                localStorage.setItem(refreshkey, Date.now());
+                console.log('refereshing page');
+                window.location.reload();
+            };
+        })();
+
+        function messageServiceWorker(data) {
+            return new Promise(function (resolve, reject) {
+                if (navigator.serviceWorker.controller) {
+                    var worker = navigator.serviceWorker.controller;
+                    var messageChannel = new MessageChannel();
+                    messageChannel.port1.onmessage = replyHandler;
+                    worker.postMessage(data, [messageChannel.port2]);
+                    function replyHandler(event) {
+                        resolve(event.data);
+                    }
+                } else {
+                    resolve();
+                }
+            });
+        }
+    }
+})(window);
+</script>
+<!-- Add manifest -->
+<link rel="manifest" href="/manifest.json">
+<!-- Tell the browser it's a PWA -->
+<meta name="mobile-web-app-capable" content="yes">
+<!-- Tell iOS it's a PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- End PWA settings -->
+
+
+
+<link rel="canonical" href="https://www.networkrecruitmentinternational.com/job-details">
+
+<meta id="view" name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<!--Add favorites icons-->
+
+<link rel="apple-touch-icon"
+      href="https://irp.cdn-website.com/7bd7e5e1/dms3rep/multi/digital-logo-icon-black-green.jpg"/>
+
+<link rel="icon" type="image/x-icon" href="https://irp.cdn-website.com/7bd7e5e1/site_favicon_16_1682667334302.ico"/>
+
+<!-- End favorite icons -->
+<link rel="preconnect" href="https://lirp.cdn-website.com/"/>
+
+
+
+<!-- render the required CSS and JS in the head section -->
+<script id='d-js-dmapi'>
+    window.SystemID = 'US_DIRECT_PRODUCTION';
+
+    if (!window.dmAPI) {
+        window.dmAPI = {
+            registerExternalRuntimeComponent: function () {
+            },
+            getCurrentDeviceType: function () {
+                return window._currentDevice;
+            },
+            runOnReady: (ns, fn) => {
+                const safeFn = dmAPI.toSafeFn(fn);
+                ns = ns || 'global_' + Math.random().toString(36).slice(2, 11);
+                const eventName = 'afterAjax.' + ns;
+
+                if (document.readyState === 'complete') {
+                    $.DM.events.off(eventName).on(eventName, safeFn);
+                    setTimeout(function () {
+                        safeFn({
+                            isAjax: false,
+                        });
+                    }, 0);
+                } else {
+                    window?.waitForDeferred?.('dmAjax', () => {
+                        $.DM.events.off(eventName).on(eventName, safeFn);
+                        safeFn({
+                            isAjax: false,
+                        });
+                    });
+                }
+            },
+            toSafeFn: (fn) => {
+                if (fn?.safe) {
+                    return fn;
+                }
+                const safeFn = function (...args) {
+                    try {
+                        return fn?.apply(null, args);
+                    } catch (e) {
+                        console.log('function failed ' + e.message);
+                    }
+                };
+                safeFn.safe = true;
+                return safeFn;
+            }
+        };
+    }
+
+    if (!window.requestIdleCallback) {
+        window.requestIdleCallback = function (fn) {
+            setTimeout(fn, 0);
+        }
+    }
+</script>
+
+<!-- loadCSS function header.jsp-->
+
+
+
+
+
+
+<script id="d-js-load-css">
+/**
+ * There are a few <link> tags with CSS resource in them that are preloaded in the page
+ * in each of those there is a "onload" handler which invokes the loadCSS callback
+ * defined here.
+ * We are monitoring 3 main CSS files - the runtime, the global and the page.
+ * When each load we check to see if we can append them all in a batch. If threre
+ * is no page css (which may happen on inner pages) then we do not wait for it
+ */
+(function () {
+  let cssLinks = {};
+  function loadCssLink(link) {
+    link.onload = null;
+    link.rel = "stylesheet";
+    link.type = "text/css";
+  }
+  
+    function checkCss() {
+      const pageCssLink = document.querySelector("[id*='CssLink']");
+      const widgetCssLink = document.querySelector("[id*='widgetCSS']");
+
+        if (cssLinks && cssLinks.runtime && cssLinks.global && (!pageCssLink || cssLinks.page) && (!widgetCssLink || cssLinks.widget)) {
+            const storedRuntimeCssLink = cssLinks.runtime;
+            const storedPageCssLink = cssLinks.page;
+            const storedGlobalCssLink = cssLinks.global;
+            const storedWidgetCssLink = cssLinks.widget;
+
+            storedGlobalCssLink.disabled = true;
+            loadCssLink(storedGlobalCssLink);
+
+            if (storedPageCssLink) {
+                storedPageCssLink.disabled = true;
+                loadCssLink(storedPageCssLink);
+            }
+
+            if(storedWidgetCssLink) {
+                storedWidgetCssLink.disabled = true;
+                loadCssLink(storedWidgetCssLink);
+            }
+
+            storedRuntimeCssLink.disabled = true;
+            loadCssLink(storedRuntimeCssLink);
+
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    storedRuntimeCssLink.disabled = false;
+                    storedGlobalCssLink.disabled = false;
+                    if (storedPageCssLink) {
+                      storedPageCssLink.disabled = false;
+                    }
+                    if (storedWidgetCssLink) {
+                      storedWidgetCssLink.disabled = false;
+                    }
+                    // (SUP-4179) Clear the accumulated cssLinks only when we're
+                    // sure that the document has finished loading and the document 
+                    // has been parsed.
+                    if(document.readyState === 'interactive') {
+                      cssLinks = null;
+                    }
+                }, 0);
+            });
+        }
+    }
+  
+
+  function loadCSS(link) {
+    try {
+      var urlParams = new URLSearchParams(window.location.search);
+      var noCSS = !!urlParams.get("nocss");
+      var cssTimeout = urlParams.get("cssTimeout") || 0;
+
+      if (noCSS) {
+        return;
+      }
+      if (link.href && link.href.includes("d-css-runtime")) {
+        cssLinks.runtime = link;
+        checkCss();
+      } else if (link.id === "siteGlobalCss") {
+        cssLinks.global = link;
+        checkCss();
+      } 
+      
+      else if (link.id && link.id.includes("CssLink")) {
+        cssLinks.page = link;
+        checkCss();
+      } else if (link.id && link.id.includes("widgetCSS")) {
+        cssLinks.widget = link;
+        checkCss();
+      }
+      
+      else {
+        requestIdleCallback(function () {
+          window.setTimeout(function () {
+            loadCssLink(link);
+          }, parseInt(cssTimeout, 10));
+        });
+      }
+    } catch (e) {
+      throw e
+    }
+  }
+  window.loadCSS = window.loadCSS || loadCSS;
+})();
+</script>
+
+
+
+<script data-role="deferred-init" type="text/javascript">
+    /* usage: window.getDeferred(<deferred name>).resolve() or window.getDeferred(<deferred name>).promise.then(...)*/
+    function Def() {
+        this.promise = new Promise((function (a, b) {
+            this.resolve = a, this.reject = b
+        }).bind(this))
+    }
+
+    const defs = {};
+    window.getDeferred = function (a) {
+        return null == defs[a] && (defs[a] = new Def), defs[a]
+    }
+    window.waitForDeferred = function (b, a, c) {
+        let d = window?.getDeferred?.(b);
+        d
+            ? d.promise.then(a)
+            : c && ["complete", "interactive"].includes(document.readyState)
+                ? setTimeout(a, 1)
+                : c
+                    ? document.addEventListener("DOMContentLoaded", a)
+                    : console.error(`Deferred  does not exist`);
+    };
+</script>
+<style id="forceCssIncludes">
+    /* This file is auto-generated from a `scss` file with the same name */
+
+.videobgwrapper{overflow:hidden;position:absolute;z-index:0;width:100%;height:100%;top:0;left:0;pointer-events:none;border-radius:inherit}.videobgframe{position:absolute;width:101%;height:100%;top:50%;left:50%;transform:translateY(-50%) translateX(-50%);object-fit:fill}#dm video.videobgframe{margin:0}@media (max-width:767px){.dmRoot .dmPhotoGallery.newPhotoGallery:not(.photo-gallery-done){min-height:80vh}}@media (min-width:1025px){.dmRoot .dmPhotoGallery.newPhotoGallery:not(.photo-gallery-done){min-height:45vh}}@media (min-width:768px) and (max-width:1024px){.responsiveTablet .dmPhotoGallery.newPhotoGallery:not(.photo-gallery-done){min-height:45vh}}#dm [data-show-on-page-only]{display:none!important}#dmRoot div.stickyHeaderFix div.site_content{margin-top:0!important}#dmRoot div.stickyHeaderFix div.hamburger-header-container{position:relative}
+    
+
+</style>
+<style id="cssVariables" type="text/css">
+    
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Google Fonts Include -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- loadCSS function fonts.jsp-->
+
+
+
+<link type="text/css" rel="stylesheet" href="https://irp.cdn-website.com/fonts/css2?family=Abel:ital,wght@0,400&family=Cabin:ital,wght@0,400..700;1,400..700&family=Amiko:ital,wght@0,400;0,600;0,700&family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&family=Alegreya:ital,wght@0,400..900;1,400..900&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Barlow:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bebas+Neue:ital,wght@0,400&family=Be+Vietnam:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900&family=Comfortaa:ital,wght@0,300..700;1,300..700&family=Dancing+Script:ital,wght@0,400..700;1,400..700&family=DM+Sans:ital,wght@0,100..1000;1,100..1000&family=DM+Serif+Display:ital,wght@0,400;1,400&family=Droid+Sans:ital,wght@0,400;0,700&family=Droid+Sans+Mono:ital,wght@0,400&family=Droid+Serif:ital,wght@0,400;0,700&family=Epilogue:ital,wght@0,100..900;1,100..900&family=Fjalla+One:ital,wght@0,400&family=Heebo:ital,wght@0,100..900;1,100..900&family=Inter:ital,wght@0,100..900;1,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&amp;subset=latin-ext&amp;display=swap"  />
+
+<link type="text/css" rel="stylesheet" href="https://irp.cdn-website.com/fonts/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Muli:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900&family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:ital,wght@0,200..700;1,200..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Petit+Formal+Script:ital,wght@0,400&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Prata:ital,wght@0,400&family=Prompt:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:ital,wght@0,300..700;1,300..700&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto+Slab:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Rock+Salt:ital,wght@0,400&family=Shadows+Into+Light:ital,wght@0,400&family=Slabo+27px:ital,wght@0,400&family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&amp;subset=latin-ext&amp;display=swap"  />
+
+<link type="text/css" rel="stylesheet" href="https://irp.cdn-website.com/fonts/css2?family=Spartan:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900&family=Sulphur+Point:ital,wght@0,300;0,400;0,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Vidaloka:ital,wght@0,400&family=Work+Sans:ital,wght@0,100..900;1,100..900&family=Yeseva+One:ital,wght@0,400&family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Red+Rose:ital,wght@0,300..700;1,300..700&family=Abril+Fatface:ital,wght@0,400&family=Fraunces:ital,wght@0,100..900;1,100..900&family=Albert+Sans:ital,wght@0,100..900;1,100..900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:ital,wght@0,300..700;1,300..700&family=Outfit:ital,wght@0,100..900;1,100..900&family=Aboreto:ital,wght@0,400&family=Arapey:ital,wght@0,400;1,400&family=Questrial:ital,wght@0,400&family=Marcellus:ital,wght@0,400&family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&family=Quattrocento+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Hedvig+Letters+Serif:ital,wght@0,400&amp;subset=latin-ext&amp;display=swap"  />
+
+<style>
+@font-face {
+  font-family: "GillSans Condensed";
+  src: url("https://irp.cdn-website.com/7bd7e5e1/fonts/GillSans+Condensed-d6b_400.otf");
+  font-weight: 400;
+  font-style: normal;
+}
+</style>
+
+
+<style>
+@font-face {
+  font-family: "GillSans Condensed Bold";
+  src: url("https://irp.cdn-website.com/7bd7e5e1/fonts/GillSans+Condensed+Bold-b5b1_400.otf");
+  font-weight: 400;
+  font-style: normal;
+}
+</style>
+
+
+<style>
+@font-face {
+  font-family: "Gill Sans Bold";
+  src: url("https://irp.cdn-website.com/7bd7e5e1/fonts/Gill+Sans+Bold-10f_400.otf");
+  font-weight: 400;
+  font-style: normal;
+}
+</style>
+
+
+<style>
+@font-face {
+  font-family: "Gill Sans Medium";
+  src: url("https://irp.cdn-website.com/7bd7e5e1/fonts/Gill+Sans+Medium-bc86_400.otf");
+  font-weight: 400;
+  font-style: normal;
+}
+</style>
+
+
+<style>
+@font-face {
+  font-family: "Gill Sans Heavy";
+  src: url("https://irp.cdn-website.com/7bd7e5e1/fonts/Gill+Sans+Heavy-3610_400.otf");
+  font-weight: 400;
+  font-style: normal;
+}
+</style>
+
+
+<style>
+@font-face {
+  font-family: "Gill Sans";
+  src: url("https://irp.cdn-website.com/7bd7e5e1/fonts/Gill+Sans-2231_400.otf");
+  font-weight: 400;
+  font-style: normal;
+}
+</style>
+
+
+
+
+
+
+<!-- RT CSS Include d-css-runtime-desktop-one-package-structured-global-->
+<link rel="stylesheet" type="text/css" href="https://static.cdn-website.com/mnlt/production/6166/_dm/s/rt/dist/css/d-css-runtime-desktop-one-package-structured-global.min.css" />
+
+<!-- End of RT CSS Include -->
+
+<link type="text/css" rel="stylesheet" href="https://irp.cdn-website.com/WIDGET_CSS/0edc5c3ad840b11cdb4fa7d9c23fe34d.css" id="widgetCSS" />
+
+<!-- Support `img` size attributes -->
+<style>img[width][height] {
+  height: auto;
+}</style>
+
+<!-- Support showing sticky element on page only -->
+<style>
+  body[data-page-alias="job-details"] #dm [data-show-on-page-only="job-details"] {
+    display: block !important;
+  }
+</style>
+
+<!-- This is populated in Ajax navigation -->
+<style id="pageAdditionalWidgetsCss" type="text/css">
+</style>
+
+
+
+
+<!-- Site CSS -->
+<link type="text/css" rel="stylesheet" href="https://irp.cdn-website.com/7bd7e5e1/files/7bd7e5e1_1.min.css?v=1833" id="siteGlobalCss" />
+
+
+
+<style id="customWidgetStyle" type="text/css">
+    
+</style>
+<style id="innerPagesStyle" type="text/css">
+    
+</style>
+
+
+<style
+        id="additionalGlobalCss" type="text/css"
+>
+</style>
+
+<style id="pagestyle" type="text/css">
+    *#dm *.dmBody a.span.textonly{
+color:rgb(255,255,255) !important}
+*#dm *.dmBody div.dmform-error{
+font-style:normal !important}
+*#dm *.dmBody div.dmforminput textarea{
+font-style:italic !important}
+*#dm *.dmBody div.dmforminput *.fileUploadLink{
+font-style:italic !important}
+*#dm *.dmBody div.checkboxwrapper span{
+font-style:italic !important}
+*#dm *.dmBody div.radiowrapper span{
+font-style:italic !important}
+*#dm *.dmBody nav.u_1144820115{
+color:black !important}
+</style>
+
+<style id="pagestyleDevice" type="text/css">
+    *#dm *.d-page-1716942098 DIV.dmInner
+{
+	background-repeat:no-repeat !important;
+	background-size:cover !important;
+	background-attachment:fixed !important;
+	background-position:50% 50% !important;
+}
+*#dm *.d-page-1716942098 DIV#dmSlideRightNavRight
+{
+	background-repeat:no-repeat !important;
+	background-image:none !important;
+	background-size:cover !important;
+	background-attachment:fixed !important;
+	background-position:50% 50% !important;
+}
+*#dm *.dmBody div.u_1243667655
+{
+	margin-left:0 !important;
+	padding-top:200px !important;
+	padding-left:40px !important;
+	padding-bottom:200px !important;
+	margin-top:0 !important;
+	margin-bottom:0 !important;
+	padding-right:40px !important;
+	margin-right:0 !important;
+	float:none !important;
+	top:0 !important;
+	left:0 !important;
+	width:auto !important;
+	position:relative !important;
+	height:auto !important;
+	max-width:none !important;
+	min-width:0 !important;
+	text-align:left !important;
+}
+*#dm *.dmBody *.u_1939041056 .shareLink .share-icon
+{
+	width:24px !important;
+	height:24px !important;
+	font-size:14.399999999999999px !important;
+	line-height:24px !important;
+}
+*#dm *.dmBody *.u_1939041056 .share-icons .shareLink:not(:last-child)
+{
+	margin-right:4px !important;
+}
+*#dm *.dmBody div.u_1939041056
+{
+	float:none !important;
+	top:0px !important;
+	left:0 !important;
+	width:calc(100% - 0px) !important;
+	position:relative !important;
+	height:auto !important;
+	padding-top:0px !important;
+	padding-left:0px !important;
+	padding-bottom:0px !important;
+	margin-right:auto !important;
+	margin-left:auto !important;
+	max-width:100% !important;
+	margin-top:-112px !important;
+	margin-bottom:10px !important;
+	padding-right:0px !important;
+	min-width:25px !important;
+	text-align:left !important;
+}
+
+</style>
+
+<!-- Flex Sections CSS -->
+
+
+
+
+
+
+
+<style id="globalFontSizeStyle" type="text/css">
+    .font-size-24, .size-24, .size-24 > font { font-size: 24px !important; }.font-size-30, .size-30, .size-30 > font { font-size: 30px !important; }.font-size-16, .size-16, .size-16 > font { font-size: 16px !important; }.font-size-14, .size-14, .size-14 > font { font-size: 14px !important; }
+</style>
+<style id="pageFontSizeStyle" type="text/css">
+</style>
+
+
+
+<!-- ========= JS Section ========= -->
+<script>
+    var isWLR = true;
+
+    window.customWidgetsFunctions = {};
+    window.customWidgetsStrings = {};
+    window.collections = {};
+    window.currentLanguage = "ENGLISH_UK"
+    window.isSitePreview = false;
+</script>
+<script>
+    window.customWidgetsFunctions["1f5975986930429f819d4cd2154b5c4a~25"] = function (element, data, api) {
+        null
+    };
+</script>
+<script type="text/javascript">
+
+    var d_version = "production_6166";
+    var build = "2026-02-09T13_48_39";
+    window['v' + 'ersion'] = d_version;
+
+    function buildEditorParent() {
+        window.isMultiScreen = true;
+        window.editorParent = {};
+        window.previewParent = {};
+        window.assetsCacheQueryParam = "?version=2026-02-09T13_48_39";
+        try {
+            var _p = window.parent;
+            if (_p && _p.document && _p.$ && _p.$.dmfw) {
+                window.editorParent = _p;
+            } else if (_p.isSitePreview) {
+                window.previewParent = _p;
+            }
+        } catch (e) {
+
+        }
+    }
+
+    buildEditorParent();
+</script>
+
+<!-- Load jQuery -->
+<script type="text/javascript" id='d-js-jquery'
+        src="https://static.cdn-website.com/libs/jquery/jquery-3.7.0.min.js"></script>
+<!-- End Load jQuery -->
+<!-- Injecting site-wide before scripts -->
+<!-- End Injecting site-wide to the head -->
+
+
+<script>
+    var _jquery = window.$;
+
+    var jqueryAliases = ['$', 'jquery', 'jQuery'];
+
+    jqueryAliases.forEach((alias) => {
+        Object.defineProperty(window, alias, {
+            get() {
+                return _jquery;
+            },
+            set() {
+                console.warn("Trying to over-write the global jquery object!");
+            }
+        });
+    });
+    window.jQuery.migrateMute = true;
+</script>
+<script>
+    window.cookiesNotificationMarkupPreview = ' <div> <p class=\"rteBlock\">We use cookies to give you the best possible browsing experience. By continuing to browse this website you agree to the terms outlined in our Privacy Notice. To find out more click <a type=\"url\" href=\"https:\/\/www.advtech.co.za\/privacy-notice\" target=\"_blank\" data-runtime-url=\"https:\/\/www.advtech.co.za\/privacy-notice\">here&nbsp;<\/a> \n<\/p> \n<\/div> \n';
+</script>
+
+<!-- HEAD RT JS Include -->
+<script id='d-js-params'>
+    window.INSITE = window.INSITE || {};
+    window.INSITE.device = "desktop";
+
+    window.rtCommonProps = {};
+    rtCommonProps["rt.ajax.ajaxScriptsFix"] =true;
+    rtCommonProps["rt.pushnotifs.sslframe.encoded"] = 'aHR0cHM6Ly97c3ViZG9tYWlufS5wdXNoLW5vdGlmcy5jb20=';
+    rtCommonProps["runtimecollector.url"] = 'https://rtc.multiscreensite.com';
+    rtCommonProps["performance.tabletPreview.removeScroll"] = 'false';
+    rtCommonProps["inlineEditGrid.snap"] =true;
+    rtCommonProps["popup.insite.cookie.ttl"] = '0.5';
+    rtCommonProps["rt.pushnotifs.force.button"] =true;
+    rtCommonProps["common.mapbox.token"] = 'pk.eyJ1IjoiZGFubnliMTIzIiwiYSI6ImNqMGljZ256dzAwMDAycXBkdWxwbDgzeXYifQ.Ck5P-0NKPVKAZ6SH98gxxw';
+    rtCommonProps["common.mapbox.js.override"] =false;
+    rtCommonProps["common.here.appId"] = 'iYvDjIQ2quyEu0rg0hLo';
+    rtCommonProps["common.here.appCode"] = '1hcIxLJcbybmtBYTD9Z1UA';
+    rtCommonProps["isCoverage.test"] =false;
+    rtCommonProps["ecommerce.ecwid.script"] = 'https://app.multiscreenstore.com/script.js';
+    rtCommonProps["common.resources.dist.cdn"] =true;
+    rtCommonProps["common.build.dist.folder"] = 'production/6166';
+    rtCommonProps["common.resources.cdn.host"] = 'https://static.cdn-website.com';
+    rtCommonProps["common.resources.folder"] = 'https://static.cdn-website.com/mnlt/production/6166';
+    rtCommonProps["feature.flag.runtime.backgroundSlider.preload.slowly"] =true;
+    rtCommonProps["feature.flag.runtime.newAnimation.enabled"] =true;
+    rtCommonProps["feature.flag.runtime.newAnimation.jitAnimation.enabled"] =true;
+    rtCommonProps["feature.flag.sites.google.analytics.gtag"] =true;
+    rtCommonProps["feature.flag.runOnReadyNewTask"] =true;
+    rtCommonProps["isAutomation.test"] =false;
+    rtCommonProps["booking.cal.api.domain"] = 'api.cal.com';
+
+    
+    rtCommonProps['common.mapsProvider'] = 'google';
+    
+    rtCommonProps["google.places.key"] = 'QUl6YVN5QlJVNFE3QWFSUzNoX3JmdEZVM3ZVUzYxZmI4NVd1U0Y4';
+    
+    rtCommonProps['common.mapsProvider.version'] = '0.52.0';
+    rtCommonProps['common.geocodeProvider'] = 'google';
+    rtCommonProps['server.for.resources'] = '';
+    rtCommonProps['feature.flag.lazy.widgets'] = true;
+    rtCommonProps['feature.flag.single.wow'] = false;
+    rtCommonProps['feature.flag.disallowPopupsInEditor'] = true;
+    rtCommonProps['feature.flag.mark.anchors'] = true;
+    rtCommonProps['captcha.public.key'] = '6LffcBsUAAAAAMU-MYacU-6QHY4iDtUEYv_Ppwlz';
+    rtCommonProps['captcha.invisible.public.key'] = '6LeiWB8UAAAAAHYnVJM7_-7ap6bXCUNGiv7bBPME';
+    rtCommonProps["images.sizes.small"] =160;
+    rtCommonProps["images.sizes.mobile"] =640;
+    rtCommonProps["images.sizes.tablet"] =1280;
+    rtCommonProps["images.sizes.desktop"] =1920;
+    rtCommonProps["modules.resources.cdn"] =true;
+    rtCommonProps["import.images.storage.imageCDN"] = 'https://lirp.cdn-website.com/';
+    rtCommonProps["feature.flag.runtime.inp.threshold"] =150;
+    rtCommonProps["feature.flag.performance.logs"] =true;
+    rtCommonProps["site.widget.form.captcha.type"] = 'g_recaptcha';
+    rtCommonProps["friendly.captcha.site.key"] = 'FCMGSQG9GVNMFS8K';
+    rtCommonProps["cookiebot.mapbox.consent.category"] = 'marketing';
+    // feature flags that's used out of runtime module (in  legacy files)
+    rtCommonProps["platform.monolith.personalization.dateTimeCondition.popupMsgAction.moveToclient.enabled"] =true;
+
+    window.rtFlags = {};
+    rtFlags["unsuspendEcwidStoreOnRuntime.enabled"] =true;
+    rtFlags["scripts.widgetCount.enabled"] =true;
+    rtFlags["fnb.animations.tracking.enabled"] =true;
+    rtFlags["ecom.ecwidNewUrlStructure.enabled"] = false;
+    rtFlags["ecom.ecwid.accountPage.emptyBaseUrl.enabled"] = true;
+    rtFlags["ecom.ecwid.pages.links.disable.listeners"] = true;
+    rtFlags["ecom.ecwid.storefrontV3.enabled"] = false;
+    rtFlags["ecom.ecwid.old.store.fix.facebook.share"] = true;
+    rtFlags["feature.flag.photo.gallery.exact.size"] =true;
+    rtFlags["geocode.search.localize"] =false;
+    rtFlags["feature.flag.runtime.newAnimation.asyncInit.setTimeout.enabled"] =false;
+    rtFlags["twitter.heightLimit.enabled"] = true;
+    rtFlags["runtime.lottieOverflow"] =false;
+    rtFlags["runtime.monitoring.sentry.ignoreErrors"] = "";
+    rtFlags["streamline.monolith.personalization.supportMultipleConditions.enabled"] =false;
+    rtFlags["flex.animation.design.panel.layout"] =true;
+    rtFlags["runtime.cwv.report.cls.enabled"] =true;
+    rtFlags["runtime.cwv.report.lcp.enabled"] =false;
+    rtFlags["contact.form.useActiveForm"] =true;
+    rtFlags["contact.form.custom.errors.enabled"] =false;
+    rtFlags["runtime.ssr.productStore.internal.observer"] =true;
+    rtFlags["runtime.ssr.productCustomizations"] =true;
+    rtFlags["runtime.ssr.runtime.filter-sort.newFilterSortWidgetWithOptions.enabled"] =false;
+    rtFlags["runtime.ssr.ssrSlider.jumpThreshold.enabled"] =false;
+</script>
+<script src="https://static.cdn-website.com/mnlt/production/6166/_dm/s/rt/dist/scripts/d-js-one-runtime-unified-desktop.min.js"  id="d-js-core"></script>
+<!-- End of HEAD RT JS Include -->
+<script src="https://static.cdn-website.com/mnlt/production/6166/_dm/s/rt/dist/scripts/d-js-jquery-migrate.min.js" ></script>
+<script>
+    
+    $(window).bind("orientationchange", function (e) {
+        $.layoutManager.initLayout();
+        
+    });
+    $(document).resize(function () {
+        
+    });
+</script>
+
+
+
+<style id="hideAnimFix">
+  .dmDesktopBody:not(.editGrid) [data-anim-desktop]:not([data-anim-desktop='none']), .dmDesktopBody:not(.editGrid) [data-anim-extended] {
+    visibility: hidden;
+  }
+
+  .dmDesktopBody:not(.editGrid) .dmNewParagraph[data-anim-desktop]:not([data-anim-desktop='none']), .dmDesktopBody:not(.editGrid) .dmNewParagraph[data-anim-extended] {
+    visibility: hidden !important;
+  }
+
+
+  #dmRoot:not(.editGrid) .flex-element [data-anim-extended] {
+    visibility: hidden;
+  }
+
+</style>
+
+
+
+
+
+
+<!-- End render the required css and JS in the head section -->
+
+
+
+
+
+
+
+  <link type="application/rss+xml" rel="alternate" href="https://www.networkrecruitmentinternational.com/feed/rss2"/>
+  <link type="application/atom+xml" rel="alternate" href="https://www.networkrecruitmentinternational.com/feed/atom"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://www.networkrecruitmentinternational.com/job-details"/>
+  <title>
+    
+    Job Details | Network Recruitment
+  
+  </title>
+  <meta name="keywords" content="recruitment, network recruitment, hiring, consultant, finance, engineering, it, permanent, contract, careers, jobs, candidates, clients, relationships, results, placements, executive, hiring managers, talent acquisition, specialist recruitment, experience, recruiters, Africa, internationally, Covid19, professionals, talent solutions, talent sourcing, employment agency, human capital, engineering, IT, finance,. It, recruitment, jobs, employment, developers, agile, C#, C++, full stack, sales executive, telco, mobile, python, java, Microsoft, software, business analyst, central developer, android, ios, d365, crm, client experience, CX, UX, devops, JavaScript, cloud, cloud sysadmin, sysadmin, software engineer, designer, .net, game developer, experience, web developer, angular, angular developer, php, php developer, networking, cyber security, back-end developer,Finance, accounting, auditing, audit, tax, equities, bookkeeper, CA SA, financial manager, internal auditor, risk auditor, senior accountant, accountant, analyst, pricing analyst, credit controller, regional manager, financial director, group accountant, management accountant, project manager, equity analyst, payroll specialist, head of finance, module risk auditor, senior m&amp;a associate, associate, commercial officer, finance clerk, cost accountant, sales manager, corporate finance associate, corporate, experience, sales, management, internal, external, risk, equity, markets, quantitative, actuaries., Engineering, civil, mechanical, artisan, mechatronic, electronic, electrical, automotive, toolmaker, technician, mining, hydraulic, project engineer, sales engineer, sales, rf, fitter, millwright, area sales, engineering manager, gcc electrical engineer, plant engineer, gcc, electrical software technician, plc programmer, plc, experience, electronic hardware, cnc, cnc operator, has cnc operator, service technician, hiring manager, overqualified, recruiter, job search, CV, Biometrics, data, job, Covid-19, recruitment, Virtual recruiting, remote working, risk, actuarial, COVID-19, Risk Recruitment, Actuarial recruitment, Interview, preparation, job searching, interviews, job tips. career tips, CV, update, resume, &amp;nbsp; Matric, education, artisan, career, career changes, career moves, mental health, and employee wellness, solutions, services, customer care, invest, post-placement, placement, recruitment, cv's, training, relationships, support, preplacement, experience, clients, candidates, applications, representative, recruitment process, retainer assignments, managers, specialist services, consultants, jobs, researchers, customer care, employment, network, network recruitment, engineering, it, financial, network, recruitment, consultants, clients, candidates, testimonials, placement, experience, highlights, agency, professional, passionate, job, position, technology, growth, finance candidate, engineering candidate, it candidate, career, recruitment specialists, contracting solutions, awards, accolades, network recruitment, pmr awards, diamond, gold, silver, bronze, track record, accounting, engineering, it recruitment, industry awards, results, directors, managers, recruitment specialists, recruitment agencies, criteria, job specs, employees, employers, 
+south african talent for remote hire,
+payroll service management,
+International Recruitment,
+contact staff recruiting firms,
+application managed services,
+south african finance talent job agency near me,
+it recruitment south africa,
+hire remote it staff,
+it recruitment south africa,
+qualified talent network engineering menlyn,
+it skills,
+network recriotment international,
+managed security services,
+finance talent accounting temp agencies,
+Hire staff for your international team,
+employment agencies in pietermaritzburg,
+gauteng agencies hiring,
+network specialist,
+finance careers south africa,
+finance recruitment agencies,
+network engineering menlyn,
+engineering recruitment companies,
+recruitment agencies in pretoria east,
+recruitment agencies in centurion,
+provincial recruitment network,
+recruitment consultant vacancies,
+network finance jobs,
+engineering placement agency,
+ca global africa recruitment,
+centurion careers, 
+employment agency centurion,
+network company,
+advtech vacancies,
+cisa jobs in south africa,
+capital outsourcing recruitment agency,
+network contracting solutions,
+cedrus libani recruitment,
+recruitment agencies in pietermaritzburg,
+international recruitment agencies in cape town,
+hire audit managers,
+south african it talent,
+south african finance skills,
+south african recruitment agency staffing agency,
+outsource your payroll,
+jobs for be civil engineer,
+internal audit jobs,
+finance,
+IT jobs,
+remote it staff,
+contract it staff,
+contract it talent,
+hire remote it staff,
+south african it skills,
+south african it talent,
+permanent it staff,
+permanent remote it talent,
+remote it talent south africa,
+it skills for relocation,
+screened it professionals,
+hire it managers,
+hire it executives,
+finance professional,
+finance recruitment,
+finance recruitment agency,
+international finance recruitment,
+accounting and finance recruitment agencies,
+financial services recruitment agencies,
+finance staffing agencies,
+accounting staffing,
+banking and finance recruitment agencies,
+accounting headhunters,
+accounting employment agencies,
+finance recruitment agencies near me,
+finance and accounting staffing,
+accountancy recruitment agencies near me,
+finance company recruitment,
+financial services headhunters,
+accounting recruitment agencies near me,
+accounting and finance recruitment,
+finance staffing,
+accounting recruiting company,
+finance recruiting company,
+specialist financial recruitment,
+it headhunters,
+full service talent solutions,
+permanent professionals for relocation work,
+hire cfo,
+hire payroll staff,
+hire tax specialist,
+executive professionals placement agencies near me,
+finance managed services,
+network recruitment international,
+network recruitment international it recruitment agencies,
+managed services construction temp agency,
+hire accountants it placement agencies
+south african it skills,
+reliable permanent recruitmet,
+hire tax specialist it employment agency,
+outsourced services,
+remote finance staff,
+it recruitment agency,
+deliver on long term projects,
+remote it talent south africa,
+finance professional,
+secured managed sercvices,
+south african finance professionals,
+hire remote talent job placement agencies,
+employee benefits management,
+it talent solutions,
+global talent solutions,
+accounting and it recruitment agencies,
+banking and it recruitment agencies,
+it recruitment agencies near me,
+it and accounting staffing,
+it company recruitment,
+accounting and it recruitment,
+recruitment agencies for accounting jobs,
+it staffing,
+it recruiting company,
+hire developers,
+it staffing companies,
+it recruiting firms,
+it temp agencies,
+it staffing firms,
+best it recruitment agencies,
+hire programmers,
+it employment agency,
+it recruitment services,
+it placement agencies,
+top it recruiting firms,
+best it staffing agencies,
+top it recruitment agencies,
+it head hunter,
+best it recruitment agencies for it specialists,
+finance recruitment south africa,
+remote finance talent,
+remote finance staff,
+contract finance staff,
+contract finance talent,
+hire remote finance staff,
+hst vacancies,
+it staffing agencies,
+managed networking and infrastructure services,
+sourcing it candidates,
+hire remote finance staff,
+hire auditors it recruitment services,
+it contractors best it recruitment agencies for it specialists,
+accounting careers,
+permanent finance staff,
+finance recruitment south africa,
+it skills for relocation,
+south african it talent recruitment agencies,
+managed tax services,
+Network International Recruitment,
+international talent strategy,
+remote it staff,
+it staff for relocation,
+managed vat services,
+network recruitment,
+Relocation work,
+flexible resource management,
+hire financial analyst it recruitment agencies near me,
+hire payroll staff hire programmers,
+full service talent solutions,
+permanent remote it talent,
+South African IT Professionals,
+remote it staff it staffing companies,
+it professional recruiting specialist,
+remote it talent,
+permanent recruitment solutions,
+contract it staff,
+managed desktop support services,
+Finance Key Words,
+bookkeeping jobs,
+actuarial science,
+Jobs for engineers,
+blue stock,
+Jobs mechanical,
+Java Programmer,
+accounting jobs,
+chartered accountant,
+IT Specialists,
+it recruitment agencies,
+job agencies in pretoria,
+wdc recruitment,
+finance jobs in south africa,
+engineering management recruitment agencies,
+engineering recruitment agencies,
+advtech login,
+it recruitment agencies in gauteng,
+engineering recruitment,
+bruma loans south africa,
+job agencies in gauteng,
+recruitment agencies stellenbosch,
+recruiters johannesburg,
+engineering recruitment agencies in pretoria,
+civil engineering recruitment agencies in johannesburg,
+finance staff for relocation,
+finance skills for relocation,
+screened finance professionals,
+hire south african finance talent,
+south afrcian finance staff,
+south african talent for remote work,
+south african talent for remote hire,
+top it staffing firms,
+Engineering Key Words,
+tax jobs,
+actuarial society of south africa,
+corporate investment banking,
+sasol share price,
+staffing solutions,
+hr services,
+remote staff,
+finance talent,
+we source staff,
+finance recruitment agency,
+finance recruitment technical recruitment agencies,
+hire it managers,
+global talent provider,
+International talent solutions,
+contract finance staff,
+south african talent temp agencies near me,
+managed service provider,
+it talent the recruitment company,
+Qualified Finance Talent,
+it recruitment accounting staffing,
+managed service support,
+full function managed services,
+hire it executives best it recruitment agencies,
+managed services from south africa,
+specialist recruitment,
+network recuitment recruitment company,
+sourcing candidates,
+finance talent for your business,
+permanent professionals for remote work,
+it support services,
+international finance recruitment,
+remote recruitment solutions,
+remote finance talent south africa,
+reliable permanent recruitmet,
+it recruitment job recruitment agencies near me,
+full spectrum managed services,
+hire south african it talent top it recruiting firms,
+network recuitment,
+hire qualified professionals,
+finance and executive talent solutions,
+executive contractors,
+find finance talent,
+network recuitment,
+third party it provider,
+remote recruitment solutions,
+remote managed services,
+Screened Finance Candidates,
+managed services recruitment,
+Tailored service offering,
+finance professionals temp job agencies,
+finance recruitment accounting staffing,
+permanent it staff,
+third party payroll provider,
+international it recruitment,
+south african finance talent,
+remote finance staff recruiting agencies near me,
+contract it talent,
+timesheeting services,
+relocation it staff,
+contract staff,
+outsourcer managed services,
+south african talent for remote work top it recruitment agencies,
+relocation finance staff,
+hire financial analyst,
+permanent professionals for remote work,
+managed communications services,
+managed service advisory,
+soucing finance candidates,
+contract finance talent,
+finance recruitment south africa,
+managed services,
+hire remote staff staffing agencies,
+south africa talent leader,
+Specialist resourcing candidates,
+flexible resource management,
+deliver in short term projects,
+hire finance directors,
+it executive,
+remote it talent,
+hire cfo,
+payroll services best staffing agencies,
+network it bruma,
+network finance,
+permanent remote finance talent,
+finance skills,
+immediately available remote staff,
+hire executives,
+soucing candidates for managed services,
+it professional,
+south afrcian it staff best it staffing agencies,
+Qualified IT Talent,
+full service talent solutions,
+third party finance provider,
+Contarcting Solutions,
+governance and risk staff,
+hire finance executives,
+recruitment south africa,
+capital recruitment agency in midrand,
+hire accountants,
+network recruitment menlyn,
+recruitment agencies in cape town northern suburbs,
+network finance recruitment,
+manager in finance,
+managed service staff,
+reliable managed services,
+screened it professionals,
+Screened IT candiates,
+it contractors,
+hire finance managers,
+hire auditors,
+Jobs electrical engineer,
+controlled managed services,
+talent provider,
+executive candidates,
+managed software services,
+IT Key Words
+Jobs Mechanical Engineer
+Finance Contractors
+hire financial managers
+Hire remote staff from South Africa
+it executive
+flexible stafffing
+Permanent Recruitment
+South african recruitment agency
+managed data analytics services
+Managed services
+contracting solutions
+finance executive
+remote finance talent
+managed finance services
+permanent professionals for relocation work
+recruitment solutions
+find it talent
+remote work
+network recruitment international
+network recuitment
+it skills
+it talent
+it professional
+it recruitment agency
+it recruitment south africa
+reliable permanent recruitmet
+remote recruitment solutions
+international it recruitment
+relocation it staff
+it staff for relocation
+hire south african it talent
+finance talent
+south african finance talent
+finance executive
+permanent finance staff
+permanent remote finance talent
+remote finance talent south africa
+south afrcian it staff
+financial services recruitment
+finance headhunters
+it job agencies
+staff it
+it recruitment consultant
+top it recruiters
+recruitment ict
+top it staffing companies
+specialist it recruitment agencies
+best it recruiting firms
+finance skills
+it recruitment, south african finance skills candidates, clients consultants, network recruitment, resourcing, partner, africa, south africa, internationally, nigeria, mozambique, mauritius, zambia, tanzania, ghana, operations, engineering, it, finance, supply chain, specialist, market, footprint, expert team, skills, contact us, country, consulting"/>
+  <meta name="description" content="Network Recruitment specializes in talent solution services in the fields of IT, Finance, and Engineering. We pride ourselves on developing relationships and delivering results."/>
+  <!--THE CONTENT OF THIS FILE WILL BE APPENDED TO EVERY PAGE INSIDE THE </HEAD> ELEMENT-->  <!-- Google Tag Manager -->  <script>
+
+
+
+
+
+
+
+
+
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PVCV22M');
+ 
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  </script>
+  <!-- End Google Tag Manager -->  <!-- Google Search Console -->  <meta name="google-site-verification" content="-ZXLdJSxjwx16rQzy-YPdKAMeK9yFkvwZnQoG82RZsQ"/>
+
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="Job Details | Network Recruitment"/>
+  <meta name="twitter:description" content="Network Recruitment specializes in talent solution services in the fields of IT, Finance, and Engineering. We pride ourselves on developing relationships and delivering results."/>
+  <meta name="twitter:image" content="https://lirp.cdn-website.com/7bd7e5e1/dms3rep/multi/opt/digital-logo-icon-black-green-1920w.jpg"/>
+  <meta property="og:description" content="Network Recruitment specializes in talent solution services in the fields of IT, Finance, and Engineering. We pride ourselves on developing relationships and delivering results."/>
+  <meta property="og:title" content="Job Details | Network Recruitment"/>
+  <meta property="og:image" content="https://lirp.cdn-website.com/7bd7e5e1/dms3rep/multi/opt/digital-logo-icon-black-green-1920w.jpg"/>
+
+
+
+
+<!-- SYS- VVNfRElSRUNUX1BST0RVQ1RJT04= -->
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body id="dmRoot" data-page-alias="job-details"  class="dmRoot dmDesktopBody fix-mobile-scrolling addCanvasBorder dmResellerSite dmLargeBody "
+      style="padding:0;margin:0;"
+      
+    >
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ========= Site Content ========= -->
+<div id="dm" class='dmwr'>
+    
+    <div class="dm_wrapper standard-var5 widgetStyle-3 standard">
+         <div dmwrapped="true" id="1901957768" class="dm-home-page" themewaschanged="true"> <div dmtemplateid="StandardLayoutMultiD" class="standardHeaderLayout dm-bfs dm-layout-sec hasAnimations rows-1200 inMiniHeaderMode hasStickyHeader hamburger-reverse dmPageBody d-page-1716942098 inputs-css-clean dmFreeHeader" id="dm-outer-wrapper" data-page-class="1716942098" data-soch="true" data-background-parallax-selector=".dmHomeSection1, .dmSectionParallex"> <div id="dmStyle_outerContainer" class="dmOuter"> <div id="dmStyle_innerContainer" class="dmInner"> <div class="dmLayoutWrapper standard-var dmStandardDesktop"> <div> <div id="iscrollBody"> <div id="site_content"> <div class="dmHeaderContainer fHeader d-header-wrapper"> <div id="hcontainer" class="u_hcontainer dmHeader p_hfcontainer" freeheader="true" headerlayout="b58ba5b5703b4cd7b5f5f7951565dc87===horizontal-layout-5" layout="78f5c343822e4eb3aac27f4ad5d13812===header" secondary-image="https://lirp.cdn-website.com/7bd7e5e1/dms3rep/multi/opt/nr_recruitment_logo_on-black-644544eb-1920w.png" has-secondary-image="true" data-gradient-background="true" data-scrollable-target="body" data-scrollable-target-threshold="1" data-scroll-responder-id="1" logo-size-target="83%" mini-header-show-only-navigation-row="true"> <div dm:templateorder="85" class="dmHeaderResp dmHeaderStack noSwitch" id="1709005236"> <div class="dmRespRow dmDefaultListContentRow u_1146256589 fullBleedChanged fullBleedMode" style="text-align:center" id="1146256589"> <div class="dmRespColsWrapper" id="1984553079"> <div class="u_1667401319 small-12 dmRespCol large-2 medium-2" id="1667401319"> <div class="u_1852778474 imageWidget align-center" data-widget-type="image" id="1852778474" data-element-type="image"> <a href="/" id="1948819313" file="false"><img src="https://lirp.cdn-website.com/7bd7e5e1/dms3rep/multi/opt/digital-stacked-white-green-1920w.png" id="1214675823" class="" data-dm-image-path="https://lirp.cdn-website.com/7bd7e5e1/dms3rep/multi/opt/digital-stacked-white-green-1920w.png" onerror="handleImageLoadError(this)"/></a> 
+</div> 
+</div> 
+ <div class="u_1264434977 dmRespCol small-12 large-8 medium-8" id="1264434977"> <div class="dmNewParagraph u_1198382738" data-element-type="paragraph" data-version="5" id="1198382738" style="transition: opacity 1s ease-in-out 0s;"> <h1 class="m-size-19 text-align-center size-24"><span class="m-font-size-19 font-size-24" style="color: rgb(255, 255, 255); display: unset;">Specialist Recruitment</span></h1> 
+</div> 
+ <div class="dmNewParagraph u_1006037240" data-element-type="paragraph" data-version="5" id="1006037240" style="transition: opacity 1s ease-in-out 0s;"> <h1 class="m-size-24 text-align-center size-30"><a href="/finance" runtime_url="/finance" type="page" class="font-size-30 m-font-size-24" style="color:rgb(190, 197, 49);display:unset;font-family:'Gill Sans Bold';">FINANCE</a><span single-space="true" class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"> <span class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"></span> 
+</span><span class="font-size-30 m-font-size-24" style="color:rgb(255, 255, 255);display:unset;font-family:'Gill Sans Bold';">|</span><span single-space="true" class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"> <span class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"></span> 
+</span><a href="/it" runtime_url="/it" type="page" class="font-size-30 m-font-size-24" style="color:rgb(190, 197, 49);display:unset;font-family:'Gill Sans Bold';">IT</a><span single-space="true" class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"> <span class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"></span> 
+</span><span class="font-size-30 m-font-size-24" style="color:rgb(255, 255, 255);display:unset;font-family:'Gill Sans Bold';">|</span><span single-space="true" class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"> <span class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"></span> 
+</span><a href="/engineering" runtime_url="/engineering" type="page" class="font-size-30 m-font-size-24" style="color:rgb(190, 197, 49);display:unset;font-family:'Gill Sans Bold';">ENGINEERING</a><span single-space="true" class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"> <span class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"></span> 
+</span><span class="font-size-30 m-font-size-24" style="color:rgb(255, 255, 255);display:unset;font-family:'Gill Sans Bold';">|</span><span single-space="true" class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"> <span class="font-size-30 m-font-size-24" style="color: rgb(255, 255, 255); display: unset;"></span> 
+</span><a href="/supply-chain" runtime_url="/supply-chain" type="page" class="font-size-30 m-font-size-24" style="color:rgb(190, 197, 49);display:unset;font-family:'Gill Sans Bold';">SUPPLY CHAIN</a></h1> 
+</div> 
+ <div class="dmNewParagraph" data-element-type="paragraph" data-version="5" id="1856194470" style="transition: opacity 1s ease-in-out 0s;"><p class="text-align-center size-24 m-size-19"><span class="font-size-24 m-font-size-19" style="font-weight: bold; color: rgb(190, 197, 49); display: initial;"><span class="font-size-24 m-font-size-19" style="font-weight: bold; color: rgb(190, 197, 49); display: initial;">WE&nbsp;</span> 
+</span><span class="font-size-24 m-font-size-19" style="font-weight: bold; color: rgb(255, 255, 255); display: initial;"><span class="font-size-24 m-font-size-19" style="font-weight: bold; color: rgb(255, 255, 255); display: initial;">KNOW</span> 
+</span><span class="font-size-24 m-font-size-19" style="font-weight: bold; color: rgb(190, 197, 49); display: initial;">PEOPLE</span></p></div> 
+</div> 
+ <div class="u_1920485222 dmRespCol small-12 large-2 medium-2" id="1920485222"> <div class="u_1214648570 align-center text-align-center dmSocialHub gapSpacing" id="1214648570" dmle_extension="social_hub" data-element-type="social_hub" wr="true" networks="" icon="true" surround="true" adwords=""> <div class="socialHubWrapper"> <div class="socialHubInnerDiv "> <a href="mailto:bdadmin@networkrecruitment.co.za" dm_dont_rewrite_url="true" aria-label="email" onclick="dm_gaq_push_event &amp;&amp; dm_gaq_push_event(&apos;socialLink&apos;, &apos;click&apos;, &apos;Email&apos;)"> <span class="dmSocialEmail dm-social-icons-email oneIcon socialHubIcon style5" aria-hidden="true" data-hover-effect=""></span> 
+</a> 
+ <a href="https://www.linkedin.com/company/network-recruitment/" target="_blank" dm_dont_rewrite_url="true" aria-label="linkedin" onclick="dm_gaq_push_event &amp;&amp; dm_gaq_push_event(&apos;socialLink&apos;, &apos;click&apos;, &apos;Linkedin&apos;)"> <span class="dmSocialLinkedin icon-linkedin oneIcon socialHubIcon style5" aria-hidden="true" data-hover-effect=""></span> 
+</a> 
+ <a href="https://facebook.com/NetworkRecruitment" target="_blank" dm_dont_rewrite_url="true" aria-label="facebook" onclick="dm_gaq_push_event &amp;&amp; dm_gaq_push_event(&apos;socialLink&apos;, &apos;click&apos;, &apos;Facebook&apos;)"> <span class="dmSocialFacebook dm-social-icons-facebook oneIcon socialHubIcon style5" aria-hidden="true" data-hover-effect=""></span> 
+</a> 
+ <a href="https://www.instagram.com/nrecruitment_/" target="_blank" dm_dont_rewrite_url="true" aria-label="instagram" onclick="dm_gaq_push_event &amp;&amp; dm_gaq_push_event(&apos;socialLink&apos;, &apos;click&apos;, &apos;Instagram&apos;)"> <span class="dmSocialInstagram dm-social-icons-instagram oneIcon socialHubIcon style5" aria-hidden="true" data-hover-effect=""></span> 
+</a> 
+ <a href="https://youtube.com/channel/UCV4ZCFaTjaEyhMKG2ytGrUg" target="_blank" dm_dont_rewrite_url="true" aria-label="youtube" onclick="dm_gaq_push_event &amp;&amp; dm_gaq_push_event(&apos;socialLink&apos;, &apos;click&apos;, &apos;Youtube&apos;)"> <span class="dmSocialYoutube dm-social-icons-youtube oneIcon socialHubIcon style5" aria-hidden="true" data-hover-effect=""></span> 
+</a> 
+ <a href="https://twitter.com/NRecruitment" target="_blank" dm_dont_rewrite_url="true" aria-label="twitter" onclick="dm_gaq_push_event &amp;&amp; dm_gaq_push_event(&apos;socialLink&apos;, &apos;click&apos;, &apos;Twitter&apos;)"> <span class="dmSocialTwitter dm-social-icons-twitter oneIcon socialHubIcon style5" aria-hidden="true" data-hover-effect=""></span> 
+</a> 
+</div> 
+</div> 
+</div> 
+ <a data-display-type="block" class="u_1866069280 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient" file="false" href="/submit-a-vacancy" data-element-type="dButtonLinkId" id="1866069280"> <span class="iconBg" aria-hidden="true" id="1243524801"> <span class="icon hasFontIcon icon-star" id="1588702780"></span> 
+</span> 
+ <span class="text" id="1571482832">Submit a Vacancy</span> 
+</a> 
+ <a data-display-type="block" class="u_1950571082 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient" file="false" href="/submit-your-cv" data-element-type="dButtonLinkId" id="1950571082"> <span class="iconBg" aria-hidden="true" id="1894517431"> <span class="icon hasFontIcon icon-star" id="1312912536"></span> 
+</span> 
+ <span class="text" id="1891170447">Submit Your CV</span> 
+</a> 
+ <a data-display-type="block" class="u_1551387320 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient" file="false" href="/subscribe-to-network-recruitment-newsletter" data-element-type="dButtonLinkId" id="1551387320"> <span class="iconBg" aria-hidden="true" id="1067077764"> <span class="icon hasFontIcon icon-star" id="1214329114"></span> 
+</span> 
+ <span class="text" id="1461343223">Subscribe To Our Newsletter</span> 
+</a> 
+</div> 
+</div> 
+</div> 
+ <div class="dmRespRow u_1869711424" id="1869711424"> <div class="dmRespColsWrapper" id="1509968057"> <div class="dmRespCol small-12 u_1750814868 medium-12 large-12" id="1750814868"> <nav class="u_1052088586 effect-bottom2 main-navigation unifiednav dmLinksMenu" role="navigation" layout-main="horizontal_nav_layout_1" layout-sub="submenu_horizontal_1" data-show-vertical-sub-items="HOVER" id="1052088586" dmle_extension="onelinksmenu" data-element-type="onelinksmenu" wr="true" icon="true" surround="true" adwords="" navigation-id="unifiedNav"> <ul role="menubar" class="unifiednav__container  " data-auto="navigation-pages"> <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/find-talent" class="unifiednav__item  dmUDNavigationItem_010101134259  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+         FIND TALENT
+        " data-auto="page-text-style">FIND TALENT<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="0" data-auto="sub-pages"> <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/talent-industries" class="unifiednav__item  dmUDNavigationItem_010101801068  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           TALENT INDUSTRIES
+          " data-auto="page-text-style">TALENT INDUSTRIES<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-for-finance" class="unifiednav__item  dmUDNavigationItem_010101814795  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             FINANCE CANDIDATES
+            " data-auto="page-text-style">FINANCE CANDIDATES<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-for-it" class="unifiednav__item  dmUDNavigationItem_010101982255  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             IT CANDIDATES
+            " data-auto="page-text-style">IT CANDIDATES<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-for-engineering" class="unifiednav__item  dmUDNavigationItem_010101720397  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             ENGINEERING CANDIDATES
+            " data-auto="page-text-style">ENGINEERING CANDIDATES<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-for-supply-chain" class="unifiednav__item  dmUDNavigationItem_01010175089  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             SUPPLY CHAIN CANDIDATES
+            " data-auto="page-text-style">SUPPLY CHAIN CANDIDATES<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/talent-region" class="unifiednav__item  dmUDNavigationItem_010101930612  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           TALENT REGION
+          " data-auto="page-text-style">TALENT REGION<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-south-africa" class="unifiednav__item  dmUDNavigationItem_010101681151  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM SOUTH AFRICA
+            " data-auto="page-text-style">CANDIDATES FROM SOUTH AFRICA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-rest-of-africa" class="unifiednav__item  dmUDNavigationItem_010101783541  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM REST OF AFRICA
+            " data-auto="page-text-style">CANDIDATES FROM REST OF AFRICA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-americas" class="unifiednav__item  dmUDNavigationItem_010101259683  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM AMERICAS
+            " data-auto="page-text-style">CANDIDATES FROM AMERICAS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-australia" class="unifiednav__item  dmUDNavigationItem_010101469246  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM AUSTRALIA
+            " data-auto="page-text-style">CANDIDATES FROM AUSTRALIA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-middle-east" class="unifiednav__item  dmUDNavigationItem_010101362185  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM MIDDLE EAST
+            " data-auto="page-text-style">CANDIDATES FROM MIDDLE EAST<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-europe" class="unifiednav__item  dmUDNavigationItem_010101695117  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM EUROPE
+            " data-auto="page-text-style">CANDIDATES FROM EUROPE<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-uk-and-ireland" class="unifiednav__item  dmUDNavigationItem_01010157392  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM UK AND IRELAND
+            " data-auto="page-text-style">CANDIDATES FROM UK AND IRELAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/candidates-from-new-zealand" class="unifiednav__item  dmUDNavigationItem_010101367694  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANDIDATES FROM NEW ZEALAND
+            " data-auto="page-text-style">CANDIDATES FROM NEW ZEALAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/find-jobs" class="unifiednav__item  dmUDNavigationItem_010101778979  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+         FIND JOBS
+        " data-auto="page-text-style">FIND JOBS<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="0" data-auto="sub-pages"> <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/job-industries" class="unifiednav__item  dmUDNavigationItem_010101328270  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           JOB INDUSTRIES
+          " data-auto="page-text-style">JOB INDUSTRIES<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/finance-jobs" class="unifiednav__item  dmUDNavigationItem_010101348028  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             FINANCE JOBS
+            " data-auto="page-text-style">FINANCE JOBS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/it-jobs" class="unifiednav__item  dmUDNavigationItem_010101216114  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             IT JOBS
+            " data-auto="page-text-style">IT JOBS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/engineering-jobs" class="unifiednav__item  dmUDNavigationItem_010101901830  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             ENGINEERING JOBS
+            " data-auto="page-text-style">ENGINEERING JOBS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/supply-chain-jobs" class="unifiednav__item  dmUDNavigationItem_010101204060  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             SUPPLY CHAIN JOBS
+            " data-auto="page-text-style">SUPPLY CHAIN JOBS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/job-regions" class="unifiednav__item  dmUDNavigationItem_010101916733  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           JOB REGION
+          " data-auto="page-text-style">JOB REGION<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-south-africa" class="unifiednav__item  dmUDNavigationItem_010101141298  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN SOUTH AFRICA
+            " data-auto="page-text-style">JOBS IN SOUTH AFRICA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-rest-of-africa" class="unifiednav__item  dmUDNavigationItem_010101163613  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN REST OF AFRICA
+            " data-auto="page-text-style">JOBS IN REST OF AFRICA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-americas" class="unifiednav__item  dmUDNavigationItem_010101678693  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN AMERICAS
+            " data-auto="page-text-style">JOBS IN AMERICAS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-australia" class="unifiednav__item  dmUDNavigationItem_010101989359  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN AUSTRALIA
+            " data-auto="page-text-style">JOBS IN AUSTRALIA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-middle-east" class="unifiednav__item  dmUDNavigationItem_010101824700  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN MIDDLE EAST
+            " data-auto="page-text-style">JOBS IN MIDDLE EAST<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-europe" class="unifiednav__item  dmUDNavigationItem_010101815052  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN EUROPE
+            " data-auto="page-text-style">JOBS IN EUROPE<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-uk-and-ireland" class="unifiednav__item  dmUDNavigationItem_010101561241  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN UK AND IRELAND
+            " data-auto="page-text-style">JOBS IN UK AND IRELAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/jobs-in-new-zealand" class="unifiednav__item  dmUDNavigationItem_010101100884  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             JOBS IN NEW ZEALAND
+            " data-auto="page-text-style">JOBS IN NEW ZEALAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/manage-alertscdcd5aaf" class="unifiednav__item  dmUDNavigationItem_010101462244  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           MANAGE ALERTS
+          " data-auto="page-text-style">MANAGE ALERTS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/our-niches" class="unifiednav__item  dmUDNavigationItem_010101478510  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+         OUR NICHES
+        " data-auto="page-text-style">OUR NICHES<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="0" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/finance" class="unifiednav__item  dmUDNavigationItem_0101011049  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           FINANCE
+          " data-auto="page-text-style">FINANCE<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/it" class="unifiednav__item  dmUDNavigationItem_010101676320  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           IT
+          " data-auto="page-text-style">IT<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/engineering" class="unifiednav__item  dmUDNavigationItem_010101137838  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           ENGINEERING
+          " data-auto="page-text-style">ENGINEERING<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/supply-chain" class="unifiednav__item  dmUDNavigationItem_010101760066  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           SUPPLY CHAIN
+          " data-auto="page-text-style">SUPPLY CHAIN<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/about-us" class="unifiednav__item  dmUDNavigationItem_010101798065  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+         ABOUT US
+        " data-auto="page-text-style">ABOUT US<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="0" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/what-we-do" class="unifiednav__item  dmUDNavigationItem_010101747336  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           WHAT WE DO
+          " data-auto="page-text-style">WHAT WE DO<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/client-testimonials" class="unifiednav__item  dmUDNavigationItem_010101233225  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           CLIENT TESTIMONIALS
+          " data-auto="page-text-style">CLIENT TESTIMONIALS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/our-awards" class="unifiednav__item  dmUDNavigationItem_0101015824  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           OUR AWARDS
+          " data-auto="page-text-style">OUR AWARDS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/join-our-team" class="unifiednav__item  dmUDNavigationItem_010101656800  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           JOIN OUR TEAM
+          " data-auto="page-text-style">JOIN OUR TEAM<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/executive_search" class="unifiednav__item  dmUDNavigationItem_010101282607  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="EXECUTIVE SEARCH" data-auto="page-text-style">EXECUTIVE SEARCH<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/network-recruitment-outsourcing-solutions" class="unifiednav__item  dmUDNavigationItem_010101451175  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="OUTSOURCING" data-auto="page-text-style">OUTSOURCING<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="0" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/our-solutions" class="unifiednav__item  dmUDNavigationItem_010101249769  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           OUR SOLUTIONS
+          " data-auto="page-text-style">OUR SOLUTIONS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/recruitment-process-outsourcing" class="unifiednav__item  dmUDNavigationItem_010101284627  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           RPO - RECRUITMENT PROCESS OUTSOURCING
+          " data-auto="page-text-style">RPO - RECRUITMENT PROCESS OUTSOURCING<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/priority-partnership" class="unifiednav__item  dmUDNavigationItem_010101402395  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           PRIORITY PARTNERSHIP
+          " data-auto="page-text-style">PRIORITY PARTNERSHIP<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/recruit-to-order" class="unifiednav__item  dmUDNavigationItem_010101986539  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           RECRUIT TO ORDER
+          " data-auto="page-text-style">RECRUIT TO ORDER<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/project-case-studies" class="unifiednav__item  dmUDNavigationItem_010101636442  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           PROJECT CASE STUDIES
+          " data-auto="page-text-style">PROJECT CASE STUDIES<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/blogs" class="unifiednav__item  dmUDNavigationItem_010101167281  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+         BLOGS
+        " data-auto="page-text-style">BLOGS<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/countries" class="unifiednav__item  dmUDNavigationItem_010101779373  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+         REGIONS
+        " data-auto="page-text-style">REGIONS<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="0" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/south-africa" class="unifiednav__item  dmUDNavigationItem_010101586479  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           SOUTH AFRICA
+          " data-auto="page-text-style">SOUTH AFRICA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/rest-of-africa" class="unifiednav__item  dmUDNavigationItem_010101164863  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           REST OF AFRICA
+          " data-auto="page-text-style">REST OF AFRICA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/kenya" class="unifiednav__item  dmUDNavigationItem_01010154448  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             KENYA
+            " data-auto="page-text-style">KENYA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/ivory-coast" class="unifiednav__item  dmUDNavigationItem_010101818621  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             IVORY COAST
+            " data-auto="page-text-style">IVORY COAST<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/democratic-republic-of-congo" class="unifiednav__item  dmUDNavigationItem_010101867266  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             DEMOCRATIC REPUBLIC OF CONGO
+            " data-auto="page-text-style">DEMOCRATIC REPUBLIC OF CONGO<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/tanzania" class="unifiednav__item  dmUDNavigationItem_010101514472  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             TANZANIA
+            " data-auto="page-text-style">TANZANIA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/ghana" class="unifiednav__item  dmUDNavigationItem_01010139673  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             GHANA
+            " data-auto="page-text-style">GHANA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/mozambique" class="unifiednav__item  dmUDNavigationItem_010101826566  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             MOZAMBIQUE
+            " data-auto="page-text-style">MOZAMBIQUE<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/americas" class="unifiednav__item  dmUDNavigationItem_010101382858  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           AMERICAS
+          " data-auto="page-text-style">AMERICAS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/canada" class="unifiednav__item  dmUDNavigationItem_010101433292  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             CANADA
+            " data-auto="page-text-style">CANADA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/australia" class="unifiednav__item  dmUDNavigationItem_010101436929  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           AUSTRALIA
+          " data-auto="page-text-style">AUSTRALIA<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/middle-east" class="unifiednav__item  dmUDNavigationItem_010101420064  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           MIDDLE EAST
+          " data-auto="page-text-style">MIDDLE EAST<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/dubai" class="unifiednav__item  dmUDNavigationItem_010101514099  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             DUBAI
+            " data-auto="page-text-style">DUBAI<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/europe" class="unifiednav__item  dmUDNavigationItem_010101399311  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           EUROPE
+          " data-auto="page-text-style">EUROPE<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/netherlands" class="unifiednav__item  dmUDNavigationItem_010101685729  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             NETHERLANDS
+            " data-auto="page-text-style">NETHERLANDS<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" aria-haspopup="true" data-sub-nav-menu="true" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/uk-and-ireland" class="unifiednav__item  dmUDNavigationItem_010101811768  unifiednav__item_has-sub-nav" target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           UK AND IRELAND
+          " data-auto="page-text-style">UK AND IRELAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+ <ul role="menu" aria-expanded="false" class="unifiednav__container unifiednav__container_sub-nav" data-depth="1" data-auto="sub-pages"> <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/england" class="unifiednav__item  dmUDNavigationItem_010101792878  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             ENGLAND
+            " data-auto="page-text-style">ENGLAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="2"> <a href="/ireland" class="unifiednav__item  dmUDNavigationItem_010101301515  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+             IRELAND
+            " data-auto="page-text-style">IRELAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="1"> <a href="/new-zealand" class="unifiednav__item  dmUDNavigationItem_01010192368  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+           NEW ZEALAND
+          " data-auto="page-text-style">NEW ZEALAND<span class="icon icon-angle-right"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</li> 
+ <li role="menuitem" class=" unifiednav__item-wrap " data-auto="more-pages" data-depth="0"> <a href="/network-recruitment-contact-us" class="unifiednav__item  dmUDNavigationItem_010101834756  " target="" data-target-page-alias=""> <span class="nav-item-text " data-link-text="
+         CONTACT US
+        " data-auto="page-text-style">CONTACT US<span class="icon icon-angle-down"></span> 
+</span> 
+</a> 
+</li> 
+</ul> 
+</nav> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+ <div class="stickyHeaderSpacer" id="stickyHeaderSpacer" data-new="true"></div> 
+ <div class="dmRespRow dmRespRowStable dmRespRowNoPadding dmPageTitleRow "> <div class="dmRespColsWrapper"> <div class="large-12 dmRespCol"> <div id="innerBar" class="innerBar lineInnerBar dmDisplay_None"> <div class="titleLine display_None"><hr/></div> 
+<!-- Page title is hidden in css for new responsive sites. It is left here only so we don't break old sites. Don't copy it to new layouts --> <div id="pageTitleText"> <div class="innerPageTitle">Job Details</div> 
+</div> 
+ <div class="titleLine display_None"><hr/></div> 
+</div> 
+</div> 
+</div> 
+</div> 
+ <div dmwrapped="true" id="dmFirstContainer" class="dmBody u_dmStyle_template_job-details dm-home-page" themewaschanged="true"> <div id="allWrapper" class="allWrapper"><!-- navigation placeholders --> <div id="dm_content" class="dmContent" role="main"> <div dm:templateorder="170" class="dmHomeRespTmpl mainBorder dmRespRowsWrapper dmFullRowRespTmpl" id="1716942098"> <div class="u_1243667655 dmRespRow" id="1243667655"> <div class="dmRespColsWrapper" id="1173148036"> <div class="dmRespCol small-12 medium-12 large-12" id="1620106714"> <div data-element-type="html" class="dmCustomHtml u_1986509361" id="1986509361"> <script type="text/javascript" id="1233447232">
+
+
+      var adData = new Array();
+      console.log(adData);
+            var baseUrl =
+              'https://az-jhb-was-rescr-duda-api-prod-networkrecruitint.azurewebsites.net/PlacementPartnerXml/';
+            $(window).on('load', function () {
+              //load function calls into DOM
+              const urlSearchParams = new URLSearchParams(
+                window.location.search,
+              );
+              const params = Object.fromEntries(urlSearchParams.entries());
+              var myvacancyRef = params.vacancy_ref;
+              var myinstance = params.instance;
+              if (typeof myvacancyRef === 'undefined') {
+                myvacancyRef = '';
+              }
+              getAdverts(myvacancyRef, myinstance);
+            });
+            function showMoreDetails(id) {
+              if ($('#ReadMore' + id).val() === 'Read Less') {
+                $('#ReadMore' + id).val('Read More...');
+              } else {
+                $('#ReadMore' + id).val('Read Less');
+              }
+              $('.ReadMore' + id).toggle();
+            }
+            function getAdverts(vacancyRef, instance) {
+              var url =
+                baseUrl +
+                'api/getadbyvacancyref?instance=' +
+                instance +
+                '&vacancyRef=' +
+                vacancyRef;
+              $.get(url, function (data) {
+                console.log(data);
+                $('#adverts').html('<br/><hr/>');
+                $('#nav').html('<br/></hr/>');
+                var pageSize = 10; 
+                var newLine = '\n';
+                var i = 0;
+                if (typeof data !== 'undefined') {
+                  adData.push(data);
+                  if (i < pageSize) {
+                    if (i === 0) {
+                      $('#adverts').append(
+                        $(
+                          '<h3>Job Advert Details for: ' +
+                            adData[i].vacancy_ref +
+                            '</h3>',
+                        ),
+                      );
+                    }
+                    var salaryinterval = 'Annual';
+                    if (adData[i].salary_interval !== null) {
+                      salaryinterval = adData[i].salary_interval;
+                    }
+                    var briefDescription =
+                      adData[i]?.brief_description_html
+                        ? adData[i]?.brief_description_html?.toString()
+                        : adData[i]?.brief_description?.toString();
+                    console.log(briefDescription);
+                    if (
+                      adData[i].market_related === 0 &&
+                      adData[i].negotiable === 0
+                    ) {  
+                      $('#adverts').append(
+                        $(
+                          '<div class="ad">' +
+                            '<span style="font-family:Gill Sans"><table id="' +
+                            adData[i].id +
+                            '" style="width:100%;padding: 20px;border-left: 1px solid #BEC531;border-right: 1px solid #BEC531;border-bottom: 1px solid #BEC531">' +
+                            '<tr style="background-color:#232323;color: white;"><td colspan="4"><table width="100%"><tr><td style="width:70%;padding:20px"><b>' +
+                            adData[i].job_title +
+                            '</b></td>' +
+                            '<td style="background-color:#232323;width:20%;color: white;" align="center"><p style="color: white;"><small>' +
+                            adData[i].vacancy_ref +
+                            '</small></p></td>' +
+                            '<td colspan="2" style="background-color:#232323;width:20%;color: white;" align="center"><p style="color: white;"><small>' +
+                            adData[i].expiry_date.toString().substring(0, 10) +
+                            '</small></p></td></tr></table></td></tr>' +
+                            '<tr><td colspan="3" style="padding-left:45px;width:25%;"><strong>Annual R' +
+                            adData[i].salary_min +
+                            '- R' +
+                            adData[i].salary_max +
+                            '</strong></td><td colspan="1" style="padding-right:20px"><a style="padding-left:23px;padding:10px;vertical-align: center;15 float: center; background-color:rgba(128,128,0);background-image:linear-gradient(90deg,#BEC531 0%,#BEC531 100%); border-color: #BEC531; color:black;" popup-open="popup-1" class="dmWidget R font-size-NaN m-font-size-NaN"  id="Apply' +
+                            i +
+                            '" href="https://webapp.placementpartner.com/wi/application_form.php?id=' + adData[i].company_ref + '&powered_by=0&source=SOURCE_TAG&vacancy_ref=' +
+                            adData[i].vacancy_ref +
+                            '&redirect_url=https://www.networkrecruitmentinternational.com/thank-you-job-application"><strong>APPLY NOW</strong></a>' +
+                            '<a style="width=300px;padding:10px;vertical-align: center;15 float: center; background-color:rgba(207,213,51,1);background-image:linear-gradient(90deg,#BEC531 0%,#BEC531 100%);border-color: #BEC531; color:black;" class="dmWidget R font-size-NaN m-font-size-NaN" href="mailto:?subject=Job Referral from Network Recruitment for ' +
+                            adData[i].job_title +
+                            '&body=R' +
+                            adData[i].salary_min +
+                            ' - R' +
+                            adData[i].salary_max +
+                            ', Reference: ' +
+                            adData[i].vacancy_ref +
+                            '%0D%0D' +
+                            briefDescription  +
+                                '%0D%0DTown: ' +
+                                adData[i].town +
+                                '%0D%0DSector: ' +
+                                adData[i].sector +
+                                '%0D%0DVisit to find out more: https://www.networkrecruitmentinternational.com/job-details?instance=' +
+                                adData[i].company_ref +
+                                '%26vacancy_ref=' +
+                                adData[i].vacancy_ref +
+                                '"><strong>REFER & WIN</strong></a>' +
+                                '</td></tr><tr><td style="padding-left:45px">' +
+                                adData[i].region +
+                                ' > ' +
+                                adData[i].town +
+                                '</td></tr><tr><td style="padding-left:72px;padding-right:20px" colspan="4">' +
+                                briefDescription
+                                +'</td></tr><br/><br/>' +
+                                '</td></tr><tr><td style="padding-left:45px;text-decoration:underline"><strong>Job & Company Description:</strong></td></tr>' +
+                                '<tr class="ReadMore' +
+                                i +
+                                '" style="padding: 20px;display:none;"><td style="padding-left:93px;text-align:left !important; width: 100%" >' +
+                                adData[i].detail_description +
+                                '</td>' +
+                                '</tr>' +
+                                '</table></span></div>',
+                        ),
+                      );
+                    } else if (adData[i].market_related === 1) {
+                      $('#adverts').append(
+                        $(
+                          '<div class="ad">' +
+                            '<span style="font-family:Gill Sans"><table id="' +
+                            adData[i].id +
+                            '" style="width:100%;padding: 20px;border-left: 1px solid #BEC531;border-right: 1px solid #BEC531;border-bottom: 1px solid #BEC531">' +
+                            '<tr style="background-color:#232323;color: white;"><td colspan="4"><table width="100%"><tr><td style="width:70%;padding:20px"><b>' +
+                            adData[i].job_title +
+                            '</b></td>' +
+                            '<td style="background-color:#232323;width:20%;color: white;" align="center"><p style="color: white;"><small>' +
+                            adData[i].vacancy_ref +
+                            '</small></p></td>' +
+                            '<td colspan="2" style="background-color:#232323;width:20%;color: white;" align="center"><p style="color: white;"><small>' +
+                            adData[i].expiry_date.toString().substring(0, 10) +
+                            '</small></p></td></tr></table></td></tr>' +
+                            '<tr><td colspan="3" style="padding-left:45px;width:25%;"><strong>Market Related</strong></td><td colspan="1" style="padding-right:20px"><a style="padding-left:23px;padding:10px;vertical-align: center;15 float: center; background-color:rgba(128,128,0);background-image:linear-gradient(90deg,#BEC531 0%,#BEC531 100%); border-color: #BEC531; color:black;" popup-open="popup-1" class="dmWidget R font-size-NaN m-font-size-NaN"  id="Apply' +
+                            i +
+                            '" href="https://webapp.placementpartner.com/wi/application_form.php?id=' + adData[i].company_ref + '&powered_by=0&source=SOURCE_TAG&vacancy_ref=' +
+                            adData[i].vacancy_ref +
+                            '&redirect_url=https://www.networkrecruitmentinternational.com/thank-you-job-application"><strong>APPLY NOW</strong></a>' +
+                            '<a style="width=300px;padding:10px;vertical-align: center;15 float: center; background-color:rgba(207,213,51,1);background-image:linear-gradient(90deg,#BEC531 0%,#BEC531 100%);border-color: #BEC531; color:black;" class="dmWidget R font-size-NaN m-font-size-NaN" href="mailto:?subject=Job Referral from Network Recruitment for ' +
+                            adData[i].job_title +
+                            '&body=R' +
+                            adData[i].salary_min +
+                            ' - R' +
+                            adData[i].salary_max +
+                            ', Reference: ' +
+                            adData[i].vacancy_ref +
+                            '%0D%0D' +
+                            briefDescription +
+                                '%0D%0DTown: ' +
+                                adData[i].town +
+                                '%0D%0DSector: ' +
+                                adData[i].sector +
+                                '%0D%0DVisit to find out more: https://www.networkrecruitmentinternational.com/job-details?instance=' +
+                                adData[i].company_ref +
+                                '%26vacancy_ref=' +
+                                adData[i].vacancy_ref +
+                                '"><strong>REFER & WIN</strong></a>' +
+                                '</td></tr><tr><td style="padding-left:45px">' +
+                                adData[i].region +
+                                '>' +
+                                adData[i].town +
+                                '</td></tr><tr><td style="padding-left:72px;padding-right:20px" colspan="4">' +
+                                briefDescription +
+                                '</td></tr><br/><br/>' +
+                                '</td></tr><tr><td style="padding-left:45px;text-decoration:underline"><strong>Job & Company Description:</strong></td></tr>' +
+                                '<tr class="ReadMore' +
+                                i +
+                                '" style="padding: 20px;display:none;"><td style="padding-left:93px;text-align:left !important; width: 100%">' +
+                                adData[i].detail_description +
+                                '</td>' +
+                                '</tr>' +
+                                '</table></span></div>',
+                        ),
+                      );
+                    } else if (adData[i].negotiable === 1) {
+                      $('#adverts').append(
+                        $(
+                          '<div class="ad">' +
+                            '<span style="font-family:Gill Sans"><table id="' +
+                            adData[i].id +
+                            '" style="width:100%;padding: 20px;border-left: 1px solid #BEC531;border-right: 1px solid #BEC531;border-bottom: 1px solid #BEC531">' +
+                            '<tr style="background-color:#232323;color: white;"><td colspan="4"><table width="100%"><tr><td style="width:70%;padding:20px"><b>' +
+                            adData[i].job_title +
+                            '</b></td>' +
+                            '<td style="background-color:#232323;width:20%;color: white;" align="center"><p style="color: white;"><small>' +
+                            adData[i].vacancy_ref +
+                            '</small></p></td>' +
+                            '<td colspan="2" style="background-color:#232323;width:20%;color: white;" align="center"><p style="color: white;"><small>' +
+                            adData[i].expiry_date.toString().substring(0, 10) +
+                            '</small></p></td></tr></table></td></tr>' +
+                            '<tr><td colspan="3" style="padding-left:45px;width:25%;"><strong>Negotiable</strong></td><td colspan="1" style="padding-right:20px"><a style="padding-left:23px;padding:10px;vertical-align: center;15 float: center; background-color:rgba(128,128,0);background-image:linear-gradient(90deg,#BEC531 0%,#BEC531 100%); border-color: #BEC531; color:black;" popup-open="popup-1" class="dmWidget R font-size-NaN m-font-size-NaN"  id="Apply' +
+                            i +
+                            '" href="https://webapp.placementpartner.com/wi/application_form.php?id=' + adData[i].company_ref + '&powered_by=0&source=SOURCE_TAG&vacancy_ref=' +
+                            adData[i].vacancy_ref +
+                            '&redirect_url=https://www.networkrecruitmentinternational.com/thank-you-job-application"><strong>APPLY NOW</strong></a>' +
+                            '<a style="width=300px;padding:10px;vertical-align: center;15 float: center; background-color:rgba(207,213,51,1);background-image:linear-gradient(90deg,#BEC531 0%,#BEC531 100%);border-color: #BEC531; color:black;" class="dmWidget R font-size-NaN m-font-size-NaN" href="mailto:?subject=Job Referral from Network Recruitment for ' +
+                            adData[i].job_title +
+                            '&body=R' +
+                            adData[i].salary_min +
+                            ' - R' +
+                            adData[i].salary_max +
+                            ', Reference: ' +
+                            adData[i].vacancy_ref +
+                            '%0D%0D' +
+                            briefDescription +
+                                '%0D%0DTown: ' +
+                                adData[i].town +
+                                '%0D%0DSector: ' +
+                                adData[i].sector +
+                                '%0D%0DVisit to find out more: https://www.networkrecruitmentinternational.com/job-details?instance=' +
+                                adData[i].company_ref +
+                                '%26vacancy_ref=' +
+                                adData[i].vacancy_ref +
+                                '"><strong>REFER & WIN</strong></a>' +
+                                '</td></tr><tr><td style="padding-left:45px">' +
+                                adData[i].region +
+                                '>' +
+                                adData[i].town +
+                                '</td></tr><tr><td style="padding-left:72px;padding-right:20px" colspan="4">' +
+                                briefDescription +
+                                '</td></tr><br/><br/>' +
+                                '</td></tr><tr><td style="padding-left:45px;text-decoration:underline"><strong>Job & Company Description:</strong></td></tr>' +
+                                '<tr class="ReadMore' +
+                                i +
+                                '" style="padding: 20px;display:none;"><td style="padding-left:93px;text-align:left !important width: 100%">' +
+                                adData[i].detail_description +
+                                '</td>' +
+                                '</tr>' +
+                                '</table></span></div>',
+                        ),
+                      );
+                    }
+                    showMoreDetails(i);
+                  }
+                  if (i % pageSize === 0) {
+                    var space = '&nbsp;';
+                    var pNum = i / pageSize + 1;
+                    $('#nav').append(
+                      $(
+                        '<td width="30"<label><input type="button" style="width=40" class="dmWidget R font-size-NaN m-font-size-NaN" value=' +
+                          space +
+                          pNum +
+                          space +
+                          ' onclick="getPagedResults(' +
+                          pNum +
+                          ')"/></td>',
+                      ),
+                    );
+                  }
+                }
+                if (typeof data === 'undefined') {
+                  $('#adverts').append($('<p><strong>This position has expired and is no longer looking for applications.</strong></p><br>'));
+                                    $('#adverts').append($('<p>This is because the role has closed or been filled. But don’t worry, your next opportunity could be just a few clicks away.</p><br>'));
+                                    $('#adverts').append($('<p><a href="https://www.networkrecruitmentinternational.com/find-jobs"><strong>Return to job search</strong></a> to explore more roles that match your skills and goals.</p>'));
+                }
+              });
+            }
+              
+
+                </script> 
+ <div class="u_adverts"> <div class="fullBleedChanged fullBleedMode" id="shareShortcuts" style="text-align: left; display: block"> <label class="m-font-size-11 font-size-16">Share this Position</label> 
+ <div class="dmShare dmNoMark dmShareDesktop clearfix" id="1939041056" dmle_extension="shareextension" data-element-type="shareextension" google_plus="true" wr="true" data-display-type="block" icon="true" surround="true" icon-name="icon-share" facebook="true" twitter="true" email="false" like="true" use_new_design="true" use_popup="true" linked_in="true" data-title="U2hhcmU=" data-display-title="false" data-layout="layout-1" data-share-hover-effect="zoomout" text="I wanted to share this great job with you" design="large" share_button_text="Share" share_popup_title="Share by:"> <div class="share-icons gapSpacing"> <div data-target="facebook" class="shareLink fbShare clickTarget" data-href="http://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.networkrecruitmentinternational.com%2Fjob-details" data-hover-effect="zoomout"> <span class="share-icon dm-social-icons-facebook"></span> 
+</div> 
+ <div data-target="twitter" class="shareLink twitterShare clickTarget" data-href="http://twitter.com/intent/tweet?text=I wanted to share this great job with you&url=https%3A%2F%2Fwww.networkrecruitmentinternational.com%2Fjob-details" data-hover-effect="zoomout"> <span class="share-icon dm-social-icons-twitter"></span> 
+</div> 
+ <div data-target="linkedin" class="shareLink linkedinShare clickTarget" data-href="http://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fwww.networkrecruitmentinternational.com%2Fjob-details&title=I wanted to share this great job with you" data-hover-effect="zoomout"> <span class="share-icon dm-social-icons-linkedin"></span> 
+</div> 
+ <a data-target="whatsapp" class="shareLink whatsappShare clickTarget" target="_blank" href="https://api.whatsapp.com/send?text=I wanted to share this great job with you https%3A%2F%2Fwww.networkrecruitmentinternational.com%2Fjob-details" data-hover-effect="zoomout"> <span class="share-icon dm-social-icons-whatsapp"></span> 
+</a> 
+</div> 
+</div> 
+</div> 
+ <div id="adverts"></div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+ <div class="sticky-widgets-container-global" id="1152462857"></div> 
+ <div class="dmFooterContainer"> <div id="fcontainer" class="u_fcontainer f_hcontainer dmFooter p_hfcontainer"> <div dm:templateorder="250" class="dmFooterResp generalFooter" id="1943048428"> <div class="u_1632155419 dmRespRow fullBleedChanged fullBleedMode" style="text-align: center;" id="1632155419"> <div class="dmRespColsWrapper" id="1253858808"> <div class="u_1063824722 dmRespCol small-12 large-2 medium-2" id="1063824722"> <div class="u_1318260302 imageWidget align-center" data-element-type="image" data-widget-type="image" id="1318260302"> <a href="/" id="1585180535" file="false"><img src="https://lirp.cdn-website.com/7bd7e5e1/dms3rep/multi/opt/digital-stacked-white-green-1920w.png" alt="" id="1639019603" class="" data-dm-image-path="https://irp.cdn-website.com/7bd7e5e1/dms3rep/multi/digital-stacked-white-green.png" width="1500" height="975" onerror="handleImageLoadError(this)"/></a> 
+</div> 
+ <div class="dmNewParagraph" data-element-type="paragraph" data-version="5" id="1927028877" style="transition: opacity 1s ease-in-out 0s;"><p class="m-size-11 text-align-center size-14"><strong class="m-font-size-11 font-size-14" style="font-weight: bold; color: rgb(190, 197, 49); display: initial;">Level 3 B-BBEE Contributor</strong></p></div> 
+</div> 
+ <div class="u_1219603732 dmRespCol small-12 large-9 medium-9" id="1219603732"> <div class="u_1612972208 dmNewParagraph" data-element-type="paragraph" id="1612972208" style="transition: opacity 1s ease-in-out 0s; text-align: left;" data-version="5"> <h5 class="text-align-center"><a href="/network-recruitment-contact-us" runtime_url="/network-recruitment-contact-us" type="page" style="display: initial;">CONTACT US</a></h5> 
+</div> <div class="dmRespRow" id="1365926264"> <div class="dmRespColsWrapper" id="1445107966"> <div class="dmRespCol small-12 medium-4 large-4" id="1663346350"> <div class="dmNewParagraph u_1787856636" data-element-type="paragraph" data-version="5" id="1787856636" style="transition: opacity 1s ease-in-out 0s; text-align: left;"><p class="text-align-center"><span style="color: rgb(255, 255, 255); display: initial; font-weight: bold;">PRETORIA</span></p><p class="text-align-center"><a href="tel:+27123484940" target="_blank" type="call" style="display: initial; text-decoration: none; color: rgb(255, 255, 255);">+27 12 348 4940</a></p><p class="text-align-center"><a href="mailto:bdadmin@networkrecruitment.co.za" target="_blank" type="email" style="text-decoration: none; color: rgb(255, 255, 255); display: initial;">bdadmin@networkrecruitment.co.za</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/Summit+Place+Office+Park/@-25.7863672,28.2677226,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9561bf20b185c7:0x762ebd8105b529bb!8m2!3d-25.7863721!4d28.2725989!16s%2Fg%2F11szb_pst_" target="_blank" runtime_url="https://www.google.com/maps/place/Summit+Place+Office+Park/@-25.7863672,28.2677226,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9561bf20b185c7:0x762ebd8105b529bb!8m2!3d-25.7863721!4d28.2725989!16s%2Fg%2F11szb_pst_" type="url" style="display: initial; text-decoration: none; color: rgb(255, 255, 255);">4th Floor, Bldg 6, Summit Office Park</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/Summit+Place+Office+Park/@-25.7863672,28.2677226,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9561bf20b185c7:0x762ebd8105b529bb!8m2!3d-25.7863721!4d28.2725989!16s%2Fg%2F11szb_pst_" target="_blank" runtime_url="https://www.google.com/maps/place/Summit+Place+Office+Park/@-25.7863672,28.2677226,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9561bf20b185c7:0x762ebd8105b529bb!8m2!3d-25.7863721!4d28.2725989!16s%2Fg%2F11szb_pst_" type="url" style="display: initial; text-decoration: none; color: rgb(255, 255, 255);">221 Garsfontein Road</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/Summit+Place+Office+Park/@-25.7863672,28.2677226,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9561bf20b185c7:0x762ebd8105b529bb!8m2!3d-25.7863721!4d28.2725989!16s%2Fg%2F11szb_pst_" target="_blank" runtime_url="https://www.google.com/maps/place/Summit+Place+Office+Park/@-25.7863672,28.2677226,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9561bf20b185c7:0x762ebd8105b529bb!8m2!3d-25.7863721!4d28.2725989!16s%2Fg%2F11szb_pst_" type="url" style="display: initial; text-decoration: none; color: rgb(255, 255, 255);">Menlyn, Pretoria</a></p></div> 
+</div> 
+ <div class="dmRespCol small-12 medium-4 large-4" id="1477993410"> <div class="dmNewParagraph u_1318177561" data-element-type="paragraph" data-version="5" id="1318177561" style="transition: opacity 1s ease-in-out 0s; text-align: left;"><p class="text-align-center"><span style="font-weight: bold; display: initial; color: rgb(255, 255, 255);">JOHANNESBURG</span></p><p class="text-align-center"><a href="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" target="_blank" runtime_url="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" type="call" style="color: rgb(255, 255, 255); text-decoration: none; display: initial;">+27 11 234 0600</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" target="_blank" runtime_url="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" type="email" style="color: rgb(255, 255, 255); text-decoration: none; display: initial;">bdadmin@networkrecruitment.co.za</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" target="_blank" runtime_url="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" type="url" style="color: rgb(255, 255, 255); text-decoration: none; display: initial;">2nd Floor</a><span style="color: rgb(255, 255, 255); text-decoration: none; display: initial;">, Avenue North</span></p><p class="text-align-center"><a href="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" target="_blank" runtime_url="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" type="url" style="color: rgb(255, 255, 255); text-decoration: none; display: initial;">6 Mellis Road</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" target="_blank" runtime_url="https://www.google.com/maps/place/7+Naivasha+Rd,+Sunninghill,+Sandton,+2157/@-26.0320539,28.0613551,17z/data=!3m1!4b1!4m6!3m5!1s0x1e9573cd605726b3:0xaaceda6f643af933!8m2!3d-26.0320587!4d28.0639354!16s%2Fg%2F11f3zvfgtq" type="url" style="color: rgb(255, 255, 255); text-decoration: none; display: initial;">Rivonia, Johannesburg</a></p></div> 
+</div> 
+ <div class="dmRespCol small-12 medium-4 large-4" id="1798388194"> <div class="dmNewParagraph u_1599298600" data-element-type="paragraph" data-version="5" id="1599298600" style="transition: opacity 1s ease-in-out 0s; text-align: left;"><p class="text-align-center"><span style="font-weight: bold; display: initial; color: rgb(255, 255, 255);">CAPE TOWN</span></p><p class="text-align-center"><a href="tel:+27120072450" target="_blank" type="call" style="text-decoration: none; color: rgb(255, 255, 255); display: initial;">+27 21 753</a><span single-space="true" class="" style="display: initial;"> <span style="display: initial;"></span> 
+</span><span style="display: initial; text-decoration: none; color: rgb(255, 255, 255);">6481</span></p><p class="text-align-center"><a href="mailto:bdadmin@networkrecruitment.co.za" target="_blank" type="email" style="display: initial; text-decoration: none; color: rgb(255, 255, 255);">bdadmin@networkrecruitment.co.za</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/5+Canterbury+St,+N1+City,+Cape+Town,+7925/@-33.8933129,18.5604564,17z/data=!3m1!4b1!4m6!3m5!1s0x1dcc5bc9e5d1e4f1:0x6864e3d4327382d1!8m2!3d-33.8933174!4d18.5630367!16s%2Fg%2F11tdmvrhgg" target="_blank" runtime_url="https://www.google.com/maps/place/5+Canterbury+St,+N1+City,+Cape+Town,+7925/@-33.8933129,18.5604564,17z/data=!3m1!4b1!4m6!3m5!1s0x1dcc5bc9e5d1e4f1:0x6864e3d4327382d1!8m2!3d-33.8933174!4d18.5630367!16s%2Fg%2F11tdmvrhgg" type="url" style="display: initial; color: rgb(255, 255, 255); text-decoration: none;">3rd Floor DSTV Office</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/5+Canterbury+St,+N1+City,+Cape+Town,+7925/@-33.8933129,18.5604564,17z/data=!3m1!4b1!4m6!3m5!1s0x1dcc5bc9e5d1e4f1:0x6864e3d4327382d1!8m2!3d-33.8933174!4d18.5630367!16s%2Fg%2F11tdmvrhgg" target="_blank" runtime_url="https://www.google.com/maps/place/5+Canterbury+St,+N1+City,+Cape+Town,+7925/@-33.8933129,18.5604564,17z/data=!3m1!4b1!4m6!3m5!1s0x1dcc5bc9e5d1e4f1:0x6864e3d4327382d1!8m2!3d-33.8933174!4d18.5630367!16s%2Fg%2F11tdmvrhgg" type="url" style="display: initial; color: rgb(255, 255, 255); text-decoration: none;">5 Canterbury Street</a></p><p class="text-align-center"><a href="https://www.google.com/maps/place/5+Canterbury+St,+N1+City,+Cape+Town,+7925/@-33.8933129,18.5604564,17z/data=!3m1!4b1!4m6!3m5!1s0x1dcc5bc9e5d1e4f1:0x6864e3d4327382d1!8m2!3d-33.8933174!4d18.5630367!16s%2Fg%2F11tdmvrhgg" target="_blank" runtime_url="https://www.google.com/maps/place/5+Canterbury+St,+N1+City,+Cape+Town,+7925/@-33.8933129,18.5604564,17z/data=!3m1!4b1!4m6!3m5!1s0x1dcc5bc9e5d1e4f1:0x6864e3d4327382d1!8m2!3d-33.8933174!4d18.5630367!16s%2Fg%2F11tdmvrhgg" type="url" style="display: initial; color: rgb(255, 255, 255); text-decoration: none;">N1 City, Cape Town</a></p></div> 
+</div> 
+</div> 
+</div> 
+ <div class="dmNewParagraph" data-element-type="paragraph" data-version="5" id="1435908736" style="transition: opacity 1s ease-in-out 0s;"><p class="m-size-11 text-align-center size-14"><strong style="font-weight: bold; color: rgb(190, 197, 49); display: initial;" class="m-font-size-11 font-size-14">Download Documents</strong></p><p class="m-size-11 text-align-center size-14"><a href="https://www.advtech.co.za/paia" target="_blank" runtime_url="https://www.advtech.co.za/paia" type="url" style="text-decoration: none; color: rgb(190, 197, 49); display: initial;" class="m-font-size-11 font-size-14">PAIA</a><span class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial;"> <span class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial;">|</span> 
+</span><a href="https://www.advtech.co.za/privacy-notice" target="_blank" runtime_url="https://www.advtech.co.za/privacy-notice" type="url" class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial; text-decoration: none;">PRIVACY NOTICE</a><span class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial;"> <span class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial;">|</span> 
+</span><a href="/disclaimer" runtime_url="/disclaimer" type="page" class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial; text-decoration: none;">SITE DISCLAIMER</a><span class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial;"> <span class="m-font-size-11 font-size-14" style="color: rgb(190, 197, 49); display: initial;">|</span> 
+</span><a href="https://irp.cdn-website.com/7bd7e5e1/files/uploaded/ADvTECH_Resourcing_-_Expiry_date_30_Jan_2026.pdf" target="_blank" runtime_url="https://irp.cdn-website.com/7bd7e5e1/files/uploaded/ADvTECH_Resourcing_-_Expiry_date_30_Jan_2026.pdf" file="true" type="file" class="m-font-size-11 font-size-14" style="display: initial; text-decoration: none;">B-BBEE CERTIFICATE</a><span class="m-font-size-11 font-size-14" style="display: initial; color: rgb(190, 197, 49);"> <span class="m-font-size-11 font-size-14" style="display: initial; color: rgb(190, 197, 49);">|</span> 
+</span><a href="/terms-and-conditions" runtime_url="/terms-and-conditions" type="page" class="m-font-size-11 font-size-14" style="display: initial; color: rgb(190, 197, 49); text-decoration: none;">TERMS &amp; CONDITIONS</a></p></div> 
+</div> 
+ <div class="u_1273214902 dmRespCol small-12 large-1 medium-1" id="1273214902"> <div class="u_1581797442 dmNewParagraph" data-element-type="paragraph" id="1581797442" style="transition: opacity 1s ease-in-out 0s;" data-version="5"> <h5 class="text-align-center size-14 m-size-11"><span style="color: rgb(255, 255, 255); display: initial;" class="font-size-14 m-font-size-11">SUBSCRIBE TO OUR MONTHLY NEWSLETTER</span></h5> 
+</div> <a data-display-type="block" class="u_1878671675 align-center dmButtonLink dmWidget dmWwr default dmOnlyButton dmDefaultGradient" file="false" href="/subscribe-to-network-recruitment-newsletter" data-element-type="dButtonLinkId" id="1878671675"> <span class="iconBg" aria-hidden="true" id="1407906623"> <span class="icon hasFontIcon icon-star" id="1770319935"></span> 
+</span> 
+ <span class="text" id="1245036123">Subscribe Here</span> 
+</a> 
+</div> 
+</div> 
+</div> 
+ <div class="dmRespRow u_1975596994" id="1975596994"> <div class="dmRespColsWrapper" id="1155618430"> <div class="dmRespCol large-12 medium-12 small-12" id="1237761960"> <div class="dmDividerWrapper clearfix u_1830055858" data-element-type="dDividerId" data-layout="divider-style-1" data-widget-version="2" id="1830055858"><hr class="dmDivider" style="border-width:2px; border-top-style:solid; color:grey;" id="1946688216"/></div> 
+ <div class="u_1280351186 widget-1f5975 dmCustomWidget" data-lazy-load="" data-title="" id="1280351186" dmle_extension="custom_extension" data-element-type="custom_extension" icon="false" surround="false" data-widget-id="1f5975986930429f819d4cd2154b5c4a" data-widget-version="25" data-widget-config="eyJyZXZlcnNlRmxhZyI6dHJ1ZSwiY29weXJpZ2h0VGV4dCI6IjxwIGNsYXNzPVwicnRlQmxvY2tcIj5BbGwgUmlnaHRzIFJlc2VydmVkIHwgTmV0d29yayBSZWNydWl0bWVudMKgPC9wPiJ9"> <div class="copyright"> <div><p class="rteBlock">All Rights Reserved | Network Recruitment&nbsp;</p></div> 
+ <div>&nbsp;&copy; 2026</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+ <div id="1236746004" dmle_extension="powered_by" data-element-type="powered_by" icon="true" surround="false"></div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+</div> 
+
+    </div>
+</div>
+<!--  Add full CSS and Javascript before the close tag of the body if needed -->
+<script type="text/javascript" id="d_track_campaign">
+(function() {
+    if (!window.location.search) {
+        return;
+    }
+	const cleanParams = window.location.search.substring(1); // Strip ?
+	const queryParams = cleanParams.split('&');
+
+	const expires = 'expires=' + new Date().getTime() + 24 * 60 * 60 * 1000;
+	const domain = 'domain=' + window.location.hostname;
+	const path = "path=/";
+
+	queryParams.forEach((param) => {
+		const [key, value = ''] = param.split('=');
+		if (key.startsWith('utm_')) {
+			const cookieName = "_dm_rt_" + key.substring(4);
+			const cookie = cookieName + "=" + value;
+			const joined = [cookie, expires, domain, path].join(";");
+			document.cookie = joined;
+		}
+	});
+}());
+</script>
+<script type="text/javascript" >
+  var _dm_gaq = {};
+  var _gaq = _gaq || [];
+  var _dm_insite = [];
+</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZQM20ZK670"></script>
+<script type="text/javascript" id="d_track_ga">
+  _dm_gaq.siteAlias = '7bd7e5e1';
+  _dm_gaq.systemAggregatedGaqID = '';
+  _dm_gaq.externalGaqID = 'G-ZQM20ZK670';
+  _dm_gaq.gaAggregatedEventAttributes = {
+	  'site_alias':  _dm_gaq.siteAlias,
+	  'product': 'DM_DIRECT',
+	  'plan': 'BUSINESS_PLUS',
+	  'dfooter': 'false',
+	  'sitetype': '1',
+	  'pwaEnabled': 'true'
+  }
+
+  _dm_gaq.pushEvent = function(trackingId, event, category, label, value, additionalParams = {}) {
+	  const eventProps = {
+		  send_to: trackingId,
+		  event_category: category,
+		  event_label: label,
+		  value,
+		  ...additionalParams,
+		  ...(trackingId === _dm_gaq.systemAggregatedGaqID
+				  ? _dm_gaq.gaAggregatedEventAttributes : {})
+	  };
+	  gtag('event', event, eventProps);
+  }
+
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+
+  function pushInsiteImpressions(id) {
+	  _dm_insite.forEach((rule) => {
+		  _dm_gaq.pushEvent(id, 'insite_impression', 'insite', rule.ruleType + '__' + rule.ruleId);
+	  });
+  }
+
+if(_dm_gaq.systemAggregatedGaqID){
+	// track aggregated account
+	gtag('config', '', {
+		'send_page_view': false,
+		'anonymize_ip': true,
+		'transport_type': 'beacon',
+		'custom_map': {'dimension1': 'site_alias', 'dimension2': 'product', 'dimension3': 'dFooter', 'dimension4': 'sitetype'}
+	});
+	gtag('set', 'developer_id.dMDU5Nj', true);
+
+	_dm_gaq.pushEvent('', 'page_view');
+	pushInsiteImpressions(_dm_gaq.systemAggregatedGaqID);
+}
+
+if(_dm_gaq.externalGaqID && _dm_gaq.externalGaqID!= '') {
+	gtag('config', 'G-ZQM20ZK670', {
+		'send_page_view': false,
+		'anonymize_ip': true,
+		'transport_type': 'beacon',
+		'linker': {
+			'domains': ['networkrecruitmentinternational.com']
+		}
+	});
+	_dm_gaq.pushEvent('G-ZQM20ZK670', 'page_view');
+	pushInsiteImpressions(_dm_gaq.externalGaqID);
+}
+</script>
+<script type="text/javascript" id="d_track_sp">
+;(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];
+p.GlobalSnowplowNamespace.push(i);p[i]=function(){(p[i].q=p[i].q||[]).push(arguments)
+};p[i].q=p[i].q||[];n=l.createElement(o);g=l.getElementsByTagName(o)[0];n.async=1;
+n.src=w;g.parentNode.insertBefore(n,g)}}(window,document,"script","//d32hwlnfiv2gyn.cloudfront.net/sp-2.0.0-dm-0.1.min.js","snowplow"));
+window.dmsnowplow  = window.snowplow;
+
+dmsnowplow('newTracker', 'cf', 'd32hwlnfiv2gyn.cloudfront.net', { // Initialise a tracker
+  appId: '7bd7e5e1'
+});
+
+// snowplow queries element styles so we wait until CSS calculations are done.
+requestAnimationFrame(() => {
+	dmsnowplow('trackPageView');
+	_dm_insite.forEach((rule) => {
+		// Specifically in popup only the client knows if it is shown or not so we don't always want to track its impression here
+		// the tracking is in popup.js
+		if (rule.actionName !== "popup") {
+			dmsnowplow('trackStructEvent', 'insite', 'impression', rule.ruleType, rule.ruleId);
+		}
+		window?.waitForDeferred?.('dmAjax', () => {
+			$.DM.events.trigger('event-ruleTriggered', {value: rule});
+		});
+	});
+});
+</script>
+   <div style="display:none;" id="P6iryBW0Wu"></div>
+
+<!-- photoswipe markup -->
+
+
+
+
+
+
+
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div id="fb-root"
+        data-locale="en_GB"></div>
+<!-- Alias: 7bd7e5e1 -->
+<div class="dmPopupMask" id="dmPopupMask"></div>
+<div id="dmPopup" class="dmPopup">
+	<div class="dmPopupCloseWrapper"> <div class="dmPopupClose dm-common-icons-close oneIcon" onclick="dmHidePopup(event);"></div> </div>
+ 	<div class="dmPopupTitle"> <span></span> Share by:</div> 
+	<div class="data"></div>
+</div><script id="d_track_personalization">
+	window?.waitForDeferred?.('dmAjax', () => {
+		// Collects client data and updates cookies used by smart sites
+		window.expireDays = 365;
+		window.visitLength = 30 * 60000;
+		$.setCookie("dm_timezone_offset", (new Date()).getTimezoneOffset(), window.expireDays);
+			setSmartSiteCookiesInternal("dm_this_page_view","dm_last_page_view","dm_total_visits","dm_last_visit");
+	});
+</script>
+<script type="text/javascript">
+    
+    Parameters.NavigationAreaParams.MoreButtonText = 'MORE';
+    
+    Parameters.NavigationAreaParams.LessButtonText = 'LESS';
+    Parameters.HomeLinkText = 'Home';
+    </script>
+<!--  End Script tags -->
+<!--  Begin Body End Markup -->
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PVCV22M"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+<!--  End Body End Markup -->
+<!--  Site Wide Html Markup -->
+<!--  Site Wide Html Markup -->
+</body>
+</html>
