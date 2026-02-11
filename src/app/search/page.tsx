@@ -45,7 +45,7 @@ export default function SearchPage() {
         sessionStorage.setItem('job_search_category', category); // Persist category too
 
         // Sources we scan
-        const primarySources = ['pnet', 'vodacom', 'mtn', 'standardbank', 'fnb', 'goldman'];
+        const primarySources = ['pnet', 'vodacom', 'mtn', 'standardbank', 'fnb', 'goldman', 'emerge'];
         const backSources = ['linkedin', 'careers24', 'indeed'];
         const allSources = [...primarySources, ...backSources];
         setLoadingSources(allSources);
@@ -149,7 +149,7 @@ export default function SearchPage() {
             {hasSearched && loadingSources.length > 0 && (
                 <div className="mb-8 flex flex-wrap gap-2 items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Engines:</span>
-                    {['pnet', 'linkedin', 'careers24', 'indeed', 'vodacom', 'mtn', 'standardbank', 'fnb', 'goldman'].map(source => (
+                    {['pnet', 'linkedin', 'careers24', 'indeed', 'vodacom', 'mtn', 'standardbank', 'fnb', 'goldman', 'emerge'].map(source => (
                         <div
                             key={source}
                             className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${loadingSources.includes(source)

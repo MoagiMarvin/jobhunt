@@ -53,6 +53,7 @@ export async function GET(request: NextRequest) {
                 case 'discovery': jobs = await scrapeDiscovery(query); break;
                 case 'capitec': jobs = await scrapeCapitec(query); break;
                 case 'goldman': jobs = await scrapeGoldmanTech(query); break;
+                case 'emerge': jobs = await scrapeEMerge(query); break;
             }
             console.log(`[SEARCH] Source ${source} returned ${jobs.length} jobs`);
         } catch (e) {
@@ -73,7 +74,8 @@ export async function GET(request: NextRequest) {
         scrapeAbsa(query).catch(e => { console.error("[ABSA] Fail:", e.message); return []; }),
         scrapeDiscovery(query).catch(e => { console.error("[DISC] Fail:", e.message); return []; }),
         scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; }),
-        scrapeGoldmanTech(query).catch(e => { console.error("[GOLDMAN] Fail:", e.message); return []; })
+        scrapeGoldmanTech(query).catch(e => { console.error("[GOLDMAN] Fail:", e.message); return []; }),
+        scrapeEMerge(query).catch(e => { console.error("[EMERGE] Fail:", e.message); return []; })
     ]);
 
     let allJobs = results.flat();
@@ -675,6 +677,55 @@ async function scrapeGoldmanTech(query: string) {
         return jobs.slice(0, 50); // Increased limit to show more potential matches
     } catch (e) {
         console.error("[GOLDMAN] Scrape fail:", e);
+        return [];
+    }
+}
+
+async function scrapeEMerge(query: string) {
+    try {
+        const queryLower = query.toLowerCase();
+        // e-Merge uses standard WordPress posts for listings.
+        // We use the REST API for clean, structured data.
+        const url = `https://www.e-merge.co.za/wp-json/wp/v2/posts?search=${encodeURIComponent(query)}&per_page=50`;
+
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            },
+            signal: AbortSignal.timeout(12000)
+        });
+
+        if (!res.ok) {
+            console.error(`[EMERGE] API responded with status: ${res.status}`);
+            return [];
+        }
+
+        const posts: any[] = await res.json();
+        if (!Array.isArray(posts)) return [];
+
+        console.log(`[EMERGE] Found ${posts.length} direct API matches for "${query}"`);
+
+        return posts.map((post: any) => {
+            // HTML Decode and clean title
+            const title = post.title?.rendered || 'Untitled Role';
+            const cleanTitle = title.replace(/&amp;/g, '&')
+                .replace(/&#8211;/g, '–')
+                .replace(/&#8217;/g, "'")
+                .replace(/<[^>]*>?/gm, '');
+
+            return {
+                id: `emerge-${post.id}`,
+                title: cleanTitle,
+                company: "e-Merge IT Recruitment",
+                location: "South Africa (Hybrid/Remote)",
+                link: post.link,
+                description: post.excerpt?.rendered || post.content?.rendered || '',
+                source: 'e-Merge IT',
+                pubDate: post.date
+            };
+        });
+    } catch (e) {
+        console.error("[EMERGE] Native API scrape fail:", e);
         return [];
     }
 }
