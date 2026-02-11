@@ -45,7 +45,7 @@ export default function SearchPage() {
         sessionStorage.setItem('job_search_category', category); // Persist category too
 
         // Sources we scan
-        const primarySources = ['pnet', 'vodacom', 'mtn', 'standardbank', 'fnb', 'goldman', 'emerge'];
+        const primarySources = ['pnet', 'linkedin', 'careers24', 'goldman', 'emerge', 'bbe', 'network'];
         const backSources = ['linkedin', 'careers24', 'indeed'];
         const allSources = [...primarySources, ...backSources];
         setLoadingSources(allSources);

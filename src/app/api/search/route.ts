@@ -54,6 +54,8 @@ export async function GET(request: NextRequest) {
                 case 'capitec': jobs = await scrapeCapitec(query); break;
                 case 'goldman': jobs = await scrapeGoldmanTech(query); break;
                 case 'emerge': jobs = await scrapeEMerge(query); break;
+                case 'bbe': jobs = await scrapeBBRE(query); break;
+                case 'network': jobs = await scrapeNetworkRecruitment(query); break;
             }
             console.log(`[SEARCH] Source ${source} returned ${jobs.length} jobs`);
         } catch (e) {
@@ -75,7 +77,9 @@ export async function GET(request: NextRequest) {
         scrapeDiscovery(query).catch(e => { console.error("[DISC] Fail:", e.message); return []; }),
         scrapeCapitec(query).catch(e => { console.error("[CAPITEC] Fail:", e.message); return []; }),
         scrapeGoldmanTech(query).catch(e => { console.error("[GOLDMAN] Fail:", e.message); return []; }),
-        scrapeEMerge(query).catch(e => { console.error("[EMERGE] Fail:", e.message); return []; })
+        scrapeEMerge(query).catch(e => { console.error("[EMERGE] Fail:", e.message); return []; }),
+        scrapeBBRE(query).catch(e => { console.error("[BBE] Fail:", e.message); return []; }),
+        scrapeNetworkRecruitment(query).catch(e => { console.error("[NETWORK] Fail:", e.message); return []; })
     ]);
 
     let allJobs = results.flat();
@@ -726,6 +730,80 @@ async function scrapeEMerge(query: string) {
         });
     } catch (e) {
         console.error("[EMERGE] Native API scrape fail:", e);
+        return [];
+    }
+}
+
+async function scrapeBBRE(query: string) {
+    try {
+        // BBE Recruitment's company identity on PNet is very specific.
+        // We search for their name first to ensure we get their pool.
+        const jobs = await scrapePNet(`BBE Recruitment ${query || ''}`);
+
+        // Match against both "BBE Recruitment" and "BBE Recruiters"
+        return jobs.filter(j => {
+            const company = j.company.toLowerCase();
+            return company.includes('bbe') && (company.includes('recruitment') || company.includes('recruiters'));
+        }).map(j => ({ ...j, source: 'BBE Recruiters' }));
+    } catch (e) {
+        console.error("[BBE] Scrape fail:", e);
+        return [];
+    }
+}
+
+async function scrapeNetworkRecruitment(query: string) {
+    try {
+        const queryLower = query.toLowerCase();
+        // Network Recruitment uses a Duda-hosted site with an Azure backend.
+        // We call their direct "PlacementPartnerXml" API for truly native data.
+        const baseUrl = "https://az-jhb-was-rescr-duda-api-prod-networkrecruitint.azurewebsites.net/PlacementPartnerXml";
+
+        // We first log in to ensure the session is active (as seen in their source code)
+        await fetch(`${baseUrl}/api/login?apiAppSettingsId=98C4B8F6-6236-4490-9EDC-3FF76DB97D49`, {
+            headers: { 'User-Agent': 'Mozilla/5.0' }
+        }).catch(() => { });
+
+        // Fetch using their search endpoint (or getall if search is broad)
+        const url = query
+            ? `${baseUrl}/api/getadvertsbysearchterm?keywords=${encodeURIComponent(query)}&pageSize=50&region=All&department=All&niche=All`
+            : `${baseUrl}/api/getallnetworkrecruitmentads?pageSize=50`;
+
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+            },
+            signal: AbortSignal.timeout(12000)
+        });
+
+        if (!res.ok) {
+            console.error(`[NETWORK] API responded with status: ${res.status}`);
+            return [];
+        }
+
+        const data: any[] = await res.json();
+        if (!Array.isArray(data)) return [];
+
+        console.log(`[NETWORK] Found ${data.length} direct API matches`);
+
+        return data.map((job: any) => {
+            // Build direct link to their detail page
+            const link = `https://www.networkrecruitmentinternational.com/job-details?instance=${job.company_ref}&vacancy_ref=${job.vacancy_ref}`;
+
+            return {
+                id: `network-${job.vacancy_ref}`,
+                title: job.job_title || 'Untitled Role',
+                company: "Network Recruitment",
+                location: job.town ? `${job.town}, ${job.region}` : (job.region || "South Africa"),
+                link: link,
+                description: job.brief_description || job.detail_description || '',
+                source: 'Network Recruitment',
+                pubDate: (job.created_date && job.created_date !== '0001-01-01T00:00:00')
+                    ? job.created_date
+                    : (job.startDate && job.startDate !== '0001-01-01T00:00:00' ? job.startDate : new Date().toISOString())
+            };
+        });
+    } catch (e) {
+        console.error("[NETWORK] Direct API scrape fail:", e);
         return [];
     }
 }
