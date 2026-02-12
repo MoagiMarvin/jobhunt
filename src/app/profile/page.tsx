@@ -21,6 +21,7 @@ import AddReferenceModal from "@/components/talent/AddReferenceModal";
 import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
 import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
 import AddExperienceModal from "@/components/talent/AddExperienceModal";
+import MasterRevampModal from "@/components/talent/MasterRevampModal";
 import { useBackToClose } from "@/hooks/useBackToClose";
 
 
@@ -160,6 +161,7 @@ export default function ProfilePage() {
     const [isAddMatricOpen, setIsAddMatricOpen] = useState(false);
     const [isAddExperienceOpen, setIsAddExperienceOpen] = useState(false);
     const [editingExperience, setEditingExperience] = useState<any>(null);
+    const [isMasterRevampOpen, setIsMasterRevampOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<any>(null);
     const [editingCredential, setEditingCredential] = useState<any>(null);
     const [editingReference, setEditingReference] = useState<any>(null);
@@ -499,6 +501,65 @@ export default function ProfilePage() {
         }
     };
 
+    const handleMasterRevampSave = async (updates: any) => {
+        if (!currentUserId) return;
+        try {
+            // Update Summary
+            if (updates.summary) {
+                await supabase.from("profiles").update({ summary: updates.summary }).eq("id", currentUserId);
+                setUser(prev => ({ ...prev, summary: updates.summary }));
+            }
+
+            // Update Experiences
+            if (updates.experiences) {
+                for (const exp of updates.experiences) {
+                    await supabase.from("work_experiences").update({ description: exp.description }).eq("id", exp.id);
+                }
+                setExperiences(prev => prev.map(e => {
+                    const updated = updates.experiences.find((u: any) => u.id === e.id);
+                    return updated ? { ...e, description: updated.description } : e;
+                }));
+            }
+
+            // Update Projects
+            if (updates.projects) {
+                for (const proj of updates.projects) {
+                    await supabase.from("projects").update({ description: proj.description }).eq("id", proj.id);
+                }
+                setProjectsList(prev => prev.map(p => {
+                    const updated = updates.projects.find((u: any) => u.id === p.id);
+                    return updated ? { ...p, description: updated.description } : p;
+                }));
+            }
+
+            // Update Skills
+            if (updates.newSkills && updates.newSkills.length > 0) {
+                const newSkillsPayload = updates.newSkills.map((skillName: string) => ({
+                    user_id: currentUserId,
+                    name: skillName,
+                    category: "Other Skills",
+                    min_experience_years: 1
+                }));
+                const { data: insertedSkills } = await supabase.from("skills").insert(newSkillsPayload).select();
+
+                if (insertedSkills) {
+                    setSkills(prev => [...prev, ...insertedSkills.map((s: any) => ({
+                        id: s.id,
+                        name: s.name,
+                        minYears: s.min_experience_years || 0,
+                        category: s.category || "Other Skills",
+                        isSoftSkill: false
+                    }))]);
+                }
+            }
+
+            alert("Profile revamped successfully!");
+        } catch (error) {
+            console.error("Failed to save revamp changes:", error);
+            alert("Some changes failed to save.");
+        }
+    };
+
     const handleCancel = () => {
         setEditedUser(user);
         setIsEditing(false);
@@ -537,17 +598,28 @@ export default function ProfilePage() {
                     licenseCode={user.licenseCode}
                     haveCar={user.haveCar}
                     onEdit={() => setIsEditing(true)}
-                    downloadAction={<DownloadResumeButton showCustomize={false} data={{
-                        user,
-                        experiences,
-                        educationList,
-                        certificationsList,
-                        skills,
-                        projectsList,
-                        languages,
-                        references,
-                        matricData
-                    }} />}
+                    downloadAction={
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setIsMasterRevampOpen(true)}
+                                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-white/20 hover:scale-105"
+                            >
+                                <Sparkles className="w-3.5 h-3.5" />
+                                AI Revamp
+                            </button>
+                            <DownloadResumeButton showCustomize={false} data={{
+                                user,
+                                experiences,
+                                educationList,
+                                certificationsList,
+                                skills,
+                                projectsList,
+                                languages,
+                                references,
+                                matricData
+                            }} />
+                        </div>
+                    }
                     targetRoles={user.targetRoles}
                     isOwner={true}
                     userId={currentUserId || undefined}
@@ -1622,6 +1694,18 @@ export default function ProfilePage() {
                     )}
                 </div>
             </div>
+            {/* Master Revamp Modal */}
+            <MasterRevampModal
+                isOpen={isMasterRevampOpen}
+                onClose={() => setIsMasterRevampOpen(false)}
+                onSave={handleMasterRevampSave}
+                currentData={{
+                    summary: user.summary,
+                    experiences: experiences.map(e => ({ id: e.id, role: e.role, company: e.company, description: e.description })),
+                    projects: projectsList.map(p => ({ id: p.id, title: p.title, description: p.description, technologies: p.technologies })),
+                    skills: skills.map(s => ({ name: s.name }))
+                }}
+            />
         </div>
     );
 }
