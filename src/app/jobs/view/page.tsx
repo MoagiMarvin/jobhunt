@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Loader2, Briefcase, Mic, ExternalLink, ArrowLeft, AlertCircle, Building2, MapPin } from 'lucide-react';
+import { Loader2, Briefcase, Mic, ExternalLink, ArrowLeft, AlertCircle, Building2, MapPin, Mail, Copy } from 'lucide-react';
 
 function JobViewContent() {
     const searchParams = useSearchParams();
@@ -20,6 +20,7 @@ function JobViewContent() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [directUrl, setDirectUrl] = useState<string | null>(null);
+    const [recruiterEmails, setRecruiterEmails] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchContent = async () => {
@@ -38,6 +39,7 @@ function JobViewContent() {
 
                 setContent(data.content);
                 if (data.directApplyUrl) setDirectUrl(data.directApplyUrl);
+                if (data.emails && Array.isArray(data.emails)) setRecruiterEmails(data.emails);
             } catch (err) {
                 console.error("Failed to load job:", err);
                 setError("We couldn't load the full description here. Please view it on the original site.");
@@ -167,33 +169,64 @@ function JobViewContent() {
                             </div>
                         </div>
 
-                        {/* Apply External */}
-                        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-                            <h3 className="font-bold text-slate-900 mb-2">Ready to Apply?</h3>
-                            <p className="text-slate-500 text-xs mb-4">Once your CV is tailored, go to the official site.</p>
-
-                            {directUrl && (
-                                <div className="mb-3 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-700 text-xs font-medium flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    Direct Link Found
-                                </div>
-                            )}
-
-                            <a
-                                href={directUrl || jobUrl || undefined}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${directUrl ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-100' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100'}`}
-                            >
-                                {directUrl ? "Apply on Company Site" : `Apply on ${jobSource}`}
-                                <ExternalLink className="w-4 h-4" />
-                            </a>
-                        </div>
                     </div>
                 </div>
 
+                {/* Recruiter Contact - Auto Email */}
+                {recruiterEmails.length > 0 && (
+                    <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
+
+                        <h3 className="font-bold text-lg mb-1 flex items-center gap-2">
+                            <Mail className="w-5 h-5" />
+                            Email Recruiter
+                        </h3>
+                        <p className="text-blue-100 text-xs mb-4">
+                            We found a direct contact! Beat the ATS by emailing them directly.
+                        </p>
+
+                        <div className="space-y-3">
+                            {recruiterEmails.map((email, idx) => (
+                                <a
+                                    key={idx}
+                                    href={`mailto:${email}?subject=${encodeURIComponent(`Application for ${jobTitle} - ${jobCompany}`)}&body=${encodeURIComponent(`Dear Hiring Manager,\n\nI am writing to express my strong interest in the ${jobTitle} position at ${jobCompany}.\n\nWith my background in software development and my passion for building scalable solutions, I believe I would be a great fit for your team.\n\nI have attached my CV for your review.\n\nBest regards,\n[Your Name]`)}`}
+                                    className="block w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white py-3 rounded-xl font-bold text-sm transition-all text-center backdrop-blur-sm"
+                                >
+                                    Email {email}
+                                </a>
+                            ))}
+                            <p className="text-[10px] text-blue-200 text-center opacity-80">
+                                Opens your default email app with a cover letter draft.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Apply External */}
+                <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                    <h3 className="font-bold text-slate-900 mb-2">Ready to Apply?</h3>
+                    <p className="text-slate-500 text-xs mb-4">Once your CV is tailored, go to the official site.</p>
+
+                    {directUrl && (
+                        <div className="mb-3 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-700 text-xs font-medium flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            Direct Link Found
+                        </div>
+                    )}
+
+                    <a
+                        href={directUrl || jobUrl || undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${directUrl ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-100' : 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-100'}`}
+                    >
+                        {directUrl ? "Apply on Company Site" : `Apply on ${jobSource}`}
+                        <ExternalLink className="w-4 h-4" />
+                    </a>
+                </div>
             </div>
         </div>
+
     );
 }
 

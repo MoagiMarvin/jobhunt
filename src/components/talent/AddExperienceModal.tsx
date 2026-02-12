@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Save, Briefcase, Calendar, FileText } from "lucide-react";
+import { X, Save, Briefcase, Calendar, FileText, Wand2, Sparkles } from "lucide-react";
 
 interface AddExperienceModalProps {
     isOpen: boolean;
@@ -20,6 +20,9 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
     const [startDate, setStartDate] = useState({ month: "January", year: new Date().getFullYear().toString() });
     const [endDate, setEndDate] = useState({ month: "January", year: new Date().getFullYear().toString() });
     const [isCurrent, setIsCurrent] = useState(true);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [showAIInput, setShowAIInput] = useState(false);
+    const [aiInstructions, setAiInstructions] = useState("");
 
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const currentYear = new Date().getFullYear();
@@ -84,6 +87,37 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
         if (e.key === 'Enter') {
             e.preventDefault();
             addAchievement();
+        }
+    };
+
+    const handleGenerateBullets = async () => {
+        // Create a context string from the role and company
+        const contextText = `Role: ${formData.role} at ${formData.company}. ${achievements.join(' ')} ${currentAchievement}`;
+
+        setIsGenerating(true);
+        try {
+            const res = await fetch('/api/ai/revamp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: contextText,
+                    goal: 'experience',
+                    instructions: aiInstructions
+                })
+            });
+
+            const data = await res.json();
+            if (data.revampedText) {
+                const newBullets = data.revampedText.split('\n').filter((line: string) => line.trim().length > 0);
+                setAchievements(newBullets);
+                setShowAIInput(false);
+                setAiInstructions("");
+            }
+        } catch (error) {
+            console.error("Analysis failed:", error);
+            alert("Failed to generate bullets. Please try again.");
+        } finally {
+            setIsGenerating(false);
         }
     };
 
@@ -257,9 +291,56 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
 
                         {/* Achievements & Responsibilities */}
                         <div className="space-y-3">
-                            <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-                                <FileText className="w-3.5 h-3.5 text-blue-600" /> Achievements & Responsibilities
+                            <label className="text-xs font-bold text-slate-500 uppercase flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2">
+                                    <FileText className="w-3.5 h-3.5 text-blue-600" /> Achievements & Responsibilities
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAIInput(!showAIInput)}
+                                    className="flex items-center gap-1 text-[10px] font-bold text-purple-600 hover:text-purple-700 bg-purple-50 px-2 py-1 rounded transition-colors"
+                                >
+                                    <Sparkles className="w-3 h-3" />
+                                    AI Assist
+                                </button>
                             </label>
+
+                            {showAIInput && (
+                                <div className="bg-purple-50 p-3 rounded-xl border border-purple-100 space-y-2 animate-in slide-in-from-top-2">
+                                    <p className="text-[10px] text-purple-700 font-medium">
+                                        Describe what you did roughly, and AI will convert it into professional bullet points.
+                                    </p>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={aiInstructions}
+                                            onChange={(e) => setAiInstructions(e.target.value)}
+                                            placeholder="E.g. I led a team of 5 and improved sales by 20%..."
+                                            className="flex-1 px-3 py-2 text-xs rounded-lg border border-purple-200 focus:ring-2 focus:ring-purple-500 outline-none"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleGenerateBullets();
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleGenerateBullets}
+                                            disabled={isGenerating}
+                                            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1 disabled:opacity-50 transition-all shadow-sm"
+                                        >
+                                            {isGenerating ? (
+                                                <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <Wand2 className="w-3 h-3" />
+                                            )}
+                                            Generate
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="flex gap-2">
                                 <input
                                     type="text"

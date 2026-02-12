@@ -252,10 +252,15 @@ export async function POST(request: NextRequest) {
         // For now, we return the raw HTML of the container
         // In a real app, strict sanitization is needed on the client
 
+        // Extract emails from content
+        const emailRegex = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/gi;
+        const emails = [...new Set(content.match(emailRegex) || [])]; // Deduplicate
+
         return NextResponse.json({
             content: content,
             url: url,
-            directApplyUrl: directApplyUrl
+            directApplyUrl: directApplyUrl,
+            emails: emails
         });
 
     } catch (error: any) {
