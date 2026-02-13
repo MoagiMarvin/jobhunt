@@ -22,6 +22,7 @@ import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
 import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
 import AddExperienceModal from "@/components/talent/AddExperienceModal";
 import MasterRevampModal from "@/components/talent/MasterRevampModal";
+import AddLanguageModal from "@/components/talent/AddLanguageModal";
 import { useBackToClose } from "@/hooks/useBackToClose";
 
 
@@ -154,7 +155,6 @@ export default function ProfilePage() {
     const [isAddSkillOpen, setIsAddSkillOpen] = useState(false);
     const [addSkillMode, setAddSkillMode] = useState<"technical" | "soft">("technical");
     const [isAddLanguageOpen, setIsAddLanguageOpen] = useState(false); // New Language Modal State
-    const [newLanguage, setNewLanguage] = useState({ language: "", proficiency: "Fluent" });
     const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
     const [isAddCredentialOpen, setIsAddCredentialOpen] = useState<{ open: boolean, type: "education" | "certification" }>({ open: false, type: "education" });
     const [isAddReferenceOpen, setIsAddReferenceOpen] = useState(false);
@@ -987,8 +987,7 @@ export default function ProfilePage() {
                                             {isEditMode && (
                                                 <ItemActionMenu
                                                     onEdit={() => {
-                                                        setEditingLanguage({ ...lang, idx });
-                                                        setNewLanguage({ language: lang.language, proficiency: lang.proficiency });
+                                                        setEditingLanguage(lang);
                                                         setIsAddLanguageOpen(true);
                                                     }}
                                                     onDelete={async () => {
@@ -1308,88 +1307,54 @@ export default function ProfilePage() {
                     }
                 }}
             />
-            {/* Simple Inline Language Modal (For speed) */}
-            {isAddLanguageOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl w-full max-sm p-6 shadow-xl animate-in fade-in zoom-in">
-                        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <Languages className="w-5 h-5 text-blue-600" /> Add Language
-                        </h3>
-                        <div className="space-y-3">
-                            <input
-                                type="text"
-                                placeholder="Language (e.g. French)"
-                                className="w-full px-4 py-2 border rounded-lg"
-                                value={newLanguage.language}
-                                onChange={e => setNewLanguage({ ...newLanguage, language: e.target.value })}
-                            />
-                            <select
-                                className="w-full px-4 py-2 border rounded-lg"
-                                value={newLanguage.proficiency}
-                                onChange={e => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
-                            >
-                                <option value="Native">Native</option>
-                                <option value="Fluent">Fluent</option>
-                                <option value="Intermediate">Intermediate</option>
-                                <option value="Basic">Basic</option>
-                            </select>
-                            <div className="flex gap-2 mt-4">
-                                <button
-                                    onClick={() => setIsAddLanguageOpen(false)}
-                                    className="flex-1 py-2 rounded-lg bg-slate-100 font-semibold text-slate-600"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={async () => {
-                                        if (newLanguage.language && currentUserId) {
-                                            try {
-                                                const langData = {
-                                                    user_id: currentUserId,
-                                                    language: newLanguage.language,
-                                                    proficiency: newLanguage.proficiency,
-                                                };
+            <AddLanguageModal
+                isOpen={isAddLanguageOpen}
+                onClose={() => {
+                    setIsAddLanguageOpen(false);
+                    setEditingLanguage(null);
+                }}
+                initialData={editingLanguage ? {
+                    id: editingLanguage.id,
+                    language: editingLanguage.language,
+                    proficiency: editingLanguage.proficiency
+                } : undefined}
+                onAdd={async (langData) => {
+                    if (!currentUserId) return;
+                    try {
+                        const payload = {
+                            user_id: currentUserId,
+                            language: langData.language,
+                            proficiency: langData.proficiency,
+                        };
 
-                                                if (editingLanguage) {
-                                                    const { error } = await supabase
-                                                        .from("languages")
-                                                        .update(langData)
-                                                        .eq("id", editingLanguage.id);
-                                                    if (error) throw error;
+                        if (langData.id) {
+                            const { error } = await supabase
+                                .from("languages")
+                                .update(payload)
+                                .eq("id", langData.id);
+                            if (error) throw error;
 
-                                                    const updated = languages.map((l: Language, i: number) => i === editingLanguage.idx ? { ...l, ...langData } : l);
-                                                    setLanguages(updated);
-                                                    alert("Language updated!");
-                                                } else {
-                                                    const { data, error } = await supabase
-                                                        .from("languages")
-                                                        .insert(langData)
-                                                        .select();
-                                                    if (error) throw error;
+                            const updated = languages.map((l: Language) => l.id === langData.id ? { ...l, ...payload } : l);
+                            setLanguages(updated);
+                            alert("Language updated!");
+                        } else {
+                            const { data, error } = await supabase
+                                .from("languages")
+                                .insert(payload)
+                                .select();
+                            if (error) throw error;
 
-                                                    const updated = [...languages, { ...langData, id: data[0].id }];
-                                                    setLanguages(updated);
-                                                    alert("Language added!");
-                                                }
-
-                                                setNewLanguage({ language: "", proficiency: "Fluent" });
-                                                setIsAddLanguageOpen(false);
-                                                setEditingLanguage(null);
-                                            } catch (error: any) {
-                                                console.error("Error adding/updating language:", error);
-                                                alert(`Error saving language: ${error.message || "Unknown error"}`);
-                                            }
-                                        }
-                                    }}
-                                    className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-bold hover:bg-blue-700"
-                                >
-                                    {editingLanguage ? "Update" : "Add"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+                            const updated = [...languages, { ...payload, id: data[0].id }];
+                            setLanguages(updated);
+                            alert("Language added!");
+                        }
+                    } catch (error: any) {
+                        console.error("Error saving language:", error);
+                        alert(`Error saving language: ${error.message || "Unknown error"}`);
+                        throw error;
+                    }
+                }}
+            />
 
             <AddCredentialModal
                 isOpen={isAddCredentialOpen.open}

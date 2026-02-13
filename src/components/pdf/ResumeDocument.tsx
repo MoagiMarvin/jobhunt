@@ -140,12 +140,11 @@ const getStyles = (themeName: string = 'modern') => {
             lineHeight: 1.3,
         },
         referenceContainer: {
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 20,
+            flexDirection: 'column',
+            gap: 12,
         },
         referenceItem: {
-            width: '45%',
+            width: '100%',
         },
         refName: {
             fontSize: 9,

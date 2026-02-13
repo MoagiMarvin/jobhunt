@@ -288,7 +288,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                     <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Professional References
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                         {referencesArr.map((ref: any, i: number) => (
                             <div key={i}>
                                 <p className="text-xs font-bold text-black">{ref.name}</p>
