@@ -1,6 +1,17 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, Link } from '@react-pdf/renderer';
 
+// Register Inter font from Google's CDN for react-pdf
+Font.register({
+    family: 'Inter',
+    fonts: [
+        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2', fontWeight: 400 },
+        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiA.woff2', fontWeight: 600 },
+        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2', fontWeight: 700 },
+        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff2', fontWeight: 800 },
+    ]
+});
+
 // Color Palettes
 const THEMES = {
     modern: {
@@ -36,7 +47,7 @@ const getStyles = (themeName: string = 'modern') => {
         page: {
             padding: 40,
             backgroundColor: '#FFFFFF',
-            fontFamily: 'Helvetica',
+            fontFamily: 'Inter',
         },
         header: {
             marginBottom: 20,
@@ -45,8 +56,8 @@ const getStyles = (themeName: string = 'modern') => {
             paddingBottom: 15,
         },
         name: {
-            fontSize: 12.5,
-            fontWeight: 'bold',
+            fontSize: 14, // Slightly larger
+            fontWeight: 800, // Extra bold for name
             color: '#000000',
             marginBottom: 2,
             textTransform: 'uppercase',
@@ -66,8 +77,9 @@ const getStyles = (themeName: string = 'modern') => {
             gap: 10,
         },
         contactItem: {
-            fontSize: 9,
+            fontSize: 9.5, // Matches Summary
             color: '#000000',
+            lineHeight: 1.4,
         },
         section: {
             marginTop: 10,
@@ -75,7 +87,7 @@ const getStyles = (themeName: string = 'modern') => {
         },
         sectionTitle: {
             fontSize: 9.5,
-            fontWeight: 'bold',
+            fontWeight: 700, // Explicitly 700
             color: '#000000',
             borderBottom: 1,
             borderBottomColor: '#000000',
@@ -88,7 +100,7 @@ const getStyles = (themeName: string = 'modern') => {
             fontSize: 9.5,
             color: '#000000',
             lineHeight: 1.4,
-            textAlign: 'justify',
+            textAlign: 'left',
         },
         itemContainer: {
             marginBottom: 8,
@@ -101,19 +113,20 @@ const getStyles = (themeName: string = 'modern') => {
         },
         itemTitle: {
             fontSize: 9.5,
-            fontWeight: 'bold',
+            fontWeight: 700,
             color: '#000000',
         },
         itemSubtitle: {
             fontSize: 9.5,
             color: '#000000',
-            fontWeight: 'normal',
+            fontWeight: 400,
             marginBottom: 1,
+            lineHeight: 1.4,
         },
         itemDate: {
             fontSize: 8.5,
             color: '#000000',
-            fontWeight: 'bold',
+            fontWeight: 600, // Semi-bold for dates
         },
         bulletPoint: {
             fontSize: 9.5,
@@ -147,13 +160,17 @@ const getStyles = (themeName: string = 'modern') => {
             width: '100%',
         },
         refName: {
-            fontSize: 9,
-            fontWeight: 'bold',
+            fontSize: 9.5,
+            fontWeight: 700,
             color: '#000000',
+            marginBottom: 1,
+            lineHeight: 1.4,
         },
         refDetail: {
-            fontSize: 8.5,
-            color: '#1E293B',
+            fontSize: 9.5, // Matches Summary
+            color: '#000000',
+            marginBottom: 1,
+            lineHeight: 1.4,
         }
     });
 };
@@ -395,12 +412,13 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 {languagesArr.length > 0 && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Languages</Text>
-                        <View style={styles.contactGrid}>
+                        <View style={[styles.contactGrid, { flexDirection: 'row', flexWrap: 'wrap' }]}>
                             {languagesArr.map((lang: any, idx: number) => (
-                                <Text key={idx} style={styles.contactItem}>
-                                    {typeof lang === 'string' ? lang : `${lang.language || lang.name}${lang.proficiency || lang.level ? ` (${lang.proficiency || lang.level})` : ''}`}
-                                    {idx < languagesArr.length - 1 ? ' • ' : ''}
-                                </Text>
+                                <View key={idx} style={{ width: '48%', marginBottom: 2 }}>
+                                    <Text style={styles.contactItem}>
+                                        • {typeof lang === 'string' ? lang : `${lang.language || lang.name}${lang.proficiency || lang.level ? ` (${lang.proficiency || lang.level})` : ''}`}
+                                    </Text>
+                                </View>
                             ))}
                         </View>
                     </View>
@@ -414,8 +432,11 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                             {referencesArr.map((ref: any, idx: number) => (
                                 <View key={idx} style={styles.referenceItem}>
                                     <Text style={styles.refName}>{ref.name}</Text>
-                                    <Text style={styles.refDetail}>{ref.relationship} at {ref.company}</Text>
-                                    <Text style={styles.refDetail}>{ref.email} | {ref.phone}</Text>
+                                    <Text style={styles.refDetail}>{ref.relationship} | {ref.company}</Text>
+                                    <View style={{ flexDirection: 'row', gap: 10 }}>
+                                        <Text style={styles.refDetail}>T: {ref.phone}</Text>
+                                        <Text style={styles.refDetail}>E: {ref.email}</Text>
+                                    </View>
                                 </View>
                             ))}
                         </View>

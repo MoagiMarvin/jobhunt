@@ -61,7 +61,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
         <div className="w-full max-w-[210mm] bg-white text-black shadow-2xl rounded-sm border border-slate-300 p-6 sm:p-10 space-y-4 text-left">
             {/* Header */}
             <div className="border-b border-slate-300 pb-4">
-                <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
+                <h1 className="text-2xl font-black text-black uppercase tracking-wide">
                     {user.name || user.fullName || "Your Name"}
                 </h1>
                 <p className="text-sm text-black font-bold uppercase tracking-wide mt-1">
@@ -124,7 +124,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                                 acc[category].push(skillObj.name || skillObj.skill);
                                 return acc;
                             }, {})).map(([category, categorySkills]: [string, any], i: number) => (
-                                <div key={i} className="text-xs text-black">
+                                <div key={i} className="text-xs text-black leading-relaxed">
                                     <span className="font-bold">{category}: </span>
                                     <span>{categorySkills.join(", ")}</span>
                                 </div>
@@ -143,7 +143,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                         {skills
                             .filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills')
                             .map((s: any, i: number) => (
-                                <div key={i} className="flex items-start gap-2 text-xs text-black">
+                                <div key={i} className="flex items-start gap-2 text-xs text-black leading-relaxed">
                                     <span className="w-2">•</span>
                                     <span className="flex-1">{typeof s === 'string' ? s : (s.name || s.skill)}</span>
                                 </div>
@@ -170,12 +170,12 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                             <div key={i} className="mb-3">
                                 <div className="flex justify-between items-baseline">
                                     <h3 className="font-bold text-xs text-black">{exp.role || exp.title}</h3>
-                                    <span className="text-xs font-bold text-black">{formatDuration(exp.duration || exp.dates)}</span>
+                                    <span className="text-xs font-semibold text-black">{formatDuration(exp.duration || exp.dates)}</span>
                                 </div>
                                 <p className="text-xs text-black mb-1">{exp.company}</p>
                                 <ul className="list-none space-y-1">
                                     {bullets.map((bullet: string, j: number) => (
-                                        <li key={j} className="text-xs text-black leading-normal flex items-start gap-2 ml-2">
+                                        <li key={j} className="text-xs text-black leading-relaxed flex items-start gap-2 ml-2">
                                             <span>•</span>
                                             <span className="flex-1">{bullet}</span>
                                         </li>
@@ -197,7 +197,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                     {projectsArr.slice(0, 3).map((project: any, i: number) => (
                         <div key={i} className="mb-2">
                             <h3 className="font-bold text-xs text-black">{project.title}</h3>
-                            <p className="text-xs text-black flex items-start gap-2 ml-2">
+                            <p className="text-xs text-black flex items-start gap-2 ml-2 leading-relaxed">
                                 <span>•</span>
                                 <span className="flex-1">{project.description}</span>
                             </p>
@@ -223,22 +223,22 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                             <h3 className="font-bold text-xs text-black">
                                 {edu.degree || edu.title}
                             </h3>
-                            <span className="text-xs font-bold text-black">
+                            <span className="text-xs font-semibold text-black">
                                 {formatYearsOnly(edu.duration || edu.date || edu.year?.toString())}
                             </span>
                         </div>
-                        <p className="text-xs text-black">{edu.school || edu.issuer}</p>
+                        <p className="text-xs text-black leading-relaxed">{edu.school || edu.issuer}</p>
                     </div>
                 ))}
                 {matricData && (
                     <div className="mb-2">
                         <div className="flex justify-between items-baseline">
                             <h3 className="font-bold text-xs text-black">Matric</h3>
-                            <span className="text-xs font-bold text-black">
+                            <span className="text-xs font-semibold text-black">
                                 Class of {matricData.completionYear}
                             </span>
                         </div>
-                        <p className="text-xs text-black">{matricData.schoolName}</p>
+                        <p className="text-xs text-black leading-relaxed">{matricData.schoolName}</p>
                     </div>
                 )}
             </div>
@@ -254,7 +254,7 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                         <div key={i} className="mb-2">
                             <div className="flex justify-between items-baseline">
                                 <h3 className="font-bold text-xs text-black">{cert.title || cert.name}</h3>
-                                <span className="text-xs font-bold text-black">{cert.date}</span>
+                                <span className="text-xs font-semibold text-black">{cert.date}</span>
                             </div>
                             <p className="text-xs text-black">{cert.issuer}</p>
                         </div>
@@ -269,13 +269,15 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                     <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Languages
                     </h2>
-                    <div className="flex flex-wrap gap-2 text-xs text-black">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-black">
                         {languagesArr.map((lang: any, i: number) => (
-                            <span key={i}>
-                                {typeof lang === 'string' ? lang : (lang.language || lang.name)}
-                                {(lang.proficiency || lang.level) && ` (${lang.proficiency || lang.level})`}
-                                {i < languagesArr.length - 1 ? ' •' : ''}
-                            </span>
+                            <div key={i} className="flex items-center gap-2 leading-relaxed">
+                                <span>•</span>
+                                <span>
+                                    {typeof lang === 'string' ? lang : (lang.language || lang.name)}
+                                    {(lang.proficiency || lang.level) && ` (${lang.proficiency || lang.level})`}
+                                </span>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -290,10 +292,13 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                     </h2>
                     <div className="grid grid-cols-1 gap-4">
                         {referencesArr.map((ref: any, i: number) => (
-                            <div key={i}>
+                            <div key={i} className="space-y-0.5 leading-relaxed">
                                 <p className="text-xs font-bold text-black">{ref.name}</p>
-                                <p className="text-xs text-slate-800">{ref.relationship} at {ref.company}</p>
-                                <p className="text-xs text-slate-800">{ref.email} | {ref.phone}</p>
+                                <p className="text-xs text-black">{ref.relationship} | {ref.company}</p>
+                                <div className="flex gap-4 text-xs text-black">
+                                    <span>T: {ref.phone}</span>
+                                    <span>E: {ref.email}</span>
+                                </div>
                             </div>
                         ))}
                     </div>
