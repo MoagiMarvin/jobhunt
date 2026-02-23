@@ -1,16 +1,8 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, Link } from '@react-pdf/renderer';
 
-// Register Inter font from Google's CDN for react-pdf
-Font.register({
-    family: 'Inter',
-    fonts: [
-        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2', fontWeight: 400 },
-        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuI6fAZ9hiA.woff2', fontWeight: 600 },
-        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuGKYAZ9hiA.woff2', fontWeight: 700 },
-        { src: 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuFuYAZ9hiA.woff2', fontWeight: 800 },
-    ]
-});
+// Using standard PDF fonts (Helvetica) for maximum reliability and speed
+// This avoids "Unknown font format" errors and external network dependencies during rendering
 
 // Color Palettes
 const THEMES = {
@@ -47,7 +39,7 @@ const getStyles = (themeName: string = 'modern') => {
         page: {
             padding: 40,
             backgroundColor: '#FFFFFF',
-            fontFamily: 'Inter',
+            fontFamily: 'Helvetica',
         },
         header: {
             marginBottom: 20,
@@ -87,7 +79,7 @@ const getStyles = (themeName: string = 'modern') => {
         },
         sectionTitle: {
             fontSize: 9.5,
-            fontWeight: 700, // Explicitly 700
+            fontWeight: 'bold',
             color: '#000000',
             borderBottom: 1,
             borderBottomColor: '#000000',
@@ -113,7 +105,7 @@ const getStyles = (themeName: string = 'modern') => {
         },
         itemTitle: {
             fontSize: 9.5,
-            fontWeight: 700,
+            fontWeight: 'bold',
             color: '#000000',
         },
         itemSubtitle: {
@@ -126,7 +118,7 @@ const getStyles = (themeName: string = 'modern') => {
         itemDate: {
             fontSize: 8.5,
             color: '#000000',
-            fontWeight: 600, // Semi-bold for dates
+            fontWeight: 'bold', // Helvetica bold for dates
         },
         bulletPoint: {
             fontSize: 9.5,
@@ -161,7 +153,7 @@ const getStyles = (themeName: string = 'modern') => {
         },
         refName: {
             fontSize: 9.5,
-            fontWeight: 700,
+            fontWeight: 'bold',
             color: '#000000',
             marginBottom: 1,
             lineHeight: 1.4,
@@ -176,19 +168,32 @@ const getStyles = (themeName: string = 'modern') => {
 };
 
 export const ResumeDocument = ({ data }: { data: any }) => {
-    if (!data) return null;
+    console.log("ResumeDocument: Rendering started with keys:", Object.keys(data || {}));
+    if (!data) {
+        console.warn("ResumeDocument: No data provided!");
+        return null;
+    }
 
-    // Standardize data source (Same logic as MinimalistCVPreview)
+    // Standardize data source with high resilience
     const info = data || {};
     const user = info.user || info.personalInfo || {};
+
+    // Ensure nested objects are accessible even if missing
     const summary = info.summary || user.summary || "";
-    const skills = info.skills || [];
-    const experiences = info.experiences || info.experience || [];
-    const educationArr = info.educationList || info.education || [];
-    const certs = info.certificationsList || (info.credentials?.filter((c: any) => c.type === 'certification')) || [];
-    const languagesArr = info.languages || [];
-    const referencesArr = info.references || [];
-    const projectsArr = info.projectsList || info.projects || [];
+    const skills = Array.isArray(info.skills) ? info.skills : [];
+    const experiences = Array.isArray(info.experiences) ? info.experiences : (Array.isArray(info.experience) ? info.experience : []);
+    const educationArr = Array.isArray(info.educationList) ? info.educationList : (Array.isArray(info.education) ? info.education : []);
+    const certificationsList = Array.isArray(info.certificationsList) ? info.certificationsList : [];
+    const credentials = Array.isArray(info.credentials) ? info.credentials : [];
+
+    // Re-map certs if they are within credentials
+    const certs = certificationsList.length > 0
+        ? certificationsList
+        : credentials.filter((c: any) => c.type === 'certification');
+
+    const languagesArr = Array.isArray(info.languages) ? info.languages : [];
+    const referencesArr = Array.isArray(info.references) ? info.references : [];
+    const projectsArr = Array.isArray(info.projectsList) ? info.projectsList : (Array.isArray(info.projects) ? info.projects : []);
     const matricData = info.matricData || info.matric;
 
     const template = info.template || 'modern';
@@ -196,7 +201,8 @@ export const ResumeDocument = ({ data }: { data: any }) => {
 
     // Helper to format raw dates (e.g., 2024-01-01) to MMM YYYY (e.g., Jan 2024)
     const formatDate = (dateStr: string) => {
-        if (!dateStr || dateStr.toLowerCase().includes("present")) return dateStr;
+        if (!dateStr || typeof dateStr !== 'string') return dateStr || "";
+        if (dateStr.toLowerCase().includes("present")) return dateStr;
         // Check if it's already in MMM YYYY format
         if (/^[a-zA-Z]{3} \d{4}$/.test(dateStr)) return dateStr;
 
@@ -211,14 +217,14 @@ export const ResumeDocument = ({ data }: { data: any }) => {
 
     // Helper to format a duration string (e.g., "2024-01-01 - 2024-06-01")
     const formatDuration = (duration: string) => {
-        if (!duration) return "";
+        if (!duration || typeof duration !== 'string') return "";
         const parts = duration.split(" - ");
         return parts.map(p => formatDate(p.trim())).join(" - ");
     };
 
     // Helper to format only years for education (e.g., "2021 - 2024")
     const formatYearsOnly = (duration: string) => {
-        if (!duration) return "";
+        if (!duration || typeof duration !== 'string') return duration || "";
         const parts = duration.split(" - ");
         return parts.map(p => {
             const trimmed = p.trim();

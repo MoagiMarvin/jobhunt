@@ -149,10 +149,11 @@ function GenerateContent() {
             const data = await res.json();
             if (data.error) throw new Error(data.error);
 
-            // Ensure we keep the master references as requested
+            // Ensure we keep the master references and projects as requested
             const tailoredData = {
                 ...data,
-                references: profileData.references || []
+                references: profileData.references || [],
+                projectsList: profileData.projectsList || []
             };
 
             setOptimizedData(tailoredData);
