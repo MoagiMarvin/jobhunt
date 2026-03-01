@@ -12,6 +12,8 @@ import {
     LayoutDashboard,
     Briefcase,
     Mic2,
+    MoreVertical,
+    ChevronUp,
     LogOut
 } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
@@ -29,22 +31,68 @@ export default function Sidebar() {
     const pathname = usePathname();
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+    const [userData, setUserData] = React.useState<{ name: string; avatar: string | null; role: 'talent' | 'recruiter' }>({
+        name: "User Account",
+        avatar: null,
+        role: 'talent'
+    });
 
     React.useEffect(() => {
+        const fetchUserData = async (userId: string) => {
+            // Try fetching from profiles (talent) first
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('full_name, avatar_url')
+                .eq('id', userId)
+                .single();
+
+            if (profile) {
+                setUserData({
+                    name: profile.full_name || "User Account",
+                    avatar: profile.avatar_url,
+                    role: 'talent'
+                });
+                return;
+            }
+
+            // Fallback to recruiter_profiles
+            const { data: recruiterProfile } = await supabase
+                .from('recruiter_profiles')
+                .select('full_name, company_name')
+                .eq('user_id', userId)
+                .single();
+
+            if (recruiterProfile) {
+                setUserData({
+                    name: recruiterProfile.full_name || recruiterProfile.company_name || "Recruiter",
+                    avatar: null,
+                    role: 'recruiter'
+                });
+            }
+        };
+
         const checkAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             setIsLoggedIn(!!session);
+            if (session?.user) {
+                fetchUserData(session.user.id);
+            }
         };
         checkAuth();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setIsLoggedIn(!!session);
+            if (session?.user) {
+                fetchUserData(session.user.id);
+            }
         });
 
         return () => subscription.unsubscribe();
     }, []);
 
     const handleLogout = async () => {
+        setIsMenuOpen(false);
         await supabase.auth.signOut();
         router.push("/");
     };
@@ -86,34 +134,66 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            <div className="p-4 border-t border-slate-100">
-                <div className="bg-slate-50 rounded-xl p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-[#0a66c2] font-bold">
-                            U
+            <div className="p-4 border-t border-slate-100 relative">
+                {/* Profile Popup Menu */}
+                {isMenuOpen && (
+                    <>
+                        <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setIsMenuOpen(false)}
+                        />
+                        <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-20 animate-in fade-in slide-in-from-bottom-2">
+                            <Link
+                                href={userData.role === 'recruiter' ? '/recruiter/profile' : '/profile'}
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                            >
+                                <User className="w-4 h-4 text-slate-400" />
+                                My Profile
+                            </Link>
+                            <Link
+                                href="/settings"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                            >
+                                <Settings className="w-4 h-4 text-slate-400" />
+                                Settings
+                            </Link>
+                            <div className="h-px bg-slate-100 my-1 mx-2" />
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-3 w-full px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
                         </div>
-                        <div className="min-w-0">
-                            <p className="text-sm font-bold text-slate-900 truncate">User Account</p>
-                            <p className="text-[10px] text-slate-500 truncate">Premium Member</p>
-                        </div>
+                    </>
+                )}
+
+                {/* Profile Button */}
+                <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className={`flex items-center gap-3 w-full p-3 rounded-xl transition-all duration-200 ${isMenuOpen ? 'bg-slate-100' : 'hover:bg-slate-50'
+                        }`}
+                >
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-[#0a66c2] font-black shrink-0 overflow-hidden ring-2 ring-white shadow-sm">
+                        {userData.avatar ? (
+                            <img src={userData.avatar} alt={userData.name} className="w-full h-full object-cover" />
+                        ) : (
+                            userData.name[0]?.toUpperCase() || 'U'
+                        )}
                     </div>
-                    <div className="flex flex-col gap-2">
-                        <Link
-                            href="/settings"
-                            className="flex items-center justify-center gap-2 w-full py-2 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors"
-                        >
-                            <Settings className="w-3.5 h-3.5" />
-                            Settings
-                        </Link>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center justify-center gap-2 w-full py-2 bg-red-50 border border-red-100 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                            <LogOut className="w-3.5 h-3.5" />
-                            Logout
-                        </button>
+                    <div className="flex-1 text-left min-w-0">
+                        <p className="text-sm font-bold text-slate-900 truncate">{userData.name}</p>
+                        <p className="text-[10px] text-slate-500 font-medium truncate uppercase tracking-wider">
+                            {userData.role === 'recruiter' ? 'Recruiter' : 'Talent'}
+                        </p>
                     </div>
-                </div>
+                    <div className={`text-slate-400 transition-transform duration-200 ${isMenuOpen ? 'rotate-180' : ''}`}>
+                        <ChevronUp className="w-4 h-4" />
+                    </div>
+                </button>
             </div>
         </aside>
     );
