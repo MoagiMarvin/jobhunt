@@ -33,11 +33,16 @@ export default function MasterRevampModal({ isOpen, onClose, onSave, currentData
             });
 
             const data = await res.json();
+            console.log("AI Debug - Data received:", data);
+            if (!res.ok) {
+                const errorMessage = data.details ? `${data.error}: ${data.details}` : (data.error || "AI Service Error");
+                throw new Error(errorMessage);
+            }
             if (data.revamped) {
                 setRevampedData(data.revamped);
                 setStep('review');
             } else {
-                throw new Error("No data returned");
+                throw new Error("AI failed to provide optimized data. Please try again.");
             }
         } catch (error) {
             console.error("Revamp failed:", error);

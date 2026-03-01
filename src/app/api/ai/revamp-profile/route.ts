@@ -3,7 +3,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: NextRequest) {
     try {
-        const { summary, experiences, projects, skills, instructions } = await req.json();
+        const body = await req.json();
+        console.log("Master Revamp - Request Body:", JSON.stringify(body, null, 2));
+        const { currentData, focus } = body;
+        const { summary, experiences, projects, skills } = currentData || {};
+        const instructions = focus;
 
         const apiKey = process.env.GEMINI_API_KEY;
 
@@ -16,7 +20,7 @@ export async function POST(req: NextRequest) {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             generationConfig: { responseMimeType: "application/json" }
         });
 
@@ -63,12 +67,19 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "AI returned invalid format" }, { status: 500 });
         }
 
-        return NextResponse.json(jsonResponse);
+        return NextResponse.json({
+            revamped: {
+                summary: jsonResponse.revampedSummary || jsonResponse.summary || "No summary generated",
+                experiences: jsonResponse.revampedExperiences || jsonResponse.experiences || [],
+                projects: jsonResponse.revampedProjects || jsonResponse.projects || [],
+                suggestedSkills: jsonResponse.suggestedSkills || jsonResponse.skills || []
+            }
+        });
 
     } catch (error: any) {
-        console.error("Master Revamp Error:", error);
+        console.error("Master Revamp Error - FULL DETAILS:", error);
         return NextResponse.json(
-            { error: "Failed to revamp profile.", details: error.message },
+            { error: "Failed to revamp profile.", details: error.message, stack: error.stack },
             { status: 500 }
         );
     }

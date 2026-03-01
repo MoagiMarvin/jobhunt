@@ -504,7 +504,7 @@ export default function ProfilePage() {
             // Update summary
             if (data.summary) {
                 const { error: summaryError } = await supabase
-                    .from('talents')
+                    .from('profiles')
                     .update({ summary: data.summary })
                     .eq('id', currentUserId);
                 if (summaryError) throw summaryError;
@@ -515,7 +515,7 @@ export default function ProfilePage() {
             if (data.experiences && data.experiences.length > 0) {
                 for (const exp of data.experiences) {
                     const { error: expError } = await supabase
-                        .from('work_experience')
+                        .from('work_experiences')
                         .update({ description: exp.description })
                         .eq('id', exp.id);
                     if (expError) console.error(`Failed to update exp ${exp.id}:`, expError);
