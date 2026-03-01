@@ -237,19 +237,6 @@ export default function ProfileHeader({
                                                             </div>
                                                             Copy Public Link
                                                         </button>
-
-                                                        {/* 4. Settings (Placeholder/Visible shortcut) */}
-                                                        <button
-                                                            onClick={() => {
-                                                                setIsActionsOpen(false);
-                                                            }}
-                                                            className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
-                                                        >
-                                                            <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500">
-                                                                <Settings className="w-4 h-4" />
-                                                            </div>
-                                                            Account Settings
-                                                        </button>
                                                     </div>
                                                 </>
                                             )}
