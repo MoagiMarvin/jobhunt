@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School, MessageSquare, Layers } from "lucide-react";
+import { Upload, FileText, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School, MessageSquare, Layers, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -21,6 +21,7 @@ import AddReferenceModal from "@/components/talent/AddReferenceModal";
 import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
 import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
 import AddExperienceModal from "@/components/talent/AddExperienceModal";
+import MasterRevampModal from "@/components/talent/MasterRevampModal";
 import AddLanguageModal from "@/components/talent/AddLanguageModal";
 import { useBackToClose } from "@/hooks/useBackToClose";
 
@@ -500,61 +501,51 @@ export default function ProfilePage() {
         }
     };
 
-    const handleMasterRevampSave = async (updates: any) => {
-        if (!currentUserId) return;
+    const handleMasterRevampSave = async (data: any) => {
         try {
-            // Update Summary
-            if (updates.summary) {
-                await supabase.from("profiles").update({ summary: updates.summary }).eq("id", currentUserId);
-                setUser(prev => ({ ...prev, summary: updates.summary }));
+            // Update summary
+            if (data.summary) {
+                const { error: summaryError } = await supabase
+                    .from('talents')
+                    .update({ summary: data.summary })
+                    .eq('id', currentUserId);
+                if (summaryError) throw summaryError;
+                setUser(prev => ({ ...prev, summary: data.summary }));
             }
 
-            // Update Experiences
-            if (updates.experiences) {
-                for (const exp of updates.experiences) {
-                    await supabase.from("work_experiences").update({ description: exp.description }).eq("id", exp.id);
+            // Update experiences
+            if (data.experiences && data.experiences.length > 0) {
+                for (const exp of data.experiences) {
+                    const { error: expError } = await supabase
+                        .from('work_experience')
+                        .update({ description: exp.description })
+                        .eq('id', exp.id);
+                    if (expError) console.error(`Failed to update exp ${exp.id}:`, expError);
                 }
                 setExperiences(prev => prev.map(e => {
-                    const updated = updates.experiences.find((u: any) => u.id === e.id);
-                    return updated ? { ...e, description: updated.description } : e;
+                    const match = data.experiences.find((de: any) => de.id === e.id);
+                    return match ? { ...e, description: match.description } : e;
                 }));
             }
 
-            // Update Projects
-            if (updates.projects) {
-                for (const proj of updates.projects) {
-                    await supabase.from("projects").update({ description: proj.description }).eq("id", proj.id);
+            // Update projects
+            if (data.projects && data.projects.length > 0) {
+                for (const proj of data.projects) {
+                    const { error: projError } = await supabase
+                        .from('projects')
+                        .update({ description: proj.description })
+                        .eq('id', proj.id);
+                    if (projError) console.error(`Failed to update project ${proj.id}:`, projError);
                 }
                 setProjectsList(prev => prev.map(p => {
-                    const updated = updates.projects.find((u: any) => u.id === p.id);
-                    return updated ? { ...p, description: updated.description } : p;
+                    const match = data.projects.find((dp: any) => dp.id === p.id);
+                    return match ? { ...p, description: match.description } : p;
                 }));
             }
 
-            // Update Skills
-            if (updates.newSkills && updates.newSkills.length > 0) {
-                const newSkillsPayload = updates.newSkills.map((skillName: string) => ({
-                    user_id: currentUserId,
-                    name: skillName,
-                    category: "Other Skills",
-                    min_experience_years: 1
-                }));
-                const { data: insertedSkills } = await supabase.from("skills").insert(newSkillsPayload).select();
-
-                if (insertedSkills) {
-                    setSkills(prev => [...prev, ...insertedSkills.map((s: any) => ({
-                        id: s.id,
-                        name: s.name,
-                        minYears: s.min_experience_years || 0,
-                        category: s.category || "Other Skills",
-                        isSoftSkill: false
-                    }))]);
-                }
-            }
-
-            alert("Profile revamped successfully!");
+            alert("Profile optimized successfully!");
         } catch (error) {
-            console.error("Failed to save revamp changes:", error);
+            console.error("Failed to save optimization changes:", error);
             alert("Some changes failed to save.");
         }
     };
@@ -598,20 +589,19 @@ export default function ProfilePage() {
                     haveCar={user.haveCar}
                     onEdit={() => setIsEditing(true)}
                     downloadAction={
-                        <div className="flex items-center gap-2">
-                            <DownloadResumeButton showCustomize={false} data={{
-                                user,
-                                experiences,
-                                educationList,
-                                certificationsList,
-                                skills,
-                                projectsList,
-                                languages,
-                                references,
-                                matricData
-                            }} />
-                        </div>
+                        <DownloadResumeButton showCustomize={false} data={{
+                            user,
+                            experiences,
+                            educationList,
+                            certificationsList,
+                            skills,
+                            projectsList,
+                            languages,
+                            references,
+                            matricData
+                        }} />
                     }
+                    onOptimize={() => setIsMasterRevampOpen(true)}
                     targetRoles={user.targetRoles}
                     isOwner={true}
                     userId={currentUserId || undefined}
@@ -1651,6 +1641,18 @@ export default function ProfilePage() {
                     )}
                 </div>
             </div>
+            {/* Master Revamp Modal */}
+            <MasterRevampModal
+                isOpen={isMasterRevampOpen}
+                onClose={() => setIsMasterRevampOpen(false)}
+                onSave={handleMasterRevampSave}
+                currentData={{
+                    summary: user.summary,
+                    experiences: experiences.map(e => ({ id: e.id, role: e.role, company: e.company, description: e.description })),
+                    projects: projectsList.map(p => ({ id: p.id, title: p.title, description: p.description, technologies: p.technologies })),
+                    skills: skills.map(s => ({ name: s.name }))
+                }}
+            />
         </div>
     );
 }

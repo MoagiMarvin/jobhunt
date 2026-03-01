@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Save, Briefcase, Calendar, FileText } from "lucide-react";
+import { X, Save, Briefcase, Calendar, FileText, Sparkles, Wand2 } from "lucide-react";
 
 interface AddExperienceModalProps {
     isOpen: boolean;
@@ -20,6 +20,9 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
     const [startDate, setStartDate] = useState({ month: "January", year: new Date().getFullYear().toString() });
     const [endDate, setEndDate] = useState({ month: "January", year: new Date().getFullYear().toString() });
     const [isCurrent, setIsCurrent] = useState(true);
+    const [isRevamping, setIsRevamping] = useState(false);
+    const [showRevampInput, setShowRevampInput] = useState(false);
+    const [revampInstructions, setRevampInstructions] = useState("");
 
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const currentYear = new Date().getFullYear();
@@ -87,6 +90,35 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
         }
     };
 
+
+    const handleRevamp = async () => {
+        if (achievements.length === 0) return;
+
+        setIsRevamping(true);
+        try {
+            const res = await fetch('/api/ai/revamp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: achievements.join('\n'),
+                    goal: 'experience',
+                    instructions: revampInstructions
+                })
+            });
+
+            const data = await res.json();
+            if (data.revampedText) {
+                setAchievements(data.revampedText.split('\n').filter((s: string) => s.trim()));
+                setShowRevampInput(false);
+                setRevampInstructions("");
+            }
+        } catch (error) {
+            console.error("Revamp failed:", error);
+            alert("Failed to refine experience. Please try again.");
+        } finally {
+            setIsRevamping(false);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -260,7 +292,62 @@ export default function AddExperienceModal({ isOpen, onClose, onAdd, initialData
                         <div className="space-y-3">
                             <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
                                 <FileText className="w-3.5 h-3.5 text-blue-600" /> Achievements & Responsibilities
+                                {!showRevampInput && achievements.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowRevampInput(true)}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded transition-colors border border-blue-100"
+                                    >
+                                        <Sparkles className="w-3 h-3" />
+                                        AI Assist
+                                    </button>
+                                )}
                             </label>
+
+                            {showRevampInput && (
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2 animate-in slide-in-from-top-2">
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase">
+                                            How should AI refine your points?
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowRevampInput(false)}
+                                            className="text-slate-400 hover:text-slate-600"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={revampInstructions}
+                                            onChange={(e) => setRevampInstructions(e.target.value)}
+                                            placeholder="E.g. Make them more impact-oriented..."
+                                            className="flex-1 px-3 py-2 text-xs rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleRevamp();
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleRevamp}
+                                            disabled={isRevamping}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1 disabled:opacity-50 transition-all shadow-sm"
+                                        >
+                                            {isRevamping ? (
+                                                <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <Wand2 className="w-3 h-3" />
+                                            )}
+                                            Refine
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="flex gap-2">
                                 <input

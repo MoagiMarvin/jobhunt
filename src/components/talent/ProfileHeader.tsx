@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, ChevronDown, Share2, Settings, FileText } from "lucide-react";
+import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, ChevronDown, Share2, Settings, FileText, Wand2, Sparkles } from "lucide-react";
 
 interface ProfileHeaderProps {
     name: string;
@@ -25,6 +25,7 @@ interface ProfileHeaderProps {
     isOwner?: boolean;
     userId?: string;
     onShare?: () => void;
+    onOptimize?: () => void;
     isEditMode?: boolean;
 }
 
@@ -49,6 +50,7 @@ export default function ProfileHeader({
     isOwner = true,
     userId,
     onShare,
+    onOptimize,
     isEditMode = true, // Default to true now for owner
 }: ProfileHeaderProps) {
     const [isMounted, setIsMounted] = useState(false);
@@ -88,9 +90,9 @@ export default function ProfileHeader({
     const status = statusConfig[availabilityStatus] || statusConfig["Not Looking"];
 
     return (
-        <div className="bg-white rounded-xl border border-blue-100 md:border-2 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-blue-100 md:border-2 shadow-sm">
             {/* Background Banner */}
-            <div className="h-24 md:h-32 bg-gradient-to-r from-blue-700 via-blue-800 to-slate-900"></div>
+            <div className="h-24 md:h-32 bg-gradient-to-r from-blue-700 via-blue-800 to-slate-900 rounded-t-xl"></div>
 
             {/* Content */}
             <div className="px-5 pb-6 md:px-8 md:pb-8 -mt-12 md:-mt-16 relative">
@@ -145,47 +147,13 @@ export default function ProfileHeader({
                             <div className="absolute top-0 right-0 md:relative md:top-auto md:right-auto shrink-0 flex items-center gap-2">
                                 {isOwner ? (
                                     <>
-                                        {/* Desktop Standalone Buttons */}
-                                        <div className="hidden lg:flex items-center gap-2">
-                                            {downloadAction ? (
-                                                <div className="flex">
-                                                    {downloadAction}
-                                                </div>
-                                            ) : (onDownloadResume && (
-                                                <button
-                                                    onClick={onDownloadResume}
-                                                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-lg"
-                                                >
-                                                    <Download className="w-4 h-4" />
-                                                    <span>Quick Download</span>
-                                                </button>
-                                            ))}
-
-                                            <Link
-                                                href="/cv/preview"
-                                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all font-bold text-xs shadow-sm"
-                                            >
-                                                <FileText className="w-4 h-4 text-slate-400" />
-                                                <span>Customize CV</span>
-                                            </Link>
-
-                                            <button
-                                                onClick={() => onShare?.()}
-                                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all font-bold text-xs shadow-sm"
-                                            >
-                                                <Share2 className="w-4 h-4 text-slate-400" />
-                                                <span>Copy Link</span>
-                                            </button>
-                                        </div>
-
-                                        {/* Mobile Consolidated Menu */}
-                                        <div className="lg:hidden relative">
+                                        <div className="relative">
                                             <button
                                                 onClick={() => setIsActionsOpen(!isActionsOpen)}
-                                                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-lg group"
+                                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-xl group"
                                             >
-                                                <Settings className="w-4 h-4 group-hover:rotate-45 transition-transform" />
-                                                <span>Manage</span>
+                                                <Sparkles className="w-4 h-4 text-blue-400 group-hover:rotate-12 transition-transform" />
+                                                <span>Profile Actions</span>
                                                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isActionsOpen ? 'rotate-180' : ''}`} />
                                             </button>
 
@@ -195,10 +163,32 @@ export default function ProfileHeader({
                                                         className="fixed inset-0 z-20"
                                                         onClick={() => setIsActionsOpen(false)}
                                                     ></div>
-                                                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-1.5 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden flex flex-col items-stretch text-left">
-                                                        <div className="px-4 py-2 border-b border-slate-50 mb-1">
-                                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-left">Profile Options</p>
+                                                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-30 animate-in fade-in slide-in-from-top-2 overflow-hidden flex flex-col items-stretch text-left">
+                                                        <div className="px-4 py-2 border-b border-slate-50 mb-1 flex items-center justify-between">
+                                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-left">Manage Profile</p>
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
                                                         </div>
+
+                                                        {/* 0. Optimize Profile (AI) */}
+                                                        {onOptimize && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setIsActionsOpen(false);
+                                                                    onOptimize();
+                                                                }}
+                                                                className="w-full px-4 py-3 text-left text-sm font-bold text-blue-600 hover:bg-blue-50 transition-colors flex items-center gap-3 group/opt"
+                                                            >
+                                                                <div className="p-1.5 bg-blue-100 rounded-lg text-blue-600 group-hover/opt:scale-110 transition-transform">
+                                                                    <Wand2 className="w-4 h-4" />
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span>Optimize with AI</span>
+                                                                    <span className="text-[10px] text-blue-400 font-medium">Bulk profile enhancement</span>
+                                                                </div>
+                                                            </button>
+                                                        )}
+
+                                                        <div className="h-px bg-slate-50 my-1 mx-2" />
 
                                                         {/* 1. Download CV */}
                                                         {downloadAction ? (
@@ -211,10 +201,12 @@ export default function ProfileHeader({
                                                                     setIsActionsOpen(false);
                                                                     onDownloadResume();
                                                                 }}
-                                                                className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                                className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
                                                             >
-                                                                <Download className="w-4 h-4 text-blue-600" />
-                                                                Quick Download
+                                                                <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500">
+                                                                    <Download className="w-4 h-4" />
+                                                                </div>
+                                                                Quick Download (PDF)
                                                             </button>
                                                         ))}
 
@@ -222,11 +214,15 @@ export default function ProfileHeader({
                                                         <Link
                                                             href="/cv/preview"
                                                             onClick={() => setIsActionsOpen(false)}
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
+                                                            className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
                                                         >
-                                                            <FileText className="w-4 h-4 text-slate-400" />
-                                                            Customize CV
+                                                            <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500">
+                                                                <FileText className="w-4 h-4" />
+                                                            </div>
+                                                            Personalize CV Layout
                                                         </Link>
+
+                                                        <div className="h-px bg-slate-50 my-1 mx-2" />
 
                                                         {/* 3. Copy Link */}
                                                         <button
@@ -234,10 +230,25 @@ export default function ProfileHeader({
                                                                 setIsActionsOpen(false);
                                                                 onShare?.();
                                                             }}
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 border-t border-slate-50"
+                                                            className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
                                                         >
-                                                            <Share2 className="w-4 h-4 text-slate-400" />
-                                                            Copy Profile Link
+                                                            <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500">
+                                                                <Share2 className="w-4 h-4" />
+                                                            </div>
+                                                            Copy Public Link
+                                                        </button>
+
+                                                        {/* 4. Settings (Placeholder/Visible shortcut) */}
+                                                        <button
+                                                            onClick={() => {
+                                                                setIsActionsOpen(false);
+                                                            }}
+                                                            className="w-full px-4 py-3 text-left text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3"
+                                                        >
+                                                            <div className="p-1.5 bg-slate-100 rounded-lg text-slate-500">
+                                                                <Settings className="w-4 h-4" />
+                                                            </div>
+                                                            Account Settings
                                                         </button>
                                                     </div>
                                                 </>

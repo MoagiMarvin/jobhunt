@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Save, FileText } from "lucide-react";
+import { X, Save, FileText, Sparkles, Wand2 } from "lucide-react";
 
 interface EditSummaryModalProps {
     isOpen: boolean;
@@ -12,11 +12,43 @@ interface EditSummaryModalProps {
 
 export default function EditSummaryModal({ isOpen, onClose, onSave, initialSummary }: EditSummaryModalProps) {
     const [summary, setSummary] = useState(initialSummary);
+    const [isRevamping, setIsRevamping] = useState(false);
+    const [showRevampInput, setShowRevampInput] = useState(false);
+    const [revampInstructions, setRevampInstructions] = useState("");
 
     // Sync state when initialSummary changes or modal opens
     useEffect(() => {
         setSummary(initialSummary || "");
     }, [initialSummary, isOpen]);
+
+    const handleRevamp = async () => {
+        if (!summary) return;
+
+        setIsRevamping(true);
+        try {
+            const res = await fetch('/api/ai/revamp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: summary,
+                    goal: 'summary',
+                    instructions: revampInstructions
+                })
+            });
+
+            const data = await res.json();
+            if (data.revampedText) {
+                setSummary(data.revampedText);
+                setShowRevampInput(false);
+                setRevampInstructions("");
+            }
+        } catch (error) {
+            console.error("Revamp failed:", error);
+            alert("Failed to revamp summary. Please try again.");
+        } finally {
+            setIsRevamping(false);
+        }
+    };
 
 
     if (!isOpen) return null;
@@ -59,6 +91,60 @@ export default function EditSummaryModal({ isOpen, onClose, onSave, initialSumma
                                     placeholder="E.g. Passionate Computer Science graduate with a strong foundation in..."
                                     className="w-full h-48 px-4 py-3 rounded-xl border-2 border-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none font-medium leading-relaxed text-slate-700 text-sm"
                                 />
+
+                                {/* AI Assistance Section */}
+                                <div className="mt-2 text-right">
+                                    {!showRevampInput ? (
+                                        <button
+                                            onClick={() => setShowRevampInput(true)}
+                                            className="inline-flex items-center gap-2 text-[10px] font-bold text-blue-600 hover:text-blue-700 transition-colors px-3 py-1.5 bg-blue-50/50 rounded-lg border border-blue-100"
+                                        >
+                                            <Sparkles className="w-3 h-3" />
+                                            Rewrite with AI
+                                        </button>
+                                    ) : (
+                                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2 animate-in slide-in-from-top-2 text-left">
+                                            <div className="flex justify-between items-center">
+                                                <label className="text-[10px] font-bold text-slate-500 uppercase">
+                                                    AI Optimization Focus
+                                                </label>
+                                                <button
+                                                    onClick={() => setShowRevampInput(false)}
+                                                    className="text-slate-400 hover:text-slate-600"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={revampInstructions}
+                                                    onChange={(e) => setRevampInstructions(e.target.value)}
+                                                    placeholder="E.g. Make it sound more senior, focus on React..."
+                                                    className="flex-1 px-3 py-2 text-xs rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            handleRevamp();
+                                                        }
+                                                    }}
+                                                />
+                                                <button
+                                                    onClick={handleRevamp}
+                                                    disabled={isRevamping}
+                                                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1 disabled:opacity-50 transition-all shadow-sm"
+                                                >
+                                                    {isRevamping ? (
+                                                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                    ) : (
+                                                        <Wand2 className="w-3 h-3" />
+                                                    )}
+                                                    Rewrite
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
 
                             </div>
                         </div>

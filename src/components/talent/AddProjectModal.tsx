@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Save, FolderKanban, Link as LinkIcon, Github, Image as ImageIcon, Upload, Lightbulb } from "lucide-react";
+import { X, Save, FolderKanban, Link as LinkIcon, Github, Image as ImageIcon, Upload, Lightbulb, Sparkles, Wand2 } from "lucide-react";
 
 interface AddProjectModalProps {
     isOpen: boolean;
@@ -20,6 +20,9 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
     });
     const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [isRevamping, setIsRevamping] = useState(false);
+    const [showRevampInput, setShowRevampInput] = useState(false);
+    const [revampInstructions, setRevampInstructions] = useState("");
 
     useEffect(() => {
         if (initialData && isOpen) {
@@ -36,6 +39,35 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
             setPreviewImage(null);
         }
     }, [initialData, isOpen]);
+
+    const handleRevamp = async () => {
+        if (!formData.description) return;
+
+        setIsRevamping(true);
+        try {
+            const res = await fetch('/api/ai/revamp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: formData.description,
+                    goal: 'project',
+                    instructions: revampInstructions
+                })
+            });
+
+            const data = await res.json();
+            if (data.revampedText) {
+                setFormData(prev => ({ ...prev, description: data.revampedText }));
+                setShowRevampInput(false);
+                setRevampInstructions("");
+            }
+        } catch (error) {
+            console.error("Revamp failed:", error);
+            alert("Failed to revamp description. Please try again.");
+        } finally {
+            setIsRevamping(false);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -239,7 +271,62 @@ export default function AddProjectModal({ isOpen, onClose, onAdd, initialData }:
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 flex items-center justify-between">
                                 Short Description
+                                {!showRevampInput && formData.description && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowRevampInput(true)}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded transition-colors border border-blue-100"
+                                    >
+                                        <Sparkles className="w-3 h-3" />
+                                        Rewrite with AI
+                                    </button>
+                                )}
                             </label>
+
+                            {showRevampInput && (
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2 animate-in slide-in-from-top-2 mb-2">
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-[10px] font-bold text-slate-500 uppercase">
+                                            AI Instructions
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowRevampInput(false)}
+                                            className="text-slate-400 hover:text-slate-600"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={revampInstructions}
+                                            onChange={(e) => setRevampInstructions(e.target.value)}
+                                            placeholder="E.g. Focusing on technical challenges..."
+                                            className="flex-1 px-3 py-2 text-xs rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleRevamp();
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleRevamp}
+                                            disabled={isRevamping}
+                                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1 disabled:opacity-50 transition-all shadow-sm"
+                                        >
+                                            {isRevamping ? (
+                                                <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <Wand2 className="w-3 h-3" />
+                                            )}
+                                            Rewrite
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             <textarea
                                 required
