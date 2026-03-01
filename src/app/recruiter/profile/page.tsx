@@ -13,7 +13,6 @@ import {
   BriefcaseBusiness,
   Plus,
   X,
-  Settings,
   LogOut,
 } from "lucide-react";
 import RecruiterProfileHeader from "@/components/recruiter/RecruiterProfileHeader";
@@ -63,7 +62,6 @@ export default function RecruiterProfilePage() {
     verification_status: "pending",
   });
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [specializationInput, setSpecializationInput] = useState("");
 
   useEffect(() => {
@@ -475,35 +473,6 @@ export default function RecruiterProfilePage() {
           </div>
 
         </form>
-      </div>
-
-      {/* Settings Menu Button - Bottom Right */}
-      <div className="fixed bottom-8 right-8 z-40">
-        <div className="relative">
-          <button
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg transition-all hover:shadow-xl"
-            title="Settings"
-          >
-            <Settings className="w-6 h-6" />
-          </button>
-
-          {/* Dropdown Menu */}
-          {isSettingsOpen && (
-            <div className="absolute bottom-full right-0 mb-2 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-bottom-2">
-              <button
-                onClick={() => {
-                  setIsSettingsOpen(false);
-                  handleLogout();
-                }}
-                className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
       </div>
     </main>
   );
