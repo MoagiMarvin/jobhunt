@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, FileText, Sparkles, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School, MessageSquare, Layers } from "lucide-react";
+import { Upload, FileText, User, Mail, Phone, LogOut, Edit2, Save, X, Loader2, GraduationCap, FolderKanban, Plus, Building2, Languages, Award, Briefcase, School, MessageSquare, Layers } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -21,7 +21,6 @@ import AddReferenceModal from "@/components/talent/AddReferenceModal";
 import SecondaryEducationCard from "@/components/talent/SecondaryEducationCard";
 import AddSecondaryEducationModal from "@/components/talent/AddSecondaryEducationModal";
 import AddExperienceModal from "@/components/talent/AddExperienceModal";
-import MasterRevampModal from "@/components/talent/MasterRevampModal";
 import AddLanguageModal from "@/components/talent/AddLanguageModal";
 import { useBackToClose } from "@/hooks/useBackToClose";
 
@@ -600,13 +599,6 @@ export default function ProfilePage() {
                     onEdit={() => setIsEditing(true)}
                     downloadAction={
                         <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setIsMasterRevampOpen(true)}
-                                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all border border-white/20 hover:scale-105"
-                            >
-                                <Sparkles className="w-3.5 h-3.5" />
-                                AI Revamp
-                            </button>
                             <DownloadResumeButton showCustomize={false} data={{
                                 user,
                                 experiences,
@@ -1659,18 +1651,6 @@ export default function ProfilePage() {
                     )}
                 </div>
             </div>
-            {/* Master Revamp Modal */}
-            <MasterRevampModal
-                isOpen={isMasterRevampOpen}
-                onClose={() => setIsMasterRevampOpen(false)}
-                onSave={handleMasterRevampSave}
-                currentData={{
-                    summary: user.summary,
-                    experiences: experiences.map(e => ({ id: e.id, role: e.role, company: e.company, description: e.description })),
-                    projects: projectsList.map(p => ({ id: p.id, title: p.title, description: p.description, technologies: p.technologies })),
-                    skills: skills.map(s => ({ name: s.name }))
-                }}
-            />
         </div>
     );
 }

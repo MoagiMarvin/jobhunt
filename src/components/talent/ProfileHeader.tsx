@@ -90,14 +90,14 @@ export default function ProfileHeader({
     return (
         <div className="bg-white rounded-xl border border-blue-100 md:border-2 shadow-sm overflow-hidden">
             {/* Background Banner */}
-            <div className="h-24 md:h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            <div className="h-24 md:h-32 bg-gradient-to-r from-blue-700 via-blue-800 to-slate-900"></div>
 
             {/* Content */}
             <div className="px-5 pb-6 md:px-8 md:pb-8 -mt-12 md:-mt-16 relative">
                 <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-end">
                     {/* Avatar */}
                     <div className="group/avatar relative">
-                        <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-4 border-white shadow-xl shrink-0 overflow-hidden transition-all ${availabilityStatus === "Looking for Work" ? "ring-[6px] ring-green-400 ring-offset-2" : ""}`}>
+                        <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-4 border-white shadow-xl shrink-0 overflow-hidden transition-all ${availabilityStatus === "Looking for Work" ? "ring-[6px] ring-green-400 ring-offset-2" : ""}`}>
                             {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
                                 <img src={avatar} alt={name} className="w-full h-full object-cover" />
                             ) : (

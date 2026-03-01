@@ -29,7 +29,7 @@ export default function ProjectCard({
         <div className="bg-white rounded-xl border border-slate-200 hover:border-blue-300 transition-all shadow-sm hover:shadow-md overflow-hidden group flex flex-col sm:flex-row">
             {/* Project Image - More compact side-by-side on desktop */}
             {image_url && (
-                <div className="relative w-full sm:w-1/3 h-28 sm:h-auto min-h-[100px] sm:min-h-[120px] bg-gradient-to-br from-blue-50 to-purple-50 overflow-hidden shrink-0">
+                <div className="relative w-full sm:w-1/3 h-28 sm:h-auto min-h-[100px] sm:min-h-[120px] bg-gradient-to-br from-blue-50 to-slate-100 overflow-hidden shrink-0">
                     <Image
                         src={image_url}
                         alt={title}
