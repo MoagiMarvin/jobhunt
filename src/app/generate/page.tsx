@@ -313,10 +313,34 @@ const GenerateStudio = () => {
                                             const isSection = req.startsWith("SECTION: ");
                                             if (isSection) return null; // Clean view
 
+                                            // Determine match status
+                                            const isMatched = analysis?.matches?.some((m: string) =>
+                                                m.toLowerCase().includes(req.toLowerCase().substring(0, 20)) ||
+                                                req.toLowerCase().includes(m.toLowerCase().substring(0, 20))
+                                            );
+                                            const isMissing = analysis?.missing?.some((m: string) =>
+                                                m.toLowerCase().includes(req.toLowerCase().substring(0, 20)) ||
+                                                req.toLowerCase().includes(m.toLowerCase().substring(0, 20))
+                                            );
+
                                             return (
-                                                <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 group hover:border-blue-200 transition-colors">
-                                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
-                                                    <p className="text-xs text-slate-700 leading-relaxed font-medium">{req}</p>
+                                                <div key={i} className={cn(
+                                                    "flex items-start gap-3 p-3 rounded-xl border transition-colors group",
+                                                    isMatched ? "bg-emerald-50/50 border-emerald-100 hover:border-emerald-200" :
+                                                        isMissing ? "bg-amber-50/50 border-amber-100 hover:border-amber-200" :
+                                                            "bg-slate-50 border-slate-100 hover:border-blue-200"
+                                                )}>
+                                                    {isMatched ? (
+                                                        <CheckCircle2 className="w-4 h-4 text-emerald-500 mt-0.5 shrink-0" />
+                                                    ) : isMissing ? (
+                                                        <div className="w-4 h-4 rounded-full border-2 border-amber-300 mt-0.5 shrink-0" />
+                                                    ) : (
+                                                        <div className="w-4 h-4 rounded-full border-2 border-slate-200 mt-0.5 shrink-0" />
+                                                    )}
+                                                    <p className={cn(
+                                                        "text-xs leading-relaxed font-medium",
+                                                        isMatched ? "text-emerald-900" : isMissing ? "text-amber-900" : "text-slate-700"
+                                                    )}>{req}</p>
                                                 </div>
                                             );
                                         })}
@@ -374,6 +398,33 @@ const GenerateStudio = () => {
                                         (analysis?.semanticScore ?? analysis?.score) > 80 ? "🔥 Excellent Match" : (analysis?.semanticScore ?? analysis?.score) > 50 ? "⚡ Good Base" : "Keep Tailoring"
                                     )}
                                 </p>
+
+                                {analysis && !isAnalyzing && (
+                                    <div className="space-y-4 pt-4 border-t border-slate-50 text-left">
+                                        <div>
+                                            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Key Matches</h4>
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {analysis.matches?.slice(0, 4).map((m: string, i: number) => (
+                                                    <span key={i} className="px-2 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-md border border-emerald-100">
+                                                        {m}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {analysis.missing?.length > 0 && (
+                                            <div>
+                                                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Noticeable Gaps</h4>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {analysis.missing?.slice(0, 3).map((m: string, i: number) => (
+                                                        <span key={i} className="px-2 py-0.5 bg-amber-50 text-amber-600 text-[10px] font-bold rounded-md border border-amber-100">
+                                                            {m}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 <button
                                     onClick={handleOptimize}
