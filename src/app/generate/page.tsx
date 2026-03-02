@@ -43,6 +43,7 @@ const GenerateStudio = () => {
 
     const [profileData, setProfileData] = useState<any>(null);
     const [optimizedData, setOptimizedData] = useState<any>(null);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     // Load profile data from individual keys
     useEffect(() => {
@@ -71,18 +72,27 @@ const GenerateStudio = () => {
                 if (session.viewMode) setViewMode(session.viewMode);
                 if (session.jobLink) setJobLink(session.jobLink);
                 if (session.manualJD) setManualJD(session.manualJD);
-                if (session.isScraped) setIsScraped(session.isScraped);
-                if (session.scrapedRequirements) setScrapedRequirements(session.scrapedRequirements);
+
+                if (session.scrapedRequirements && session.scrapedRequirements.length > 0) {
+                    setScrapedRequirements(session.scrapedRequirements);
+                    setIsScraped(true);
+                } else if (session.isScraped) {
+                    setIsScraped(true);
+                }
+
                 if (session.analysis) setAnalysis(session.analysis);
                 if (session.optimizedData) setOptimizedData(session.optimizedData);
             } catch (e) {
                 console.error("Failed to restore session:", e);
             }
         }
+        setIsLoaded(true);
     }, []);
 
     // Persist Session
     useEffect(() => {
+        if (!isLoaded) return; // Wait until loaded to start persisting
+
         const session = {
             step,
             activeTab,
@@ -95,7 +105,7 @@ const GenerateStudio = () => {
             optimizedData
         };
         localStorage.setItem("cv_gen_session", JSON.stringify(session));
-    }, [step, activeTab, viewMode, jobLink, manualJD, isScraped, scrapedRequirements, analysis, optimizedData]);
+    }, [isLoaded, step, activeTab, viewMode, jobLink, manualJD, isScraped, scrapedRequirements, analysis, optimizedData]);
 
     const handleAnalyze = async (requirements: string[]) => {
         if (!profileData) {
@@ -190,6 +200,12 @@ const GenerateStudio = () => {
             alert("Please paste the job description first.");
             return;
         }
+
+        // Clear previous state
+        setAnalysis(null);
+        setError(null);
+        setOptimizedData(null);
+
         const lines = manualJD.split('\n').filter(l => l.trim().length > 10).slice(0, 15);
         setScrapedRequirements(lines);
         setIsScraped(true);
@@ -202,12 +218,17 @@ const GenerateStudio = () => {
         }
     }, [scrapedRequirements, profileData, isAnalyzing]); // Removed analysis from deps to avoid loop if persisted
 
-    // Handle incoming link
+    // Handle incoming link - Only scrape if it's a NEW link
     useEffect(() => {
+        if (!isLoaded) return; // Wait for restoration first
+
         if (linkParam && !isScraped && !isScraping) {
-            handleScrape(linkParam);
+            // Check if this link is different from what we might have already
+            if (linkParam !== jobLink || scrapedRequirements.length === 0) {
+                handleScrape(linkParam);
+            }
         }
-    }, [linkParam]);
+    }, [linkParam, isScraped, isScraping, jobLink, isLoaded, scrapedRequirements.length]);
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
