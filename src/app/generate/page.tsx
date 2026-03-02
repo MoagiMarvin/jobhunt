@@ -336,7 +336,7 @@ const GenerateStudio = () => {
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 border-b border-slate-50 pb-2">AI Match Score</h3>
 
                                 <div className="relative inline-flex items-center justify-center mb-6">
-                                    <svg className="w-32 h-32 transform -rotate-90">
+                                    <svg className={cn("w-32 h-32 transform -rotate-90", isAnalyzing && "animate-pulse")}>
                                         <circle
                                             cx="64"
                                             cy="64"
@@ -354,16 +354,25 @@ const GenerateStudio = () => {
                                             strokeWidth="8"
                                             fill="transparent"
                                             strokeDasharray={364}
-                                            strokeDashoffset={364 - (364 * (analysis?.semanticScore ?? analysis?.score ?? 0)) / 100}
+                                            strokeDashoffset={isAnalyzing ? 90 : 364 - (364 * (analysis?.semanticScore ?? analysis?.score ?? 0)) / 100}
                                             strokeLinecap="round"
-                                            className="text-blue-600 transition-all duration-1000"
+                                            className={cn("text-blue-600 transition-all duration-1000", isAnalyzing && "animate-[spin_3s_linear_infinite]")}
                                         />
                                     </svg>
-                                    <span className="absolute text-3xl font-black text-slate-900">{analysis?.semanticScore ?? analysis?.score ?? "0"}%</span>
+                                    <span className={cn("absolute text-3xl font-black text-slate-900 transition-opacity", isAnalyzing ? "opacity-30" : "opacity-100")}>
+                                        {isAnalyzing ? <Loader2 className="w-8 h-8 animate-spin text-blue-500" /> : `${analysis?.semanticScore ?? analysis?.score ?? "0"}%`}
+                                    </span>
                                 </div>
 
-                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-6">
-                                    {(analysis?.semanticScore ?? analysis?.score) > 80 ? "🔥 Excellent Match" : (analysis?.semanticScore ?? analysis?.score) > 50 ? "⚡ Good Base" : "Keep Tailoring"}
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-6 min-h-[1.5rem] flex items-center justify-center">
+                                    {isAnalyzing ? (
+                                        <span className="flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                            AI Calculating Score...
+                                        </span>
+                                    ) : (
+                                        (analysis?.semanticScore ?? analysis?.score) > 80 ? "🔥 Excellent Match" : (analysis?.semanticScore ?? analysis?.score) > 50 ? "⚡ Good Base" : "Keep Tailoring"
+                                    )}
                                 </p>
 
                                 <button
