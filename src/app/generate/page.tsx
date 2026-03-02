@@ -60,7 +60,42 @@ const GenerateStudio = () => {
             };
             setProfileData(fullProfile);
         }
+
+        // Load Persisted Session
+        const savedSession = localStorage.getItem("cv_gen_session");
+        if (savedSession) {
+            try {
+                const session = JSON.parse(savedSession);
+                if (session.step) setStep(session.step);
+                if (session.activeTab) setActiveTab(session.activeTab);
+                if (session.viewMode) setViewMode(session.viewMode);
+                if (session.jobLink) setJobLink(session.jobLink);
+                if (session.manualJD) setManualJD(session.manualJD);
+                if (session.isScraped) setIsScraped(session.isScraped);
+                if (session.scrapedRequirements) setScrapedRequirements(session.scrapedRequirements);
+                if (session.analysis) setAnalysis(session.analysis);
+                if (session.optimizedData) setOptimizedData(session.optimizedData);
+            } catch (e) {
+                console.error("Failed to restore session:", e);
+            }
+        }
     }, []);
+
+    // Persist Session
+    useEffect(() => {
+        const session = {
+            step,
+            activeTab,
+            viewMode,
+            jobLink,
+            manualJD,
+            isScraped,
+            scrapedRequirements,
+            analysis,
+            optimizedData
+        };
+        localStorage.setItem("cv_gen_session", JSON.stringify(session));
+    }, [step, activeTab, viewMode, jobLink, manualJD, isScraped, scrapedRequirements, analysis, optimizedData]);
 
     const handleAnalyze = async (requirements: string[]) => {
         if (!profileData) {
@@ -165,7 +200,7 @@ const GenerateStudio = () => {
         if (scrapedRequirements.length > 0 && profileData && !analysis && !isAnalyzing) {
             handleAnalyze(scrapedRequirements);
         }
-    }, [scrapedRequirements, profileData, analysis, isAnalyzing]);
+    }, [scrapedRequirements, profileData, isAnalyzing]); // Removed analysis from deps to avoid loop if persisted
 
     // Handle incoming link
     useEffect(() => {
@@ -354,6 +389,12 @@ const GenerateStudio = () => {
                             </div>
                         </div>
 
+                        {/*
+                       - [ ] State Persistence: Save progress automatically
+    - [/] Implement localStorage save/load logic
+    - [ ] Add reset functionality to "Clear & Reset"
+- [x] Logic & Features: Maintain core functionality
+                        */}
                         {/* Right: Score & Primary Action */}
                         <div className="space-y-6">
                             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center">
@@ -441,6 +482,7 @@ const GenerateStudio = () => {
                                         setAnalysis(null);
                                         setIsScraped(false);
                                         setOptimizedData(null);
+                                        localStorage.removeItem("cv_gen_session");
                                     }}
                                     className="w-full mt-3 py-3 text-slate-400 hover:text-slate-600 text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2"
                                 >
