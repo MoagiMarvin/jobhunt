@@ -178,6 +178,8 @@ const GenerateStudio = () => {
         setIsScraped(false);
         setError(null);
         setAnalysis(null);
+        setOptimizedData(null); // Clear previous tailored CV
+        setJobLink(urlToScrape); // Update the link state to the new one
 
         try {
             const res = await fetch(`/api/scrape-job?url=${encodeURIComponent(urlToScrape)}`);
@@ -222,13 +224,23 @@ const GenerateStudio = () => {
     useEffect(() => {
         if (!isLoaded) return; // Wait for restoration first
 
-        if (linkParam && !isScraped && !isScraping) {
-            // Check if this link is different from what we might have already
-            if (linkParam !== jobLink || scrapedRequirements.length === 0) {
+        if (linkParam) {
+            // If the incoming link is DIFFERENT from the current session
+            if (linkParam !== jobLink) {
+                console.log("New job link detected, resetting session...");
+                setScrapedRequirements([]);
+                setAnalysis(null);
+                setOptimizedData(null);
+                setJobLink(linkParam);
+                setIsScraped(false);
+                setStep("configure"); // Back to config step
+                handleScrape(linkParam);
+            } else if (!isScraped && !isScraping && scrapedRequirements.length === 0) {
+                // If it's the same link but somehow lost state or first load without session
                 handleScrape(linkParam);
             }
         }
-    }, [linkParam, isScraped, isScraping, jobLink, isLoaded, scrapedRequirements.length]);
+    }, [linkParam, isLoaded]); // Simplified dependencies to focus on link change
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
