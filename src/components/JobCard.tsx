@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Briefcase, ExternalLink, Copy, Check, Mic, Building2, Globe } from "lucide-react";
+import { MapPin, Briefcase, ExternalLink, Copy, Check, Mic, Building2, Globe, Bookmark } from "lucide-react";
 import Image from "next/image";
+import { useSavedJobs } from "@/hooks/useSavedJobs";
 
 interface JobCardProps {
     job: {
@@ -22,6 +23,8 @@ interface JobCardProps {
 export default function JobCard({ job, router }: JobCardProps) {
     const [copied, setCopied] = useState(false);
     const [imgError, setImgError] = useState(false);
+    const { isJobSaved, toggleSave } = useSavedJobs();
+    const saved = isJobSaved(job.link);
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(job.link);
@@ -138,13 +141,26 @@ export default function JobCard({ job, router }: JobCardProps) {
                     )}
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
-                        <div>
-                            <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate pr-4 leading-tight">
-                                {job.title}
-                            </h3>
+                        <div className="flex-1">
+                            <div className="flex justify-between items-start">
+                                <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate pr-8 leading-tight">
+                                    {job.title}
+                                </h3>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleSave(job);
+                                    }}
+                                    className={`p-2 rounded-lg transition-all ${saved
+                                        ? 'bg-blue-50 text-blue-600'
+                                        : 'text-slate-300 hover:text-slate-500 hover:bg-slate-50'
+                                        }`}
+                                >
+                                    <Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} />
+                                </button>
+                            </div>
                             <div className="flex items-center gap-3 text-xs text-slate-500 mt-1.5">
                                 <span className="font-semibold text-slate-700">
                                     {job.company}
