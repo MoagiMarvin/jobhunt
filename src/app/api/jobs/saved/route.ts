@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+export const dynamic = 'force-dynamic';
+
+const getSupabaseAdmin = () => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!url || !key) {
+        throw new Error('Supabase environment variables are missing');
+    }
+
+    return createClient(url, key);
+};
 
 // Helper to normalize URLs for matching
 const normalizeUrl = (url: string) => {
@@ -25,6 +33,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'User ID required' }, { status: 400 });
         }
 
+        const supabaseAdmin = getSupabaseAdmin();
         const { data, error } = await supabaseAdmin
             .from('saved_jobs')
             .select('*')
@@ -50,6 +59,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'User ID and valid Job Data required' }, { status: 400 });
         }
 
+        const supabaseAdmin = getSupabaseAdmin();
         const normalizedLink = normalizeUrl(jobData.link);
 
         // Check if already exists using normalized link
@@ -99,6 +109,7 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ error: 'Job ID and Status required' }, { status: 400 });
         }
 
+        const supabaseAdmin = getSupabaseAdmin();
         const { data, error } = await supabaseAdmin
             .from('saved_jobs')
             .update({ status, updated_at: new Date().toISOString() })
@@ -125,6 +136,7 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ error: 'Job ID required' }, { status: 400 });
         }
 
+        const supabaseAdmin = getSupabaseAdmin();
         const { error } = await supabaseAdmin
             .from('saved_jobs')
             .delete()

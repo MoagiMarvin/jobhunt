@@ -106,7 +106,7 @@ export default function JobCard({ job, router }: JobCardProps) {
                 });
                 router.push(`/jobs/view?${params.toString()}`);
             }}
-            className="group relative bg-white rounded-2xl border border-slate-100 p-6 hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300 cursor-pointer active:scale-[0.99]"
+            className="group relative bg-white rounded-2xl border border-slate-100 p-4 sm:p-6 hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-200 transition-all duration-300 cursor-pointer active:scale-[0.99]"
         >
             {/* Glassmorphism Gradient Blob (Subtle) */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
@@ -116,9 +116,9 @@ export default function JobCard({ job, router }: JobCardProps) {
                 VIEW JOB
             </div> */}
 
-            <div className="flex gap-5 relative z-10">
+            <div className="flex gap-3 sm:gap-5 relative z-10">
                 {/* Company Logo / Avatar */}
-                <div className="w-14 h-14 shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:scale-105 transition-transform p-1">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:scale-105 transition-transform p-1">
                     {!imgError ? (
                         <img
                             src={finalLogoUrl}
@@ -137,7 +137,7 @@ export default function JobCard({ job, router }: JobCardProps) {
                     <div className="flex justify-between items-start mb-1">
                         <div className="flex-1">
                             <div className="flex justify-between items-start">
-                                <h3 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate pr-8 leading-tight">
+                                <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors truncate pr-8 leading-tight">
                                     {job.title}
                                 </h3>
                                 <button
@@ -145,12 +145,12 @@ export default function JobCard({ job, router }: JobCardProps) {
                                         e.stopPropagation();
                                         toggleSave(job);
                                     }}
-                                    className={`p-2 rounded-lg transition-all ${saved
+                                    className={`p-1.5 sm:p-2 rounded-lg transition-all ${saved
                                         ? 'bg-blue-50 text-blue-600'
                                         : 'text-slate-300 hover:text-slate-500 hover:bg-slate-50'
                                         }`}
                                 >
-                                    <Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} />
+                                    <Bookmark className={`w-4 h-4 sm:w-5 sm:h-5 ${saved ? 'fill-current' : ''}`} />
                                 </button>
                             </div>
                             <div className="flex items-center gap-3 text-xs text-slate-500 mt-1.5">

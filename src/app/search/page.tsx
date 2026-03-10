@@ -139,9 +139,14 @@ export default function SearchPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="bg-[#0a66c2] text-white px-8 rounded-xl font-bold hover:bg-[#004182] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="bg-[#0a66c2] text-white px-4 sm:px-8 rounded-xl font-bold hover:bg-[#004182] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                            <>
+                                <Search className="w-4 h-4 sm:hidden" />
+                                <span className="hidden sm:inline">Search</span>
+                            </>
+                        )}
                     </button>
                 </div>
             </form>
