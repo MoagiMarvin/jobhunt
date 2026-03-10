@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
                             return NextResponse.json({
                                 content: jobData.detail_description,
                                 url: url,
-                                directApplyUrl: `https://webapp.placementpartner.com/wi/application_form.php?id=${instance}&vacancy_ref=${encodeURIComponent(vacancyRef)}&source=JOBHUNT`
+                                directApplyUrl: `https://webapp.placementpartner.com/wi/application_form.php?id=${instance}&vacancy_ref=${encodeURIComponent(vacancyRef)}&source=SENTINEL`
                             });
                         }
                     }
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
             // Attempt 2: Minimal / Native Fetch
             response = await fetch(url, {
                 headers: {
-                    'User-Agent': 'JobHunt/1.0 (Education/Research)'
+                    'User-Agent': 'Sentinel/1.0 (Education/Research)'
                 },
                 signal: AbortSignal.timeout(15000)
             });

@@ -23,7 +23,7 @@ function resolveUrl(link: string | undefined | null, baseUrl: string): string | 
     }
 }
 
-// Search API for JobHunt (v3.0 - Integrated with User Reference Logic)
+// Search API for Sentinel (v3.0 - Integrated with User Reference Logic)
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('query');

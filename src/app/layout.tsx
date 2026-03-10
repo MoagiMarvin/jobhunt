@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "JobHunt - AI CV Optimizer",
-  description: "Tailor your CV for any job in seconds.",
+  title: "Sentinel - Exclusive Tech Talent Gatekeeper",
+  description: "Elite career acceleration for top-tier software talent.",
 };
 
 import Sidebar from "@/components/Sidebar";
@@ -19,9 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased bg-slate-50/50 flex`}>
+      <body className={`${inter.className} antialiased bg-slate-50/50 flex flex-col lg:flex-row min-h-screen`}>
         <Sidebar />
-        <main className="flex-1 min-h-screen overflow-y-auto">
+        <main className="flex-1 overflow-y-auto mt-16 lg:mt-0 w-full">
           {children}
         </main>
       </body>

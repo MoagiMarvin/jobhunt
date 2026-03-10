@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * API for Managing Saved Jobs
- * GET: Fetch all saved jobs for the user
- * POST: Save a new job
- * PATCH: Update status (applied, interviewing, etc.)
- */
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
+
+// Helper to normalize URLs for matching
+const normalizeUrl = (url: string) => {
+    try {
+        const u = new URL(url);
+        return u.origin + u.pathname + u.search;
+    } catch {
+        return url.split('#')[0];
+    }
+};
 
 export async function GET(req: NextRequest) {
     try {
@@ -17,7 +25,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'User ID required' }, { status: 400 });
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('saved_jobs')
             .select('*')
             .eq('user_id', userId)
@@ -37,12 +45,14 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { userId, jobData } = body;
 
-        if (!userId || !jobData) {
-            return NextResponse.json({ error: 'User ID and Job Data required' }, { status: 400 });
+        if (!userId || !jobData || !jobData.link) {
+            return NextResponse.json({ error: 'User ID and valid Job Data required' }, { status: 400 });
         }
 
-        // Check if already exists
-        const { data: existing } = await supabase
+        const normalizedLink = normalizeUrl(jobData.link);
+
+        // Check if already exists using normalized link
+        const { data: existing } = await supabaseAdmin
             .from('saved_jobs')
             .select('id')
             .eq('user_id', userId)
@@ -50,8 +60,7 @@ export async function POST(req: NextRequest) {
             .single();
 
         if (existing) {
-            // Unsave logic (delete if already exists)
-            const { error: delError } = await supabase
+            const { error: delError } = await supabaseAdmin
                 .from('saved_jobs')
                 .delete()
                 .eq('id', existing.id);
@@ -60,11 +69,11 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'unsaved', saved: false });
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('saved_jobs')
             .insert({
                 user_id: userId,
-                job_data: jobData,
+                job_data: { ...jobData, link: normalizedLink },
                 status: 'saved'
             })
             .select()
@@ -88,7 +97,7 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ error: 'Job ID and Status required' }, { status: 400 });
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('saved_jobs')
             .update({ status, updated_at: new Date().toISOString() })
             .eq('id', jobId)
@@ -113,7 +122,7 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ error: 'Job ID required' }, { status: 400 });
         }
 
-        const { error } = await supabase
+        const { error } = await supabaseAdmin
             .from('saved_jobs')
             .delete()
             .eq('id', jobId);

@@ -55,6 +55,15 @@ export function useSavedJobs() {
             return;
         }
 
+        // Optimistic Update
+        const isCurrentlySaved = isJobSaved(job.link);
+        if (isCurrentlySaved) {
+            setSavedJobs(prev => prev.filter(j => j.job_data.link !== job.link));
+        } else {
+            const optimisticJob = { id: 'temp-' + Date.now(), job_data: job, status: 'saved' };
+            setSavedJobs(prev => [optimisticJob, ...prev]);
+        }
+
         try {
             const res = await fetch('/api/jobs/saved', {
                 method: 'POST',
@@ -64,14 +73,18 @@ export function useSavedJobs() {
             const data = await res.json();
 
             if (data.saved) {
-                setSavedJobs(prev => [data.job, ...prev]);
+                // Replace optimistic job with real one
+                setSavedJobs(prev => prev.map(j => j.job_data.link === job.link ? data.job : j));
                 return true;
             } else {
+                // Already removed by optimistic update, just sync
                 setSavedJobs(prev => prev.filter(j => j.job_data.link !== job.link));
                 return false;
             }
         } catch (err) {
             console.error("Toggle save failed:", err);
+            // Revert on error
+            fetchSavedJobs();
             return false;
         }
     };
@@ -93,7 +106,12 @@ export function useSavedJobs() {
     };
 
     const isJobSaved = (link: string) => {
-        return savedJobs.some(j => j.job_data.link === link);
+        if (!link) return false;
+        const cleanLink = link.split('#')[0].split('?')[0];
+        return savedJobs.some(j => {
+            const savedLink = j.job_data?.link?.split('#')[0].split('?')[0];
+            return savedLink === cleanLink;
+        });
     };
 
     return {

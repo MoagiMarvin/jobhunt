@@ -10,10 +10,11 @@ import {
   AlertCircle,
   Loader,
   User,
+  LogOut,
+  Shield,
   BriefcaseBusiness,
   Plus,
-  X,
-  LogOut,
+  X
 } from "lucide-react";
 import RecruiterProfileHeader from "@/components/recruiter/RecruiterProfileHeader";
 
@@ -71,6 +72,13 @@ export default function RecruiterProfilePage() {
         router.push("/");
         return;
       }
+
+      // OPTIONAL: Hardcoded ID check for strict gatekeeping
+      // if (session.user.id !== 'YOUR_ADMIN_ID') { 
+      //   router.push("/profile");
+      //   return;
+      // }
+
       setCurrentUserId(session.user.id);
       fetchProfile(session.user.id);
     };
@@ -180,14 +188,17 @@ export default function RecruiterProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader className="w-8 h-8 animate-spin text-blue-500" />
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <Shield className="w-12 h-12 text-slate-900 animate-pulse" />
+          <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Sentinel Secure Access</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <main className="min-h-screen bg-slate-50">
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Header (match /profile flow) */}
         <div className="mb-8">
@@ -240,13 +251,13 @@ export default function RecruiterProfilePage() {
           {/* Basic Information */}
           <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-lg">
-                <User className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-lg">
+                <Shield className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-primary">Basic Information</h2>
-                <p className="text-xs text-slate-500 font-medium">
-                  Your contact details used for trust + communication
+                <h2 className="text-lg font-bold text-slate-900">Agency Identity</h2>
+                <p className="text-xs text-slate-500 font-medium text-slate-400">
+                  Your core brand details as a Sentinel Gatekeeper
                 </p>
               </div>
             </div>
@@ -312,13 +323,13 @@ export default function RecruiterProfilePage() {
           {/* Business Information */}
           <div className="bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-900">
                 <Building2 className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-slate-800">Business</h2>
-                <p className="text-xs text-slate-500 font-medium">
-                  Helps talent understand your recruiting scope
+                <h2 className="text-lg font-bold text-slate-900">Exclusivity & Focus</h2>
+                <p className="text-xs text-slate-500 font-medium text-slate-400">
+                  Define the specialized talent pool you gatekeep
                 </p>
               </div>
             </div>
@@ -452,10 +463,10 @@ export default function RecruiterProfilePage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold transition-all shadow-sm"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-900 hover:bg-black disabled:bg-slate-300 text-white font-bold transition-all shadow-xl shadow-slate-200"
             >
               {isSaving ? <Loader className="w-5 h-5 animate-spin" /> : null}
-              {isSaving ? "Saving..." : "Save Profile"}
+              {isSaving ? "Syncing..." : "Update Agency Profile"}
             </button>
             <button
               type="button"
