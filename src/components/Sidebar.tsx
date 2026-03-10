@@ -109,7 +109,7 @@ export default function Sidebar() {
     return (
         <>
             {/* Mobile Header */}
-            <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 px-4 flex items-center justify-between z-50">
+            <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 px-4 flex items-center justify-between z-50">
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
                         <Shield className="w-5 h-5 text-white" />
@@ -127,12 +127,12 @@ export default function Sidebar() {
             {/* Backdrop for Mobile */}
             {isMobileOpen && (
                 <div
-                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] lg:hidden animate-in fade-in duration-300"
+                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] md:hidden animate-in fade-in duration-300"
                     onClick={() => setIsMobileOpen(false)}
                 />
             )}
 
-            <aside className={`fixed lg:sticky top-0 left-0 w-64 h-screen bg-white border-r border-slate-200 flex flex-col z-[70] transition-transform duration-300 ease-in-out lg:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+            <aside className={`fixed md:sticky top-0 left-0 w-64 h-screen bg-white border-r border-slate-200 flex flex-col z-[70] transition-transform duration-300 ease-in-out md:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'
                 }`}>
                 <div className="p-6 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
@@ -145,7 +145,7 @@ export default function Sidebar() {
                     </Link>
                     <button
                         onClick={() => setIsMobileOpen(false)}
-                        className="lg:hidden p-2 text-slate-400 hover:text-slate-600 rounded-lg"
+                        className="md:hidden p-2 text-slate-400 hover:text-slate-600 rounded-lg"
                     >
                         <X className="w-5 h-5" />
                     </button>
