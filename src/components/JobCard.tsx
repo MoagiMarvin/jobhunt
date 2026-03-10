@@ -4,20 +4,12 @@ import { useState } from "react";
 import { MapPin, Briefcase, ExternalLink, Copy, Check, Mic, Building2, Globe, Bookmark } from "lucide-react";
 import Image from "next/image";
 import { useSavedJobs } from "@/hooks/useSavedJobs";
+import { Job } from "@/types/job";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface JobCardProps {
-    job: {
-        id: string;
-        title: string;
-        company: string;
-        location: string;
-        link: string;
-        source: string;
-        isNiche?: boolean;
-        date?: string;
-        logo?: string;
-    };
-    router: any;
+    job: Job;
+    router: AppRouterInstance;
 }
 
 export default function JobCard({ job, router }: JobCardProps) {

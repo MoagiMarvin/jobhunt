@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Job } from '@/types/job';
 
 export function useSavedJobs() {
-    const [savedJobs, setSavedJobs] = useState<any[]>([]);
+    const [savedJobs, setSavedJobs] = useState<{ id: string; job_data: Job; status: string }[]>([]);
     const [loading, setLoading] = useState(true);
     const [userId, setUserId] = useState<string | null>(null);
 
@@ -49,7 +50,7 @@ export function useSavedJobs() {
         fetchSavedJobs();
     }, [fetchSavedJobs]);
 
-    const toggleSave = async (job: any) => {
+    const toggleSave = async (job: Job) => {
         if (!userId) {
             alert("Please sign in to save jobs.");
             return;

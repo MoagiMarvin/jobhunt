@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Briefcase, MapPin, Edit2, Mail, Phone, Download, Github, Linkedin, Globe, Car, CreditCard, ChevronDown, Share2, Settings, FileText, Wand2, Sparkles } from "lucide-react";
 
@@ -58,9 +59,10 @@ export default function ProfileHeader({
 
     useEffect(() => {
         setIsMounted(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const statusConfig = {
+    const statusConfig: Record<string, { bg: string; text: string; border: string; dot: string }> = {
         "Looking for Work": {
             bg: "bg-green-50",
             text: "text-green-700",
@@ -101,7 +103,7 @@ export default function ProfileHeader({
                     <div className="group/avatar relative">
                         <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white text-3xl md:text-4xl font-bold border-4 border-white shadow-xl shrink-0 overflow-hidden transition-all ${availabilityStatus === "Looking for Work" ? "ring-[6px] ring-green-400 ring-offset-2" : ""}`}>
                             {avatar && (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('blob:')) ? (
-                                <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                                <Image src={avatar} alt={name} width={128} height={128} className="w-full h-full object-cover" />
                             ) : (
                                 <span>{name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}</span>
                             )}

@@ -2,8 +2,10 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Image from "next/image";
 import { Loader2, Briefcase, Mic, ExternalLink, ArrowLeft, AlertCircle, Building2, MapPin, Mail, Copy, Bookmark } from 'lucide-react';
 import { useSavedJobs } from '@/hooks/useSavedJobs';
+import { Job } from '@/types/job';
 
 function JobViewContent() {
     const searchParams = useSearchParams();
@@ -25,7 +27,8 @@ function JobViewContent() {
     const { isJobSaved, toggleSave } = useSavedJobs();
 
     // Construct a job object for the hook
-    const currentJob = {
+    const currentJob: Job = {
+        id: `view-${jobSource}-${jobTitle}-${jobCompany}`.replace(/\s+/g, '-').toLowerCase(),
         link: jobUrl || '',
         title: jobTitle,
         company: jobCompany,
@@ -82,8 +85,8 @@ function JobViewContent() {
                     <button
                         onClick={() => toggleSave(currentJob)}
                         className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border shadow-sm ${saved
-                                ? 'bg-blue-50 border-blue-200 text-blue-600'
-                                : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300'
+                            ? 'bg-blue-50 border-blue-200 text-blue-600'
+                            : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300'
                             }`}
                     >
                         <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-current' : ''}`} />
@@ -109,8 +112,8 @@ function JobViewContent() {
 
                         <div className="flex gap-5 items-start relative z-10 mb-4">
                             {jobLogo && (
-                                <div className="w-16 h-16 shrink-0 rounded-xl bg-white border border-slate-100 p-2 shadow-sm">
-                                    <img src={jobLogo} alt={jobCompany} className="w-full h-full object-contain" />
+                                <div className="w-16 h-16 shrink-0 rounded-xl bg-white border border-slate-100 p-2 shadow-sm relative overflow-hidden">
+                                    <Image src={jobLogo} alt={jobCompany} fill className="object-contain p-2" />
                                 </div>
                             )}
                             <div>

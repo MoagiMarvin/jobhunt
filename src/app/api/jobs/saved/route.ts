@@ -34,9 +34,10 @@ export async function GET(req: NextRequest) {
         if (error) throw error;
 
         return NextResponse.json(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('[SAVED_JOBS] GET Error:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
 
@@ -82,9 +83,10 @@ export async function POST(req: NextRequest) {
         if (error) throw error;
 
         return NextResponse.json({ message: 'saved', saved: true, job: data });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('[SAVED_JOBS] POST Error:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
 
@@ -107,9 +109,10 @@ export async function PATCH(req: NextRequest) {
         if (error) throw error;
 
         return NextResponse.json(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('[SAVED_JOBS] PATCH Error:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
 
@@ -130,8 +133,9 @@ export async function DELETE(req: NextRequest) {
         if (error) throw error;
 
         return NextResponse.json({ message: 'Deleted successfully' });
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error('[SAVED_JOBS] DELETE Error:', err);
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

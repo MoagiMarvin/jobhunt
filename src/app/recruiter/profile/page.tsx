@@ -172,9 +172,10 @@ export default function RecruiterProfilePage() {
 
       if (error) throw error;
       setMessage({ type: "success", text: "Profile saved successfully!" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error saving profile:", error);
-      setMessage({ type: "error", text: error.message || "Failed to save profile." });
+      const message = error instanceof Error ? error.message : "Failed to save profile.";
+      setMessage({ type: "error", text: message });
     } finally {
       setIsSaving(false);
     }

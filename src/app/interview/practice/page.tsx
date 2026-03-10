@@ -1,10 +1,27 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, Suspense, useCallback } from "react";
 import { Mic, Video, Play, Square, RefreshCw, Send, AlertCircle, Loader2, Sparkles, Volume2, ChevronRight, CheckCircle2, Search, MapPin, Briefcase, ExternalLink, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+
+interface InterviewConfig {
+    jobTitle: string;
+    jobDescription: string;
+    questionCount: number;
+}
+
+interface InterviewQuestion {
+    id: string;
+    text: string;
+    type: 'behavioral' | 'technical';
+}
+
+interface InterviewResult {
+    question: InterviewQuestion;
+    feedback: any; // Keep any for complex AI feedback structure for now or define deeper
+}
 
 /** Voice Waveform Component **/
 function VoiceWaveform({ isActive }: { isActive: boolean }) {
@@ -28,8 +45,12 @@ function VoiceWaveform({ isActive }: { isActive: boolean }) {
 }
 
 /** Step 2: Interview Mode & Feedback **/
-function InterviewScreen({ config, profileData, onComplete }: { config: any, profileData: any, onComplete: (results: any) => void }) {
-    const [questions, setQuestions] = useState<any[]>([]);
+function InterviewScreen({ config, profileData, onComplete }: {
+    config: InterviewConfig,
+    profileData: any,
+    onComplete: (results: { results: InterviewResult[], date: Date }) => void
+}) {
+    const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isRecording, setIsRecording] = useState(false);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -42,6 +63,29 @@ function InterviewScreen({ config, profileData, onComplete }: { config: any, pro
     const videoRef = useRef<HTMLVideoElement>(null);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
+
+    // Camera Init
+    const initCamera = useCallback(async () => {
+        try {
+            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            setStream(mediaStream);
+            setHasPermission(true);
+        } catch (err) {
+            console.error("Camera denied:", err);
+            alert("Camera access is required for practice mode.");
+        }
+    }, []);
+
+    // Text to Speech
+    const speakQuestion = useCallback((text: string) => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.lang = 'en-US';
+            window.speechSynthesis.speak(utterance);
+        }
+    }, []);
 
     // Load Questions on Mount
     useEffect(() => {
@@ -75,7 +119,7 @@ function InterviewScreen({ config, profileData, onComplete }: { config: any, pro
         };
         loadQuestions();
         initCamera();
-    }, []);
+    }, [config, profileData, speakQuestion, initCamera]);
 
     // Timer Logic
     useEffect(() => {
@@ -100,28 +144,6 @@ function InterviewScreen({ config, profileData, onComplete }: { config: any, pro
         }
     }, [hasPermission, stream, questions.length, feedback]);
 
-    // Camera Init
-    const initCamera = async () => {
-        try {
-            const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            setStream(mediaStream);
-            setHasPermission(true);
-        } catch (err) {
-            console.error("Camera denied:", err);
-            alert("Camera access is required for practice mode.");
-        }
-    };
-
-    // Text to Speech
-    const speakQuestion = (text: string) => {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            utterance.lang = 'en-US';
-            window.speechSynthesis.speak(utterance);
-        }
-    };
 
     const handleStartRecording = () => {
         if (!videoRef.current?.srcObject) {
@@ -470,7 +492,7 @@ function InterviewScreen({ config, profileData, onComplete }: { config: any, pro
 }
 
 /** Step 1: Configuration Screen **/
-function SetupScreen({ onStart }: { onStart: (config: any) => void }) {
+function SetupScreen({ onStart }: { onStart: (config: InterviewConfig) => void }) {
     const searchParams = useSearchParams();
     const initialTitle = searchParams.get("title") || "";
     const initialLink = searchParams.get("link") || "";
@@ -592,7 +614,7 @@ function SetupScreen({ onStart }: { onStart: (config: any) => void }) {
 }
 
 /** Step 3: Final Report **/
-function ReportScreen({ results, onRestart }: { results: any[], onRestart: () => void }) {
+function ReportScreen({ results, onRestart }: { results: InterviewResult[], onRestart: () => void }) {
     // Calculate Averages (only including answered questions)
     const answeredResults = results.filter(r => r.feedback);
     const resultsCount = answeredResults.length || 1;
@@ -710,8 +732,8 @@ export default function InterviewPracticePage() {
 
 function InterviewPracticeContent() {
     const [step, setStep] = useState<"setup" | "interview" | "report">("setup");
-    const [config, setConfig] = useState<any>(null);
-    const [sessionResults, setSessionResults] = useState<any[]>([]);
+    const [config, setConfig] = useState<InterviewConfig | null>(null);
+    const [sessionResults, setSessionResults] = useState<InterviewResult[]>([]);
     const [profileData, setProfileData] = useState<any>(null);
 
     // Load Profile Data from localStorage (same as Generate page)

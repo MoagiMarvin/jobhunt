@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, Briefcase, ExternalLink, Loader2, AlertCircle, Copy, Check, Mic } from "lucide-react";
 import JobCard from "@/components/JobCard";
+import { Job } from "@/types/job";
 
 export default function SearchPage() {
     const router = useRouter();
     const [query, setQuery] = useState("");
-    const [jobs, setJobs] = useState<any[]>([]);
+    const [jobs, setJobs] = useState<Job[]>([]);
     const [loading, setLoading] = useState(false);
     const [loadingSources, setLoadingSources] = useState<string[]>([]);
 
@@ -94,8 +95,8 @@ export default function SearchPage() {
                             return newJobs;
                         });
                     }
-                } catch (err: any) {
-                    if (err.name === 'AbortError') {
+                } catch (err: unknown) {
+                    if (err instanceof Error && err.name === 'AbortError') {
                         console.warn(`[Search] Source ${src} timed out after 15s.`);
                     } else {
                         console.error(`[Search] Background source ${src} failed:`, err);

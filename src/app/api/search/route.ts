@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
+import { Job } from "@/types/job";
 import * as cheerio from 'cheerio';
 import { parseString } from 'xml2js';
 import { promisify } from 'util';

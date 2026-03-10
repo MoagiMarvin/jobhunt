@@ -1,13 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Mock storage for groups (Replace with Supabase when ready)
-const groups: Record<string, any> = {};
+interface Group {
+    id: string;
+    recruiter_id: string;
+    name: string;
+    description?: string;
+    candidates: any[];
+    created_at: string;
+    updated_at: string;
+}
+
+const groups: Record<string, Group> = {};
 
 export async function GET(req: NextRequest) {
     try {
         // Get recruiter ID from header or session
         const recruiterId = req.headers.get("x-recruiter-id") || "demo-recruiter";
-        
+
         const recruiterGroups = Object.values(groups).filter(
             (group) => group.recruiter_id === recruiterId
         );
