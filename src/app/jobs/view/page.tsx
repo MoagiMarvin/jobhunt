@@ -2,7 +2,8 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Loader2, Briefcase, Mic, ExternalLink, ArrowLeft, AlertCircle, Building2, MapPin, Mail, Copy } from 'lucide-react';
+import { Loader2, Briefcase, Mic, ExternalLink, ArrowLeft, AlertCircle, Building2, MapPin, Mail, Copy, Bookmark } from 'lucide-react';
+import { useSavedJobs } from '@/hooks/useSavedJobs';
 
 function JobViewContent() {
     const searchParams = useSearchParams();
@@ -21,6 +22,19 @@ function JobViewContent() {
     const [error, setError] = useState('');
     const [directUrl, setDirectUrl] = useState<string | null>(null);
     const [recruiterEmails, setRecruiterEmails] = useState<string[]>([]);
+    const { isJobSaved, toggleSave } = useSavedJobs();
+
+    // Construct a job object for the hook
+    const currentJob = {
+        link: jobUrl || '',
+        title: jobTitle,
+        company: jobCompany,
+        location: jobLocation,
+        source: jobSource,
+        logo: jobLogo
+    };
+
+    const saved = isJobSaved(jobUrl || '');
 
     useEffect(() => {
         const fetchContent = async () => {
@@ -65,6 +79,16 @@ function JobViewContent() {
                     Back
                 </button>
                 <div className="flex gap-2">
+                    <button
+                        onClick={() => toggleSave(currentJob)}
+                        className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border shadow-sm ${saved
+                                ? 'bg-blue-50 border-blue-200 text-blue-600'
+                                : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300'
+                            }`}
+                    >
+                        <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-current' : ''}`} />
+                        {saved ? 'Saved' : 'Save Job'}
+                    </button>
                     <button
                         onClick={() => router.push(`/generate?link=${encodeURIComponent(jobUrl || '')}`)}
                         className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-black transition-all flex items-center gap-2 shadow-sm"
