@@ -95,12 +95,12 @@ export default function Navbar() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="flex items-center justify-between h-16 md:h-20">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center gap-2 shrink-0">
-                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                        <Link href="/" className="flex items-center gap-2 group shrink-0">
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#0a66c2] flex items-center justify-center text-white group-hover:bg-[#004182] transition-colors">
                                 <Briefcase className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
-                            <span className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                                JOB<span className="text-blue-600">HUNT</span>
+                            <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                                JobHunt
                             </span>
                         </Link>
 
@@ -117,8 +117,8 @@ export default function Navbar() {
                                         className={cn(
                                             "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all",
                                             isActive
-                                                ? "bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105"
-                                                : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                                                ? "bg-blue-50 text-[#0a66c2]"
+                                                : "text-slate-500 hover:text-[#0a66c2] hover:bg-blue-50/50"
                                         )}
                                     >
                                         <Icon className="w-4 h-4" />

@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sentinel - Exclusive Tech Talent Gatekeeper",
-  description: "Elite career acceleration for top-tier software talent.",
+  title: "JobHunt - AI-Powered Tech Career Platform",
+  description: "Accelerate your tech career with AI-driven job searching and interview prep.",
 };
 
 import Sidebar from "@/components/Sidebar";

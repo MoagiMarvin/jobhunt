@@ -111,10 +111,10 @@ export default function Sidebar() {
             {/* Mobile Header */}
             <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 px-4 flex items-center justify-between z-50">
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-white" />
+                    <div className="w-8 h-8 bg-[#0a66c2] rounded-lg flex items-center justify-center group-hover:bg-[#004182] transition-colors">
+                        <Briefcase className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-slate-900">Sentinel</span>
+                    <span className="font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">JobHunt</span>
                 </Link>
                 <button
                     onClick={() => setIsMobileOpen(true)}
@@ -136,11 +136,11 @@ export default function Sidebar() {
                 }`}>
                 <div className="p-6 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
-                            <Shield className="w-5 h-5 text-white" />
+                        <div className="w-8 h-8 bg-[#0a66c2] rounded-lg flex items-center justify-center group-hover:bg-[#004182] transition-colors">
+                            <Briefcase className="w-5 h-5 text-white" />
                         </div>
                         <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                            Sentinel
+                            JobHunt
                         </span>
                     </Link>
                     <button
@@ -159,12 +159,12 @@ export default function Sidebar() {
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 ${isActive
-                                    ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
+                                    ? 'bg-blue-50 text-[#0a66c2]'
                                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                     }`}
                                 onClick={() => setIsMobileOpen(false)}
                             >
-                                <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                                <item.icon className={`w-5 h-5 ${isActive ? 'text-[#0a66c2]' : 'text-slate-400'}`} />
                                 {item.name}
                             </Link>
                         );
@@ -183,17 +183,17 @@ export default function Sidebar() {
                                 <Link
                                     href={userData.role === 'recruiter' ? '/recruiter/profile' : '/profile'}
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors group"
                                 >
-                                    <User className="w-4 h-4 text-slate-400" />
+                                    <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
                                     My Profile
                                 </Link>
                                 <Link
                                     href="/settings"
                                     onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors group"
                                 >
-                                    <Settings className="w-4 h-4 text-slate-400" />
+                                    <Settings className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
                                     Settings
                                 </Link>
                                 <div className="h-px bg-slate-100 my-1 mx-2" />
