@@ -100,7 +100,7 @@ export default function Navbar() {
                                 <Briefcase className="w-5 h-5 md:w-6 md:h-6" />
                             </div>
                             <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                                JobHunt
+                                Vitah
                             </span>
                         </Link>
 

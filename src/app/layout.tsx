@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "JobHunt - AI-Powered Tech Career Platform",
+  title: "Vitah - AI-Powered Tech Career Platform",
   description: "Accelerate your tech career with AI-driven job searching and interview prep.",
 };
 

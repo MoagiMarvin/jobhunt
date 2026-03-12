@@ -114,7 +114,7 @@ export default function Sidebar() {
                     <div className="w-8 h-8 bg-[#0a66c2] rounded-lg flex items-center justify-center group-hover:bg-[#004182] transition-colors">
                         <Briefcase className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">JobHunt</span>
+                    <span className="font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Vitah</span>
                 </Link>
                 <button
                     onClick={() => setIsMobileOpen(true)}
@@ -140,7 +140,7 @@ export default function Sidebar() {
                             <Briefcase className="w-5 h-5 text-white" />
                         </div>
                         <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
-                            JobHunt
+                            Vitah
                         </span>
                     </Link>
                     <button
