@@ -13,28 +13,32 @@ export default function Icon() {
         (
             <div
                 style={{
-                    fontSize: 24,
                     background: 'white',
                     width: '100%',
                     height: '100%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#0a66c2',
                 }}
             >
                 <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
+                    width="28"
+                    height="28"
+                    viewBox="0 0 32 32"
                     fill="none"
-                    stroke="currentColor"
-                    stroke-width="4"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
                 >
-                    <path d="M6 18l4-4" />
-                    <path d="M10 18l8-12" />
+                    <path
+                        d="M4 26 L12 12"
+                        stroke="#0a66c2"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                    />
+                    <path
+                        d="M13 26 L24 6"
+                        stroke="#0a66c2"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                    />
                 </svg>
             </div>
         ),

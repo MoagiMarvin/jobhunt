@@ -96,9 +96,9 @@ export default function Navbar() {
                     <div className="flex items-center justify-between h-16 md:h-20">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2 group shrink-0">
-                            <svg viewBox="0 0 32 32" fill="none" className="w-9 h-9 md:w-11 md:h-11 shrink-0">
-                                <path d="M7 24 L13 14" stroke="#0a66c2" strokeWidth="4.5" strokeLinecap="round" />
-                                <path d="M14 24 L23 8" stroke="#0a66c2" strokeWidth="4.5" strokeLinecap="round" />
+                            <svg viewBox="0 0 32 32" fill="none" className="w-10 h-10 md:w-12 md:h-12 shrink-0">
+                                <path d="M4 26 L12 12" stroke="#0a66c2" strokeWidth="4" strokeLinecap="round" />
+                                <path d="M13 26 L24 6" stroke="#0a66c2" strokeWidth="4" strokeLinecap="round" />
                             </svg>
                             <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                                 Vitah
