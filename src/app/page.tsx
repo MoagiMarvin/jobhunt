@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Briefcase, Mail, Lock, Building2, User, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -79,7 +79,10 @@ export default function LoginPage() {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center space-y-4">
                 <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-xl flex items-center justify-center animate-pulse">
-                    <Briefcase className="w-8 h-8 text-blue-600" />
+                    <svg viewBox="0 0 32 32" fill="none" className="w-9 h-9">
+                        <path d="M4 26 L12 12" stroke="#0a66c2" strokeWidth="4" strokeLinecap="round" />
+                        <path d="M13 26 L24 6" stroke="#0a66c2" strokeWidth="4" strokeLinecap="round" />
+                    </svg>
                 </div>
                 <div className="space-y-2">
                     <div className="h-4 w-32 bg-slate-200 rounded animate-pulse mx-auto"></div>
@@ -101,7 +104,10 @@ export default function LoginPage() {
                 {/* Brand Header */}
                 <div className="text-center mb-10 space-y-3">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white border border-slate-200 shadow-xl shadow-slate-200/50 mb-4 group ring-1 ring-slate-100">
-                        <Briefcase className="w-8 h-8 text-blue-600 group-hover:text-blue-500 transition-colors" />
+                        <svg viewBox="0 0 32 32" fill="none" className="w-9 h-9">
+                            <path d="M4 26 L12 12" stroke="#0a66c2" strokeWidth="4" strokeLinecap="round" />
+                            <path d="M13 26 L24 6" stroke="#0a66c2" strokeWidth="4" strokeLinecap="round" />
+                        </svg>
                     </div>
                     <div>
                         <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
