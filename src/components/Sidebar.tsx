@@ -111,9 +111,10 @@ export default function Sidebar() {
             {/* Mobile Header */}
             <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-200 px-4 flex items-center justify-between z-50">
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 bg-[#0a66c2] rounded-lg flex items-center justify-center group-hover:bg-[#004182] transition-colors">
-                        <Briefcase className="w-5 h-5 text-white" />
-                    </div>
+                    <svg viewBox="0 0 32 32" fill="none" className="w-8 h-8 shrink-0">
+                        <path d="M7 24 L13 14" stroke="#0a66c2" strokeWidth="4.5" strokeLinecap="round" />
+                        <path d="M14 24 L23 8" stroke="#0a66c2" strokeWidth="4.5" strokeLinecap="round" />
+                    </svg>
                     <span className="font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">Vitah</span>
                 </Link>
                 <button
@@ -136,9 +137,10 @@ export default function Sidebar() {
                 }`}>
                 <div className="p-6 flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 bg-[#0a66c2] rounded-lg flex items-center justify-center group-hover:bg-[#004182] transition-colors">
-                            <Briefcase className="w-5 h-5 text-white" />
-                        </div>
+                        <svg viewBox="0 0 32 32" fill="none" className="w-8 h-8 shrink-0">
+                            <path d="M7 24 L13 14" stroke="#0a66c2" strokeWidth="4.5" strokeLinecap="round" />
+                            <path d="M14 24 L23 8" stroke="#0a66c2" strokeWidth="4.5" strokeLinecap="round" />
+                        </svg>
                         <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
                             Vitah
                         </span>
