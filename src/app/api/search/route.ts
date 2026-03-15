@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
                 case 'emerge': jobs = await scrapeEMerge(query); break;
                 case 'bbe': jobs = await scrapeBBRE(query); break;
                 case 'network': jobs = await scrapeNetworkRecruitment(query); break;
+                case 'bing': jobs = await scrapeBingJobs(query); break;
             }
             console.log(`[SEARCH] Source ${source} returned ${jobs.length} jobs`);
         } catch (e) {
@@ -80,7 +81,8 @@ export async function GET(request: NextRequest) {
         scrapeGoldmanTech(query).catch(e => { console.error("[GOLDMAN] Fail:", e.message); return []; }),
         scrapeEMerge(query).catch(e => { console.error("[EMERGE] Fail:", e.message); return []; }),
         scrapeBBRE(query).catch(e => { console.error("[BBE] Fail:", e.message); return []; }),
-        scrapeNetworkRecruitment(query).catch(e => { console.error("[NETWORK] Fail:", e.message); return []; })
+        scrapeNetworkRecruitment(query).catch(e => { console.error("[NETWORK] Fail:", e.message); return []; }),
+        scrapeBingJobs(query).catch(e => { console.error("[BING] Fail:", e.message); return []; })
     ]);
 
     let allJobs = results.flat();
@@ -484,22 +486,23 @@ async function scrapeAdzuna(query: string) {
         const $ = cheerio.load(html);
         const jobs: any[] = [];
 
-        $('[data-ad-id]').each((i, el) => {
+        $('article').each((i, el) => {
             const titleEl = $(el).find('h2 a').first();
             const title = titleEl.text().trim();
             const link = titleEl.attr('href');
-            const company = $(el).find('.ui-job-card-company, .company').first().text().trim() || "Indeed Professional";
+            const company = $(el).find('.ui-job-company, [class*="company"]').first().text().trim() || "Adzuna Employer";
+            const location = $(el).find('.ui-location, [class*="location"]').first().text().trim() || "South Africa";
 
             if (title && link && isRelevant(title, company, query)) {
                 const fullLink = link.startsWith('http') ? link : `https://www.adzuna.co.za${link}`;
 
                 jobs.push({
-                    id: `ind-${Date.now()}-${i}`,
+                    id: `adzuna-${Date.now()}-${i}`,
                     title,
-                    company: $(el).find('.ui-job-card-company, .company').first().text().trim() || "Indeed Professional",
-                    location: $(el).find('.ui-job-card-location, .location').first().text().trim() || "South Africa",
+                    company,
+                    location,
                     link: fullLink,
-                    source: 'Indeed'
+                    source: 'Adzuna'
                 });
             }
         });
@@ -808,3 +811,92 @@ async function scrapeNetworkRecruitment(query: string) {
         return [];
     }
 }
+
+/**
+ * BING JOBS SCRAPER
+ * Strategy: Bing server-renders ~18 job cards per search in its initial HTML.
+ * To beat the 18-job cap, we fire 4 parallel Bing searches with different
+ * location/context suffixes ("South Africa", "Johannesburg", "Cape Town", "remote"),
+ * then deduplicate by title+company — delivering up to 60+ unique Bing jobs per query.
+ * Bing aggregates LinkedIn, BeBee, Jobrapido and many others so coverage is wide.
+ */
+async function scrapeBingJobs(query: string) {
+
+    // Parse a single Bing Jobs HTML response into job objects
+    async function fetchBingPage(searchQuery: string): Promise<any[]> {
+        const url = `https://www.bing.com/jobs?q=${encodeURIComponent(searchQuery)}&go=Search&qs=ds&form=JOBL2P`;
+        const res = await fetch(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Connection': 'keep-alive',
+            },
+            signal: AbortSignal.timeout(15000)
+        });
+        if (!res.ok) return [];
+
+        const html = await res.text();
+        const $ = cheerio.load(html);
+        const jobs: any[] = [];
+
+        $('.jb_jlc').each((i, el) => {
+            const title    = $(el).find('.jbovrly_title, .b_mText').first().text().trim();
+            const company  = $(el).find('.jbovrly_cmpny').first().text().trim();
+            const location = $(el).find('.jbovrly_lj').first().text().trim() || 'South Africa';
+            const sourceVia = $(el).find('.jb_source').first().text().trim();
+            const postedDate = $(el).find('.jb_postedDate').first().text().trim();
+            const applyLink = $(el).find('.jb_ApplyButton, .jb_slimApply a, a[href*="bing.com/alink"]').first().attr('href');
+            const link = applyLink || `https://www.bing.com/jobs?q=${encodeURIComponent(`${title} ${company}`)}&go=Search&qs=ds&form=JOBL2P`;
+
+            if (title && company) {
+                jobs.push({
+                    id: `bing-${Date.now()}-${i}-${Math.random().toString(36).slice(2, 6)}`,
+                    title,
+                    company,
+                    location: location.replace(/·\s*Full-time|·\s*Part-time|·\s*Contract/gi, '').trim() || 'South Africa',
+                    link,
+                    source: sourceVia ? `Bing Jobs (${sourceVia})` : 'Bing Jobs',
+                    pubDate: postedDate,
+                });
+            }
+        });
+
+        return jobs;
+    }
+
+    try {
+        // Fire 4 parallel Bing searches — each page gives up to 18 DIFFERENT results
+        const queryVariants = [
+            `${query} South Africa`,
+            `${query} Johannesburg`,
+            `${query} Cape Town`,
+            `${query} remote South Africa`,
+        ];
+
+        console.log(`[BING] Firing ${queryVariants.length} parallel Bing searches for "${query}"...`);
+        const pages = await Promise.allSettled(
+            queryVariants.map(q => fetchBingPage(q))
+        );
+
+        // Flatten all results
+        const allJobs = pages.flatMap(p => p.status === 'fulfilled' ? p.value : []);
+
+        // Deduplicate by title + company (case-insensitive)
+        const seen = new Set<string>();
+        const unique = allJobs.filter(j => {
+            const key = `${j.title.toLowerCase().trim()}|${j.company.toLowerCase().trim()}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
+        console.log(`[BING] ${allJobs.length} raw → ${unique.length} unique jobs for "${query}"`);
+        return unique;
+
+    } catch (e: any) {
+        console.error('[BING] Scrape fail:', e.message);
+        return [];
+    }
+}
+
