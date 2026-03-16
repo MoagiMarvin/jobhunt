@@ -3,6 +3,7 @@ import { Job } from "@/types/job";
 import * as cheerio from 'cheerio';
 import { parseString } from 'xml2js';
 import { promisify } from 'util';
+import { JobCrawler } from "@/lib/indexers/crawler";
 
 const parseXml = promisify(parseString);
 
@@ -35,6 +36,15 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(`[SEARCH] Query: "${query}", Source: ${source || 'ALL'}`);
+
+    // --- GOLD STANDARD INDEXING ENGINE ---
+    const crawler = new JobCrawler();
+    const indexedJobsRaw = await crawler.crawlAll();
+    const indexedJobs = indexedJobsRaw.filter(j => 
+        j.title.toLowerCase().includes(query.toLowerCase()) || 
+        j.company.toLowerCase().includes(query.toLowerCase())
+    );
+    console.log(`[INDEXER] Found ${indexedJobs.length} matches in registry.`);
 
     if (source) {
         let jobs: any[] = [];
@@ -85,7 +95,7 @@ export async function GET(request: NextRequest) {
         scrapeBingJobs(query).catch(e => { console.error("[BING] Fail:", e.message); return []; })
     ]);
 
-    let allJobs = results.flat();
+    let allJobs = [...indexedJobs, ...results.flat()];
 
     // --- ENHANCED SHADOW SEARCH ---
     const companyTargets = ['vodacom', 'mtn', 'standard bank', 'fnb', 'standardbank', 'capitec', 'absa', 'nedbank', 'firstrand', 'telkom'];
