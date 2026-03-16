@@ -1,4 +1,5 @@
 import { SOURCE_REGISTRY, SourceDefinition } from './registry';
+import * as cheerio from 'cheerio';
 
 export interface IndexedJob {
     id: string;
@@ -34,6 +35,8 @@ export class JobCrawler {
                 return this.crawlWorkday(source);
             case 'AgencyAPI':
                 return this.crawlAgencyAPI(source);
+            case 'SuccessFactors':
+                return this.crawlSuccessFactors(source);
             default:
                 return [];
         }
@@ -96,6 +99,37 @@ export class JobCrawler {
                 logo: source.logo,
                 indexedAt: new Date().toISOString()
             }));
+        } catch (e) { return []; }
+    }
+
+    private async crawlSuccessFactors(source: SourceDefinition): Promise<IndexedJob[]> {
+        try {
+            const baseUrl = source.config.baseUrl?.replace(/\/$/, '');
+            const url = `${baseUrl}/search/?q=&locationsearch=South+Africa`;
+            const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            const html = await res.text();
+            const $ = cheerio.load(html);
+            const jobs: IndexedJob[] = [];
+
+            $('.job-tile, .job-row, .table-row, [data-row-id]').each((i, el) => {
+                const titleEl = $(el).find('.job-title a, h3 a, .title a').first();
+                const title = titleEl.text().trim();
+                const link = titleEl.attr('href');
+
+                if (title && link) {
+                    jobs.push({
+                        id: `indexed-${source.id}-${i}`,
+                        title,
+                        company: source.name,
+                        location: $(el).find('.location').text().trim() || "South Africa",
+                        link: link.startsWith('http') ? link : `${baseUrl}${link}`,
+                        source: source.name,
+                        logo: source.logo,
+                        indexedAt: new Date().toISOString()
+                    });
+                }
+            });
+            return jobs;
         } catch (e) { return []; }
     }
 }
