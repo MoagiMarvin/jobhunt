@@ -137,7 +137,7 @@ export default function LandingPage() {
                     <div className={`hidden lg:flex items-center gap-14 text-[10px] font-black uppercase tracking-[0.4em] transition-colors duration-500 ${scrolled ? 'text-slate-400' : 'text-white/60'}`}>
                         <Link href="#how-it-works" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'hover:text-slate-900' : 'hover:text-white'}`}>Advantage</Link>
                         <Link href="#stories" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'hover:text-slate-900' : 'hover:text-white'}`}>Success</Link>
-                        <Link href="/search" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'text-blue-600' : 'text-blue-400'}`}>Search</Link>
+                        <Link href="/search" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'text-blue-600' : 'text-blue-400'}`}>Job Search</Link>
                     </div>
 
                     <div className="flex items-center gap-12">
@@ -155,98 +155,87 @@ export default function LandingPage() {
             </nav>
 
             <main>
-                {/* Hero Overhaul: The "Visual First Impression" cinematic experience */}
-                <section className="relative min-h-screen flex items-center justify-center px-10 overflow-hidden bg-slate-900">
-                    {/* Cinematic Background Image */}
+                {/* Hero Refinement: The "Gallery" Asymmetrical Experience */}
+                <section className="relative min-h-[95vh] flex items-center px-10 overflow-hidden bg-slate-900">
+                    {/* Cinematic Background Image (Sandton vibe maintained) */}
                     <div className="absolute inset-0 z-0">
                          <img 
                             src="/vitah-hero.png" 
-                            alt="Professional Success" 
-                            className="w-full h-full object-cover opacity-60 grayscale-[0.2] contrast-[1.1]"
+                            alt="Professional Success in Sandton" 
+                            className="w-full h-full object-cover opacity-75 grayscale-[0.05] contrast-[1.1] object-[70%_50%]"
                          />
-                         {/* Seamless Overlays for depth and readability */}
-                         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-transparent to-white" />
-                         <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-white to-transparent" />
+                         {/* Asymmetrical Scrim */}
+                         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/40 to-transparent z-10" />
+                         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-white to-transparent z-10" />
                     </div>
 
-                    <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10 w-full animate-in">
-                        <div className="space-y-8">
-                            <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-white text-[10px] font-black tracking-[0.4em] uppercase shadow-2xl">
-                                <ShieldCheck className="w-4 h-4 text-blue-400" />
-                                Professional Recruitment Logic • International Access
+                    <div className="max-w-7xl mx-auto grid lg:grid-cols-12 w-full relative z-20 items-center">
+                        <div className="lg:col-span-8 flex flex-col items-start text-left space-y-8 animate-in">
+                            <div className="space-y-4">
+                                <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif-luxe text-white leading-tight tracking-tighter drop-shadow-2xl max-w-xl">
+                                    Excellence in <br />
+                                    <span className="text-blue-400 italic">Alignment.</span>
+                                </h1>
+                                
+                                <p className="text-base md:text-lg text-white/70 max-w-xl leading-relaxed font-medium font-serif-body italic drop-shadow-lg">
+                                    "The first step to arriving is deciding <br className="hidden md:block" /> exactly where you belong."
+                                </p>
                             </div>
-                            
-                            <h1 className="text-7xl md:text-[11.5rem] font-serif-luxe text-white leading-[0.8] tracking-tighter drop-shadow-2xl">
-                                Excellence in <br />
-                                <span className="text-blue-400 italic">Alignment.</span>
-                            </h1>
-                            
-                            <p className="text-xl md:text-3xl text-white/80 max-w-4xl mx-auto leading-tight font-medium font-serif-body italic drop-shadow-lg">
-                                "The first step to arriving is deciding exactly where you belong."
-                            </p>
-                        </div>
 
-                        {/* Sector-Specific Entry Points: Floating Glass Style */}
-                        <div className="flex flex-wrap items-center justify-center gap-6">
-                            {[
-                                { name: "Information Technology", icon: <Zap className="w-4 h-4" /> },
-                                { name: "Finance & Accounting", icon: <Building2 className="w-4 h-4" /> },
-                                { name: "Engineering / Technical", icon: <PenTool className="w-4 h-4" /> }
-                            ].map((sector, i) => (
-                                <button key={i} className="flex items-center gap-4 px-10 py-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:bg-white/10 hover:border-white/20 transition-all group">
-                                    <div className="text-blue-400 group-hover:scale-110 transition-transform">{sector.icon}</div>
-                                    <span className="text-[11px] font-black uppercase tracking-widest text-white/70 group-hover:text-white">{sector.name}</span>
-                                </button>
-                            ))}
-                        </div>
+                            {/* Sector-Specific Entry Points: Compact Glass Style */}
+                            <div className="flex flex-wrap items-center gap-3">
+                                {[
+                                    { name: "IT", icon: <Zap className="w-3 h-3" /> },
+                                    { name: "Finance", icon: <Building2 className="w-3 h-3" /> },
+                                    { name: "Engineering", icon: <PenTool className="w-3 h-3" /> }
+                                ].map((sector, i) => (
+                                    <button key={i} className="flex items-center gap-2.5 px-5 py-3 rounded-xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:bg-white/10 hover:border-white/20 transition-all group">
+                                        <div className="text-blue-400 group-hover:scale-110 transition-transform">{sector.icon}</div>
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-white/60 group-hover:text-white">{sector.name}</span>
+                                    </button>
+                                ))}
+                            </div>
 
-                        {/* Search field: The "Command Center" - Centered and High-Impact */}
-                        <form onSubmit={handleSearch} className="w-full max-w-5xl relative mt-8 group">
-                             <div className="absolute -inset-4 bg-blue-600/20 rounded-[3rem] blur-2xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
-                             <div className="relative flex flex-col md:flex-row p-5 bg-white rounded-[3rem] border border-slate-100 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.3)] items-center">
-                                <div className="flex-1 flex items-center px-12 py-7 w-full border-r border-slate-50">
-                                    <Search className="w-8 h-8 text-slate-400 mr-10" />
-                                    <input 
-                                        type="text"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Search by role, company, or sector..."
-                                        className="w-full outline-none text-slate-900 font-bold text-2xl placeholder:text-slate-200"
-                                    />
-                                </div>
-                                <div className="flex items-center px-12 py-5 w-full md:w-auto text-slate-300 font-bold text-sm italic border-r border-slate-50 hidden md:flex">
-                                    All of South Africa
-                                </div>
-                                <button 
-                                    type="submit"
-                                    className="w-full md:w-auto bg-slate-900 text-white px-20 py-8 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] hover:bg-blue-600 transition-all shadow-2xl active:scale-95 mt-4 md:mt-0"
-                                >
-                                    Find My Match
-                                </button>
-                             </div>
-                        </form>
+                            {/* Search field: Reduced "Job Search" Command Center */}
+                            <form onSubmit={handleSearch} className="w-full max-w-2xl relative mt-2 group">
+                                 <div className="absolute -inset-2 bg-blue-600/10 rounded-[2rem] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                                 <div className="relative flex flex-col md:flex-row p-3 bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] items-center">
+                                    <div className="flex-1 flex items-center px-6 py-4 w-full border-r border-slate-50">
+                                        <Search className="w-5 h-5 text-slate-400 mr-5" />
+                                        <input 
+                                            type="text"
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                            placeholder="Search by role or company..."
+                                            className="w-full outline-none text-slate-900 font-bold text-lg placeholder:text-slate-200"
+                                        />
+                                    </div>
+                                    <button 
+                                        type="submit"
+                                        className="w-full md:w-auto bg-slate-900 text-white px-10 py-5 rounded-[1.5rem] font-black text-[9px] uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-2xl active:scale-95 mt-3 md:mt-0"
+                                    >
+                                        Job Search
+                                    </button>
+                                 </div>
+                            </form>
 
-                        {/* Trust Bar: Minimal Authority */}
-                        <div className="flex flex-wrap items-center justify-center gap-20 pt-16">
-                             <div className="space-y-1 text-center">
-                                <div className="text-4xl font-black text-white tracking-tighter">30+ Years</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Recruitment Logic</div>
-                             </div>
-                             <div className="w-px h-16 bg-white/10" />
-                             <div className="space-y-1 text-center">
-                                <div className="text-4xl font-black text-white tracking-tighter">95%</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Success Retention</div>
-                             </div>
-                             <div className="w-px h-16 bg-white/10" />
-                             <div className="space-y-1 text-center">
-                                <div className="text-4xl font-black text-white tracking-tighter">6 Suburbs</div>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Localized Focus</div>
-                             </div>
+                            {/* Trust Bar: Discrete Left Alignment */}
+                            <div className="flex items-center gap-10 pt-4">
+                                 <div className="space-y-1">
+                                    <div className="text-xl font-black text-white tracking-tighter">30+ Years</div>
+                                    <div className="text-[7px] font-black uppercase tracking-widest text-white/30 italic">Recruitment Logic</div>
+                                 </div>
+                                 <div className="w-px h-8 bg-white/10" />
+                                 <div className="space-y-1">
+                                    <div className="text-xl font-black text-white tracking-tighter">95%</div>
+                                    <div className="text-[7px] font-black uppercase tracking-widest text-white/30 italic">Success Rate</div>
+                                 </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-                        <ArrowDown className="w-6 h-6 text-slate-300" />
+                    <div className="absolute bottom-10 left-10 animate-bounce z-20">
+                        <ArrowDown className="w-4 h-4 text-white/30" />
                     </div>
                 </section>
 
