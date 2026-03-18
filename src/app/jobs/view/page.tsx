@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from "next/image";
 import { Loader2, Briefcase, Mic, ExternalLink, ArrowLeft, AlertCircle, Building2, MapPin, Mail, Copy, Bookmark } from 'lucide-react';
+import { supabase } from "@/lib/supabase";
 import { useSavedJobs } from '@/hooks/useSavedJobs';
 import { Job } from '@/types/job';
 
@@ -83,7 +84,14 @@ function JobViewContent() {
                 </button>
                 <div className="flex gap-2">
                     <button
-                        onClick={() => toggleSave(currentJob)}
+                        onClick={async () => {
+                            const { data: { session } } = await supabase.auth.getSession();
+                            if (!session) {
+                                router.push('/login');
+                                return;
+                            }
+                            toggleSave(currentJob);
+                        }}
                         className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border shadow-sm ${saved
                             ? 'bg-blue-50 border-blue-200 text-blue-600'
                             : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300'
@@ -93,7 +101,14 @@ function JobViewContent() {
                         {saved ? 'Saved' : 'Save Job'}
                     </button>
                     <button
-                        onClick={() => router.push(`/generate?link=${encodeURIComponent(jobUrl || '')}`)}
+                        onClick={async () => {
+                            const { data: { session } } = await supabase.auth.getSession();
+                            if (!session) {
+                                router.push('/login');
+                                return;
+                            }
+                            router.push(`/generate?link=${encodeURIComponent(jobUrl || '')}`);
+                        }}
                         className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-black transition-all flex items-center gap-2 shadow-sm"
                     >
                         <Briefcase className="w-3.5 h-3.5" />
@@ -187,7 +202,14 @@ function JobViewContent() {
                                 </button>
 
                                 <button
-                                    onClick={() => router.push(`/interview/practice?title=${encodeURIComponent(jobTitle || '')}&link=${encodeURIComponent(jobUrl || '')}`)}
+                                    onClick={async () => {
+                                        const { data: { session } } = await supabase.auth.getSession();
+                                        if (!session) {
+                                            router.push('/login');
+                                            return;
+                                        }
+                                        router.push(`/interview/practice?title=${encodeURIComponent(jobTitle || '')}&link=${encodeURIComponent(jobUrl || '')}`);
+                                    }}
                                     className="w-full bg-slate-800 text-white py-3.5 rounded-xl font-bold text-sm hover:bg-slate-700 transition-all flex items-center justify-center gap-2 border border-slate-700"
                                 >
                                     <Mic className="w-4 h-4" />

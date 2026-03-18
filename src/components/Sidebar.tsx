@@ -17,7 +17,8 @@ import {
     LogOut,
     Menu,
     X,
-    Shield
+    Shield,
+    HelpCircle
 } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -101,10 +102,33 @@ export default function Sidebar() {
         router.push("/");
     };
 
-    const isAuthPage = pathname === "/" || pathname === "/register";
+    const isAuthPage = pathname === "/" || pathname === "/register" || pathname === "/login";
     const isPublicProfile = pathname?.startsWith("/p/");
+    const isPublicFeature = pathname?.startsWith("/search") || pathname?.startsWith("/jobs/view");
 
-    if (isAuthPage || isPublicProfile || !isLoggedIn) return null;
+    if (isAuthPage || isPublicProfile) return null;
+    
+    // For non-logged in users on public features, show a simple header but no sidebar
+    if (!isLoggedIn && isPublicFeature) {
+        return (
+            <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 flex items-center justify-between z-50">
+                <Link href="/" className="flex items-center gap-2 group">
+                    <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
+                        <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5">
+                            <path d="M4 26 L12 12" stroke="white" strokeWidth="4" strokeLinecap="round" />
+                            <path d="M13 26 L24 6" stroke="white" strokeWidth="4" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                    <span className="font-bold text-slate-900">Vitah</span>
+                </Link>
+                <Link href="/login" className="text-sm font-bold text-blue-600 hover:text-blue-700">
+                    Sign In
+                </Link>
+            </header>
+        );
+    }
+
+    if (!isLoggedIn) return null;
 
     return (
         <>
@@ -190,14 +214,26 @@ export default function Sidebar() {
                                     <User className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
                                     My Profile
                                 </Link>
-                                <Link
-                                    href="/settings"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors group"
-                                >
-                                    <Settings className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
-                                    Settings
-                                </Link>
+                                <div className="py-2 border-b border-slate-100">
+                                    <button
+                                        onClick={() => {
+                                            setIsMenuOpen(false);
+                                            window.location.href = "mailto:support@vitah.io";
+                                        }}
+                                        className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                    >
+                                        <HelpCircle className="w-4 h-4" />
+                                        Contact Support
+                                    </button>
+                                    <Link
+                                        href="/settings"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                                    >
+                                        <Settings className="w-4 h-4" />
+                                        Settings
+                                    </Link>
+                                </div>
                                 <div className="h-px bg-slate-100 my-1 mx-2" />
                                 <button
                                     onClick={handleLogout}

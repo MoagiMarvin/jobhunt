@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MapPin, Briefcase, ExternalLink, Copy, Check, Mic, Building2, Globe, Bookmark } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import { useSavedJobs } from "@/hooks/useSavedJobs";
 import { Job } from "@/types/job";
@@ -141,8 +142,13 @@ export default function JobCard({ job, router }: JobCardProps) {
                                     {job.title}
                                 </h3>
                                 <button
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation();
+                                        const { data: { session } } = await supabase.auth.getSession();
+                                        if (!session) {
+                                            router.push('/login');
+                                            return;
+                                        }
                                         toggleSave(job);
                                     }}
                                     className={`p-1.5 sm:p-2 rounded-lg transition-all ${saved
