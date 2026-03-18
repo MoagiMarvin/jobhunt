@@ -135,20 +135,20 @@ export default function LandingPage() {
                     </div>
                     
                     <div className={`hidden lg:flex items-center gap-14 text-[10px] font-black uppercase tracking-[0.4em] transition-colors duration-500 ${scrolled ? 'text-slate-400' : 'text-white/60'}`}>
-                        <Link href="#how-it-works" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'hover:text-slate-900' : 'hover:text-white'}`}>Advantage</Link>
-                        <Link href="#stories" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'hover:text-slate-900' : 'hover:text-white'}`}>Success</Link>
+                        <Link href="/" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'hover:text-slate-900' : 'hover:text-white'}`}>Home</Link>
+                        <Link href="/courses" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'hover:text-slate-900' : 'hover:text-white'}`}>Courses</Link>
                         <Link href="/search" className={`transition-all hover:tracking-[0.6em] ${scrolled ? 'text-blue-600' : 'text-blue-400'}`}>Job Search</Link>
                     </div>
 
                     <div className="flex items-center gap-12">
                         <Link href="/login" className={`hidden md:block text-[10px] font-black uppercase tracking-[0.3em] transition-all ${scrolled ? 'text-slate-400 hover:text-slate-900' : 'text-white/60 hover:text-white'}`}>
-                            Enter
+                            Log In
                         </Link>
                         <Link 
                             href="/register" 
                             className={`text-[10px] font-black uppercase tracking-[0.3em] px-12 py-5 rounded-full transition-all active:scale-95 shadow-2xl ${scrolled ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-white text-slate-900 hover:bg-blue-600 hover:text-white'}`}
                         >
-                            Open Lab
+                            Register
                         </Link>
                     </div>
                 </div>
@@ -246,14 +246,14 @@ export default function LandingPage() {
                             <div className="space-y-12 animate-in">
                                 <div className="inline-flex items-center gap-4 text-[11px] font-black text-blue-600 uppercase tracking-[0.5em]">
                                     <div className="w-10 h-px bg-blue-600" />
-                                    PRECISION LOGIC
+                                    OUR ADVANTAGE
                                 </div>
-                                <h2 className="text-5xl md:text-6xl font-serif-luxe text-slate-900 leading-tight">
-                                    The science of <br />
-                                    <span className="italic text-blue-600">Professional Evolution.</span>
+                                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+                                    How we help you <br />
+                                    <span className="italic text-blue-600 font-serif">get ahead.</span>
                                 </h2>
-                                <p className="text-xl text-slate-500 font-medium leading-relaxed font-serif-body">
-                                    Network Recruitment isn't about breadth; it's about depth. Vitah applies 30 years of recruitment logic to your DNA, ensuring a 98% match before you ever step into the room.
+                                <p className="text-lg text-slate-500 font-medium leading-relaxed">
+                                    We don't just dump lists of jobs on you. We take the time to look at your experience, your actual goals, and where you see yourself in five years. It's about finding where you truly belong, not just your next paycheck.
                                 </p>
                                 
                                 <div className="space-y-12 pt-4">
@@ -278,42 +278,19 @@ export default function LandingPage() {
                                 </div>
                             </div>
                             
-                            <div className="relative">
-                                {/* Visceral UI Snippet Demo */}
-                                <div className="bg-white rounded-[3rem] p-10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] border border-slate-100 space-y-8 animate-in">
-                                     <div className="flex items-center justify-between">
-                                         <div className="flex items-center gap-4">
-                                             <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center text-white">
-                                                 <Target className="w-6 h-6" />
-                                             </div>
-                                             <div>
-                                                 <div className="text-sm font-black text-slate-900 uppercase tracking-widest">Match Score</div>
-                                                 <div className="text-xs font-bold text-blue-600">Ultra High Alignment</div>
-                                             </div>
-                                         </div>
-                                         <div className="text-4xl font-black text-slate-900 tracking-tighter">98%</div>
-                                     </div>
-                                     
-                                     <div className="space-y-4">
-                                         <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 italic font-serif-body text-slate-600 text-sm">
-                                             "Based on your recent work at FirstRand, this role at Luno is a perfect strategic evolution for your career path."
-                                         </div>
-                                         <div className="flex gap-3">
-                                             <div className="px-4 py-2 rounded-full bg-blue-50 text-blue-600 text-[9px] font-black uppercase tracking-widest">Fintech</div>
-                                             <div className="px-4 py-2 rounded-full bg-blue-50 text-blue-600 text-[9px] font-black uppercase tracking-widest">Cape Town</div>
-                                         </div>
-                                     </div>
-                                     
-                                     <button className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">
-                                         Tailor CV Now
-                                     </button>
+                            <div className="relative group">
+                                <div className="absolute -inset-10 bg-blue-50/50 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                                <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 aspect-square">
+                                     <img 
+                                        src="https://images.unsplash.com/photo-1600880212340-02d956eba3ad?auto=format&fit=crop&q=80&w=1200" 
+                                        alt="Sandton Office Collaboration" 
+                                        className="w-full h-full object-cover grayscale-[0.1] hover:grayscale-0 transition-all duration-700"
+                                     />
                                 </div>
-                                
-                                {/* Floating Element for offset layout */}
-                                <div className="absolute -bottom-10 -right-10 bg-blue-600 p-8 rounded-[2rem] text-white shadow-2xl hidden md:block">
-                                     <Sparkles className="w-6 h-6 mb-3" />
-                                     <div className="text-2xl font-black">500+</div>
-                                     <div className="text-[10px] font-black uppercase tracking-widest opacity-80">Jobs Analyzed Today</div>
+                                {/* Human Context Badge */}
+                                <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-slate-50 w-48">
+                                     <div className="text-xs font-black text-blue-600 uppercase tracking-widest mb-1">Local Focus</div>
+                                     <div className="text-sm font-bold text-slate-900 leading-tight">Hand-picked roles across Gauteng.</div>
                                 </div>
                             </div>
                         </div>
@@ -347,14 +324,14 @@ export default function LandingPage() {
                              <div className="space-y-12">
                                 <div className="inline-flex items-center gap-4 text-[11px] font-black text-blue-600 uppercase tracking-[0.5em]">
                                     <div className="w-10 h-px bg-blue-600" />
-                                    BEYOND THE GRID
+                                    BEYOND THE SEARCH BAR
                                 </div>
-                                <h2 className="text-5xl md:text-7xl font-serif-luxe text-slate-900 leading-[0.9] tracking-tighter">
-                                    Trust is <br />
-                                    <span className="italic">engineered.</span>
+                                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+                                    Trust isn't a feature. <br />
+                                    <span className="italic">It's a promise.</span>
                                 </h2>
-                                <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-xl">
-                                    We don't just show you jobs. We show you your future colleagues, the culture of the boardroom, and the energy of the workspace. 
+                                <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-xl">
+                                    We go further than just showing you a list of jobs. We help you understand the culture of the office, the energy of the boardroom, and even who your future colleagues might be. No surprises, just alignment.
                                 </p>
                                 <div className="pt-8 flex items-center gap-8">
                                     <div className="flex -space-x-4">
@@ -374,11 +351,17 @@ export default function LandingPage() {
                 {/* Testimonials: Stories of Arrival */}
                 <section id="stories" className="py-40 bg-white">
                     <div className="max-w-7xl mx-auto px-10">
-                        <div className="max-w-3xl space-y-8 mb-24">
-                            <h2 className="text-5xl font-serif-luxe text-slate-900 leading-tight">
-                                They didn't just find a job. <br />
-                                <span className="italic text-blue-600">They arrived.</span>
-                            </h2>
+                        <div className="flex flex-col lg:flex-row gap-20 items-end mb-24">
+                            <div className="max-w-xl space-y-6">
+                                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+                                    Real people, <br />
+                                    <span className="italic text-blue-600 font-serif">real growth.</span>
+                                </h2>
+                                <p className="text-lg text-slate-500 font-medium leading-relaxed">
+                                    Don't just take our word for it. Here are a few people who used the platform to actually move their lives forward.
+                                </p>
+                            </div>
+                            <div className="flex-1 h-px bg-slate-100 hidden lg:block" />
                         </div>
                         
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -387,11 +370,8 @@ export default function LandingPage() {
                                 { name: "Lerato K.", role: "Product Lead", company: "Luno", text: "Finally, a platform that understands the nuance of the SA tech landscape. Vitah is miles ahead.", img: "https://i.pravatar.cc/150?u=lerato" },
                                 { name: "Chris P.", role: "Design Director", company: "Absa", text: "The interview prep gave me the confidence to negotiate my worth. Vitah pays for itself instantly.", img: "https://i.pravatar.cc/150?u=chrisp" }
                             ].map((s, i) => (
-                                <div key={i} className="space-y-8 p-10 rounded-[3rem] bg-white border border-slate-50 shadow-[0_20px_50px_rgba(0,0,0,0.03)] hover:-translate-y-2 transition-all duration-500">
-                                    <div className="flex text-amber-400">
-                                        {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-                                    </div>
-                                    <p className="text-xl font-serif-body italic text-slate-800 leading-relaxed">"{s.text}"</p>
+                                <div key={i} className="space-y-6 p-10 rounded-[2.5rem] bg-slate-50/50 border border-slate-100 hover:bg-white hover:shadow-2xl transition-all duration-500 group">
+                                    <p className="text-lg font-medium text-slate-800 leading-relaxed italic">"{s.text}"</p>
                                     <div className="flex items-center gap-6 pt-6 border-t border-slate-50">
                                         <img src={s.img} className="w-14 h-14 rounded-2xl grayscale" alt={s.name} />
                                         <div>
@@ -413,23 +393,23 @@ export default function LandingPage() {
                             <div className="space-y-12">
                                 <div className="inline-flex items-center gap-4 text-[11px] font-black text-blue-400 uppercase tracking-[0.5em]">
                                     <div className="w-10 h-px bg-blue-400" />
-                                    NETWORK REACH
+                                    OUR ROOTS
                                 </div>
-                                <h2 className="text-6xl font-serif-luxe leading-[0.85] tracking-tighter">
-                                    A Global <br />
-                                    <span className="italic text-blue-400">Foundation.</span>
+                                <h2 className="text-5xl md:text-6xl font-bold leading-tight tracking-tighter">
+                                    Large enough to matter. <br />
+                                    <span className="italic text-blue-400">Small enough to care.</span>
                                 </h2>
-                                <p className="text-xl text-slate-400 font-medium leading-relaxed font-serif-body">
-                                    Our logic spans 6 continents, but our focus is strictly local. We bring world-class recruitment standards to the heart of the South African economy.
+                                <p className="text-lg text-slate-400 font-medium leading-relaxed">
+                                    While we use world-class standards, our focus is 100% on the South African professional landscape. We understand the specific nuances of working in Johannesburg, Cape Town, and across the country.
                                 </p>
                                 <div className="grid grid-cols-2 gap-12 pt-8">
                                     <div className="space-y-2">
-                                        <div className="text-4xl font-black text-white">400k+</div>
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">Global Data Points</div>
+                                        <div className="text-3xl font-black text-white">2.4k+</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-500">Active Members</div>
                                     </div>
                                     <div className="space-y-2">
-                                        <div className="text-4xl font-black text-white">100%</div>
-                                        <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">SA Compliance</div>
+                                        <div className="text-3xl font-black text-white">100%</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-slate-500">SA Focused</div>
                                     </div>
                                 </div>
                             </div>
