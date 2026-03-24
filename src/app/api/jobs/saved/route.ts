@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
             .from('saved_jobs')
             .select('id')
             .eq('user_id', userId)
-            .filter('job_data->>link', 'eq', jobData.link)
+            .filter('job_data->>link', 'eq', normalizedLink)
             .single();
 
         if (existing) {
