@@ -1,16 +1,9 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Download, FileEdit } from 'lucide-react';
+import { Download, FileEdit, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { cn } from "@/lib/utils";
-import { ResumeDocument } from './ResumeDocument';
-
-const PDFDownloadLink = dynamic(
-    () => import('@react-pdf/renderer').then((mod) => mod.PDFDownloadLink),
-    { ssr: false }
-);
 
 interface DownloadResumeButtonProps {
     data?: any;
@@ -26,15 +19,12 @@ export default function DownloadResumeButton({
     variant = 'menu'
 }: DownloadResumeButtonProps) {
     const [isMounted, setIsMounted] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
-        console.log("Download Button: Mounted with data check:", {
-            hasData: !!data,
-            userName: data?.user?.name || data?.personalInfo?.name,
-            userEmail: data?.user?.email || data?.personalInfo?.email
-        });
-    }, [data]);
+    }, []);
 
     if (!isMounted) return null;
 
@@ -42,27 +32,61 @@ export default function DownloadResumeButton({
         ? cn("flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition-all font-bold text-xs shadow-lg cursor-pointer", className)
         : cn("w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center gap-3 cursor-pointer", className);
 
-    // More permissive data check
     const canDownload = !!data;
+
+    const handleDownload = async () => {
+        if (!data || isGenerating) return;
+        setIsGenerating(true);
+        setError(null);
+
+        try {
+            // Dynamically import to avoid SSR and reduce initial bundle
+            const { pdf } = await import('@react-pdf/renderer');
+            const { ResumeDocument } = await import('./ResumeDocument');
+            const React = (await import('react')).default;
+
+            const doc = React.createElement(ResumeDocument, { data });
+            const blob = await pdf(doc).toBlob();
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const name = (data.user?.name || data.personalInfo?.name || 'Resume')
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '_');
+            a.download = `${name}_Resume.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err: any) {
+            console.error("PDF Download Error:", err);
+            setError(err?.message || String(err));
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     return (
         <div className="contents">
             {canDownload ? (
-                <PDFDownloadLink
-                    document={<ResumeDocument data={data} />}
-                    fileName={`${(data.user?.name || data.personalInfo?.name || 'Resume').replace(/[^\w\s-]/g, '').replace(/\s+/g, '_')}_Resume.pdf`}
-                    className={btnClasses}
+                <button
+                    onClick={handleDownload}
+                    disabled={isGenerating}
+                    className={cn(btnClasses, isGenerating && "opacity-70 cursor-wait")}
+                    title={error || undefined}
                 >
-                    {({ loading, error }: any) => {
-                        if (error) console.error("PDF Download Error:", error);
-                        return (
-                            <>
-                                <Download className={cn("w-4 h-4", loading ? "text-slate-400 animate-pulse" : "text-blue-600")} />
-                                {loading ? 'Preparing PDF...' : 'Quick Download'}
-                            </>
-                        );
-                    }}
-                </PDFDownloadLink>
+                    {isGenerating
+                        ? <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+                        : <Download className={cn("w-4 h-4", error ? "text-red-400" : "text-blue-600")} />
+                    }
+                    {isGenerating
+                        ? 'Generating PDF...'
+                        : error
+                            ? 'Retry Download'
+                            : 'Quick Download'
+                    }
+                </button>
             ) : (
                 <button
                     disabled
@@ -72,6 +96,10 @@ export default function DownloadResumeButton({
                     <Download className="w-4 h-4 text-slate-400" />
                     No Data
                 </button>
+            )}
+
+            {error && (
+                <p className="text-[10px] text-red-500 px-4 pb-1 leading-tight">{error}</p>
             )}
 
             {showCustomize && (

@@ -105,14 +105,20 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
 
 
             {/* Technical Skills - Grouped by Category */}
-            {skills.filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills')).length > 0 && (
+            {(() => {
+                const EDUCATION_KEYWORDS = /\b(degree|diploma|certificate|qualification|matric|bachelor|master|phd|national diploma|higher certificate|b\.?tech|b\.?sc|b\.?com|honours|hons)\b/i;
+                const technicalSkills = skills.filter((s: any) =>
+                    !(s.isSoftSkill || s.category === 'Soft Skills') &&
+                    !EDUCATION_KEYWORDS.test(typeof s === 'string' ? s : (s.name || ''))
+                );
+                if (technicalSkills.length === 0) return null;
+                return (
                 <div>
                     <h2 className="text-sm font-bold uppercase border-b border-black pb-1 mb-2 tracking-wide text-black">
                         Technical Skills
                     </h2>
                     <div className="space-y-1">
-                        {Object.entries(skills
-                            .filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills'))
+                        {Object.entries(technicalSkills
                             .reduce((acc: any, skill: any) => {
                                 // Normalize skill object
                                 const skillObj = typeof skill === 'string'
@@ -131,7 +137,8 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
                             ))}
                     </div>
                 </div>
-            )}
+                );
+            })()}
 
             {/* Soft Skills - Separated */}
             {skills.filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills').length > 0 && (

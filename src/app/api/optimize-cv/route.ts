@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       2. Rewrite the "Professional Summary" to specifically target this job.
       3. For "experience", select the most relevant roles and rewrite bullet points using strong action verbs and matching job keywords.
       4. Ensure you include South African cultural markers if relevant (like "Matric").
-      5. Identify the top 10-15 skills from the master profile that match the job.
+      5. Identify the top 10-15 TECHNICAL SKILLS from the master profile that match the job. Skills must be actual job skills (tools, technologies, methodologies) — NEVER include degrees, diplomas, qualifications, or certifications in the skills array. Those belong in educationList only.
       6. CRITICAL - PRESERVE ALL THESE SECTIONS EXACTLY AS-IS from the master profile (copy them verbatim, do NOT omit or modify them):
          - "educationList": copy from profileData.educationList
          - "matricData": copy from profileData.matricData
