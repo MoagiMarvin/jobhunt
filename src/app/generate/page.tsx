@@ -13,12 +13,18 @@ import {
     CheckCircle2,
     Layout,
     Copy,
-    Download
+    Download,
+    Edit3,
+    Save,
+    FileDown,
+    Undo
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { pdf } from "@react-pdf/renderer";
 import MinimalistCVPreview from "@/components/cv/MinimalistCVPreview";
 import DownloadResumeButton from "@/components/pdf/DownloadResumeButton";
+import CoverLetterDocument from "@/components/pdf/CoverLetterDocument";
 import { cn } from "@/lib/utils";
 
 const GenerateStudio = () => {
@@ -50,6 +56,9 @@ const GenerateStudio = () => {
     // Cover Letter State
     const [coverLetter, setCoverLetter] = useState<string | null>(null);
     const [isGeneratingCL, setIsGeneratingCL] = useState(false);
+    const [isEditingCL, setIsEditingCL] = useState(false);
+    const [editedCL, setEditedCL] = useState<string>("");
+    const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
 
     // Load profile data from individual keys
     useEffect(() => {
@@ -214,11 +223,43 @@ const GenerateStudio = () => {
             if (data.error) throw new Error(data.error);
             
             setCoverLetter(data.coverLetter);
+            setEditedCL(data.coverLetter); // Sync edited version initially
         } catch (err: any) {
             console.error("Cover letter generation failed:", err);
             setError("Failed to generate Cover Letter: " + err.message);
         } finally {
             setIsGeneratingCL(false);
+        }
+    };
+
+    const handleDownloadCL_PDF = async () => {
+        if (!editedCL || !profileData) return;
+        setIsDownloadingPDF(true);
+        try {
+            const blob = await pdf(
+                <CoverLetterDocument 
+                    content={editedCL} 
+                    personalInfo={{
+                        name: profileData.personalInfo?.fullName || "Candidate Name",
+                        email: profileData.personalInfo?.email || "",
+                        phone: profileData.personalInfo?.phone || "",
+                        location: "South Africa"
+                    }} 
+                />
+            ).toBlob();
+            
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Cover_Letter_${profileData.personalInfo?.fullName?.replace(/\s+/g, '_') || 'Result'}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            console.error("PDF generation failed:", err);
+            alert("Failed to generate PDF. Please try again.");
+        } finally {
+            setIsDownloadingPDF(false);
         }
     };
 
@@ -676,7 +717,7 @@ const GenerateStudio = () => {
                                             <div className="flex items-center gap-2">
                                                 <button 
                                                     onClick={() => {
-                                                        navigator.clipboard.writeText(coverLetter);
+                                                        navigator.clipboard.writeText(editedCL);
                                                         alert("Copied to clipboard!");
                                                     }}
                                                     className="p-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 text-slate-400 hover:text-slate-600 transition-all"
@@ -685,18 +726,22 @@ const GenerateStudio = () => {
                                                     <Copy className="w-4 h-4" />
                                                 </button>
                                                 <button 
-                                                    onClick={() => {
-                                                        const element = document.createElement("a");
-                                                        const file = new Blob([coverLetter], {type: 'text/plain'});
-                                                        element.href = URL.createObjectURL(file);
-                                                        element.download = "Cover_Letter.txt";
-                                                        document.body.appendChild(element);
-                                                        element.click();
-                                                    }}
-                                                    className="p-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 text-slate-400 hover:text-slate-600 transition-all"
-                                                    title="Download as TXT"
+                                                    onClick={() => setIsEditingCL(!isEditingCL)}
+                                                    className={cn(
+                                                        "p-2.5 rounded-xl transition-all border border-transparent",
+                                                        isEditingCL ? "bg-blue-50 text-blue-600 border-blue-100" : "hover:bg-slate-50 hover:border-slate-200 text-slate-400 hover:text-slate-600"
+                                                    )}
+                                                    title={isEditingCL ? "Cancel Editing" : "Edit Letter"}
                                                 >
-                                                    <Download className="w-4 h-4" />
+                                                    {isEditingCL ? <Undo className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+                                                </button>
+                                                <button 
+                                                    onClick={handleDownloadCL_PDF}
+                                                    disabled={isDownloadingPDF}
+                                                    className="p-2.5 rounded-xl hover:bg-blue-50 border border-transparent hover:border-blue-100 text-blue-400 hover:text-blue-600 transition-all disabled:opacity-50"
+                                                    title="Download as PDF"
+                                                >
+                                                    {isDownloadingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
                                                 </button>
                                                 <button 
                                                     onClick={() => setCoverLetter(null)}
@@ -709,13 +754,38 @@ const GenerateStudio = () => {
                                         </div>
                                         
                                         <div className="prose prose-slate max-w-none">
-                                            <pre className="whitespace-pre-wrap font-sans text-slate-700 leading-relaxed text-[13px] bg-slate-50/50 p-8 rounded-2xl border border-slate-100 italic select-all">
-                                                {coverLetter}
-                                            </pre>
+                                            {isEditingCL ? (
+                                                <div className="relative animate-in fade-in duration-300">
+                                                    <textarea 
+                                                        value={editedCL}
+                                                        onChange={(e) => setEditedCL(e.target.value)}
+                                                        className="w-full min-h-[500px] p-8 rounded-2xl border-2 border-blue-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 outline-none font-sans text-slate-700 leading-relaxed text-[13px] transition-all resize-y shadow-inner bg-blue-50/10"
+                                                        placeholder="Edit your cover letter here..."
+                                                    />
+                                                    <div className="absolute top-4 right-4 flex gap-2">
+                                                        <span className="px-3 py-1 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                                                            Editing Mode
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <pre className="whitespace-pre-wrap font-sans text-slate-700 leading-relaxed text-[13px] bg-slate-50/50 p-8 rounded-2xl border border-slate-100 italic select-all animate-in fade-in duration-300">
+                                                    {editedCL}
+                                                </pre>
+                                            )}
                                         </div>
                                         
-                                        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-                                            <p className="text-[11px] text-slate-400 font-medium">💡 Tip: You can copy this text and paste it directly into your application email or LinkedIn message.</p>
+                                        <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
+                                            <p className="text-[11px] text-slate-400 font-medium">💡 Tip: Fill in the [Company Name] and [Date] before downloading your PDF.</p>
+                                            {isEditingCL && (
+                                                <button 
+                                                    onClick={() => setIsEditingCL(false)}
+                                                    className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
+                                                >
+                                                    <Save className="w-3.5 h-3.5" />
+                                                    Finish Editing
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 )}
