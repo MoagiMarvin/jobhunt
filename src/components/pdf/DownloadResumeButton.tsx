@@ -46,7 +46,7 @@ export default function DownloadResumeButton({
             const React = (await import('react')).default;
 
             const doc = React.createElement(ResumeDocument, { data });
-            const blob = await pdf(doc).toBlob();
+            const blob = await pdf(doc as any).toBlob();
 
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
