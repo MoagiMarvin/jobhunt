@@ -16,8 +16,11 @@ export default function MinimalistCVPreview({ cv, profileData, data }: Minimalis
     const summary = resume.summary || user.summary || "";
     const skills = resume.skills || info.skills || [];
     const experiences = resume.experiences || resume.experience || info.experiences || info.experience || [];
-    const educationArr = info.educationList || resume.education || [];
-    const certs = info.certificationsList || (info.credentials?.filter((c: any) => c.type === 'certification')) || [];
+    const rawEducation = info.educationList || resume.education || [];
+    const educationArr = Array.isArray(rawEducation) ? rawEducation.filter((e: any) => e.type !== 'certification') : [];
+    const certs = info.certificationsList || 
+                  (Array.isArray(rawEducation) ? rawEducation.filter((c: any) => c.type === 'certification') : []) || 
+                  (info.credentials?.filter((c: any) => c.type === 'certification')) || [];
     const languagesArr = info.languages || [];
     const referencesArr = info.references || [];
     const projectsArr = info.projectsList || info.projects || [];

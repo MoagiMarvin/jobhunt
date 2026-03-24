@@ -181,14 +181,15 @@ export const ResumeDocument = ({ data }: { data: any }) => {
     const summary = info.summary || user.summary || "";
     const skills = Array.isArray(info.skills) ? info.skills : [];
     const experiences = Array.isArray(info.experiences) ? info.experiences : (Array.isArray(info.experience) ? info.experience : []);
-    const educationArr = Array.isArray(info.educationList) ? info.educationList : (Array.isArray(info.education) ? info.education : []);
+    const rawEducation = Array.isArray(info.educationList) ? info.educationList : (Array.isArray(info.education) ? info.education : []);
+    const educationArr = rawEducation.filter((e: any) => e.type !== 'certification');
     const certificationsList = Array.isArray(info.certificationsList) ? info.certificationsList : [];
     const credentials = Array.isArray(info.credentials) ? info.credentials : [];
 
-    // Re-map certs if they are within credentials
+    // Re-map certs if they are within credentials OR within the combined educationList
     const certs = certificationsList.length > 0
         ? certificationsList
-        : credentials.filter((c: any) => c.type === 'certification');
+        : (credentials.length > 0 ? credentials.filter((c: any) => c.type === 'certification') : rawEducation.filter((c: any) => c.type === 'certification'));
 
     const languagesArr = Array.isArray(info.languages) ? info.languages : [];
     const referencesArr = Array.isArray(info.references) ? info.references : [];
