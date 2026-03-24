@@ -11,7 +11,9 @@ import {
     Eye,
     ChevronRight,
     CheckCircle2,
-    Layout
+    Layout,
+    Copy,
+    Download
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -44,6 +46,10 @@ const GenerateStudio = () => {
     const [profileData, setProfileData] = useState<any>(null);
     const [optimizedData, setOptimizedData] = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    
+    // Cover Letter State
+    const [coverLetter, setCoverLetter] = useState<string | null>(null);
+    const [isGeneratingCL, setIsGeneratingCL] = useState(false);
 
     // Load profile data from individual keys
     useEffect(() => {
@@ -185,6 +191,34 @@ const GenerateStudio = () => {
             setError("Failed to generate AI CV: " + err.message);
         } finally {
             setIsOptimizing(false);
+        }
+    };
+
+    const handleGenerateCoverLetter = async () => {
+        if (!profileData || !scrapedRequirements.length) return;
+        
+        setIsGeneratingCL(true);
+        setError(null);
+        
+        try {
+            const res = await fetch("/api/generate-cover-letter", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    profileData,
+                    jobDescription: scrapedRequirements.join("\n")
+                })
+            });
+            
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            
+            setCoverLetter(data.coverLetter);
+        } catch (err: any) {
+            console.error("Cover letter generation failed:", err);
+            setError("Failed to generate Cover Letter: " + err.message);
+        } finally {
+            setIsGeneratingCL(false);
         }
     };
 
@@ -569,6 +603,29 @@ const GenerateStudio = () => {
                                     >
                                         Edit Job Data
                                     </button>
+                                    <div className="flex items-center gap-3 border-l border-blue-200 pl-6 ml-6">
+                                        {!coverLetter ? (
+                                            <button
+                                                onClick={handleGenerateCoverLetter}
+                                                disabled={isGeneratingCL}
+                                                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all disabled:opacity-50"
+                                            >
+                                                {isGeneratingCL ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                {isGeneratingCL ? "Writing..." : "Get Cover Letter"}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => {
+                                                    const el = document.getElementById('cover-letter-section');
+                                                    el?.scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                                className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-emerald-700 transition-all"
+                                            >
+                                                <CheckCircle2 className="w-3 h-3" />
+                                                View Letter
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
@@ -579,6 +636,89 @@ const GenerateStudio = () => {
                                 <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-200 text-[9px] font-black uppercase tracking-widest text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
                                     Viewing {viewMode} version
                                 </div>
+                            </div>
+
+                            {/* Cover Letter Section */}
+                            <div id="cover-letter-section" className="mt-12 max-w-[800px] mx-auto w-full">
+                                {!coverLetter ? (
+                                    <div className="bg-slate-900 rounded-3xl p-8 text-center border border-slate-800 shadow-2xl relative overflow-hidden group">
+                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent opacity-50 group-hover:opacity-80 transition-opacity" />
+                                        <div className="relative z-10">
+                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/5 border border-white/10 mb-6 text-blue-400">
+                                                <FileText className="w-8 h-8" />
+                                            </div>
+                                            <h3 className="text-xl font-black text-white mb-2">Need a Cover Letter?</h3>
+                                            <p className="text-slate-400 text-sm mb-8 max-w-md mx-auto font-medium">
+                                                We can generate a professional, tailored cover letter for this job based on your profile.
+                                            </p>
+                                            <button
+                                                onClick={handleGenerateCoverLetter}
+                                                disabled={isGeneratingCL}
+                                                className="px-8 py-4 bg-white text-slate-900 rounded-2xl font-black text-sm hover:scale-105 transition-all flex items-center justify-center gap-2 mx-auto disabled:opacity-50"
+                                            >
+                                                {isGeneratingCL ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 text-blue-600" />}
+                                                {isGeneratingCL ? "Writing Letter..." : "Generate AI Cover Letter"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="bg-white rounded-3xl p-10 border border-slate-200 shadow-xl animate-in zoom-in-95 duration-500">
+                                        <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
+                                                    <FileText className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-black text-slate-900">Tailored Cover Letter</h3>
+                                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Generated • Ready to send</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(coverLetter);
+                                                        alert("Copied to clipboard!");
+                                                    }}
+                                                    className="p-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 text-slate-400 hover:text-slate-600 transition-all"
+                                                    title="Copy all text"
+                                                >
+                                                    <Copy className="w-4 h-4" />
+                                                </button>
+                                                <button 
+                                                    onClick={() => {
+                                                        const element = document.createElement("a");
+                                                        const file = new Blob([coverLetter], {type: 'text/plain'});
+                                                        element.href = URL.createObjectURL(file);
+                                                        element.download = "Cover_Letter.txt";
+                                                        document.body.appendChild(element);
+                                                        element.click();
+                                                    }}
+                                                    className="p-2.5 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 text-slate-400 hover:text-slate-600 transition-all"
+                                                    title="Download as TXT"
+                                                >
+                                                    <Download className="w-4 h-4" />
+                                                </button>
+                                                <button 
+                                                    onClick={() => setCoverLetter(null)}
+                                                    className="p-2.5 rounded-xl hover:bg-red-50 border border-transparent hover:border-red-100 text-slate-300 hover:text-red-500 transition-all"
+                                                    title="Regenerate"
+                                                >
+                                                    <RefreshCcw className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="prose prose-slate max-w-none">
+                                            <pre className="whitespace-pre-wrap font-sans text-slate-700 leading-relaxed text-[13px] bg-slate-50/50 p-8 rounded-2xl border border-slate-100 italic select-all">
+                                                {coverLetter}
+                                            </pre>
+                                        </div>
+                                        
+                                        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+                                            <p className="text-[11px] text-slate-400 font-medium">💡 Tip: You can copy this text and paste it directly into your application email or LinkedIn message.</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="py-20 text-center">
