@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font, Link } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 
 // Using standard PDF fonts (Helvetica) for maximum reliability and speed
 // This avoids "Unknown font format" errors and external network dependencies during rendering
@@ -242,15 +242,15 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                     <Text style={styles.name}>{user.name || user.fullName}</Text>
                     <Text style={styles.title}>{user.headline || user.title}</Text>
                     <View style={styles.contactGrid}>
-                        <Link src={`mailto:${user.email}`} style={styles.contactItem}>{user.email}</Link>
-                        <Text style={styles.contactItem}>•</Text>
-                        <Link src={`tel:${user.phone?.replace(/\s/g, '')}`} style={styles.contactItem}>{user.phone}</Link>
-                        <Text style={styles.contactItem}>•</Text>
-                        <Text style={styles.contactItem}>{user.location}</Text>
+                        <Text style={styles.contactItem}>{user.email}</Text>
+                        {user.phone && <Text style={styles.contactItem}>•</Text>}
+                        {user.phone && <Text style={styles.contactItem}>{user.phone}</Text>}
+                        {user.location && <Text style={styles.contactItem}>•</Text>}
+                        {user.location && <Text style={styles.contactItem}>{user.location}</Text>}
                         {user.linkedin && (
                             <>
                                 <Text style={styles.contactItem}>•</Text>
-                                <Link src={user.linkedin} style={styles.contactItem}>LinkedIn</Link>
+                                <Text style={styles.contactItem}>{user.linkedin}</Text>
                             </>
                         )}
                     </View>
@@ -278,12 +278,19 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                 )}
 
                 {/* Technical Skills */}
-                {skills.filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills')).length > 0 && (
+                {(() => {
+                    // Filter out soft skills AND any qualification/education-type items
+                    const EDUCATION_KEYWORDS = /\b(degree|diploma|certificate|qualification|matric|bachelor|master|phd|national diploma|higher certificate|b\.?tech|b\.?sc|b\.?com|honours|hons)\b/i;
+                    const technicalSkills = skills.filter((s: any) =>
+                        !(s.isSoftSkill || s.category === 'Soft Skills') &&
+                        !EDUCATION_KEYWORDS.test(typeof s === 'string' ? s : (s.name || ''))
+                    );
+                    if (technicalSkills.length === 0) return null;
+                    return (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Technical Skills</Text>
                         <View style={{ marginTop: 2 }}>
-                            {Object.entries(skills
-                                .filter((s: any) => !(s.isSoftSkill || s.category === 'Soft Skills'))
+                            {Object.entries(technicalSkills
                                 .reduce((acc: any, skill: any) => {
                                     // Normalize skill object
                                     const skillObj = typeof skill === 'string'
@@ -304,7 +311,8 @@ export const ResumeDocument = ({ data }: { data: any }) => {
                                 ))}
                         </View>
                     </View>
-                )}
+                    );
+                })()}
 
                 {/* Soft Skills */}
                 {skills.filter((s: any) => s.isSoftSkill || s.category === 'Soft Skills').length > 0 && (

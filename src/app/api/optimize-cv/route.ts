@@ -77,23 +77,28 @@ export async function POST(req: NextRequest) {
       INSTRUCTIONS:
       1. Analyze the Job Requirements to identify the most important skills and keywords.
       2. Rewrite the "Professional Summary" to specifically target this job.
-      3. For "Experience", select the most relevant roles and rewrite bullet points to use strong action verbs and match job keywords. 
+      3. For "experience", select the most relevant roles and rewrite bullet points using strong action verbs and matching job keywords.
       4. Ensure you include South African cultural markers if relevant (like "Matric").
-      5. Identify the top 10-15 skills that match the job.
-      6. CRITICAL: Do NOT modify the "references" section. Keep it exactly as it is in the master profile.
-      7. Return a CLEAN JSON OBJECT only (no markdown, no backticks).
+      5. Identify the top 10-15 skills from the master profile that match the job.
+      6. CRITICAL - PRESERVE ALL THESE SECTIONS EXACTLY AS-IS from the master profile (copy them verbatim, do NOT omit or modify them):
+         - "educationList": copy from profileData.educationList
+         - "matricData": copy from profileData.matricData
+         - "languages": copy from profileData.languages
+         - "references": copy from profileData.references
+         - "projectsList": copy from profileData.projectsList
+      7. Return a CLEAN JSON OBJECT only (no markdown, no backticks, no code fences).
 
-      JSON STRUCTURE:
+      REQUIRED JSON STRUCTURE (fill every field, never use null or empty arrays for the preserved sections):
       {
         "personalInfo": {
-          "name": "User Name",
-          "title": "Desired Job Title",
-          "email": "Email",
-          "phone": "Phone",
-          "location": "Location (if found)",
-          "links": ["link1", "link2"]
+          "name": "Full name from master profile",
+          "title": "Desired Job Title tailored to the job",
+          "email": "Email from master profile",
+          "phone": "Phone from master profile",
+          "location": "Location from master profile",
+          "links": []
         },
-        "summary": "Tailored professional summary here...",
+        "summary": "Tailored professional summary targeting the job...",
         "experience": [
           {
             "role": "Job Title",
@@ -105,15 +110,14 @@ export async function POST(req: NextRequest) {
             ]
           }
         ],
-        "skills": ["Skill 1", "Skill 2"],
-        "education": [
-          {
-            "degree": "Degree/Certificate",
-            "school": "Institution",
-            "year": "Year"
-          }
+        "skills": [
+          { "name": "Skill Name", "category": "Category" }
         ],
-        "references": []
+        "educationList": [ /* COPY VERBATIM from profileData.educationList */ ],
+        "matricData": { /* COPY VERBATIM from profileData.matricData */ },
+        "languages": [ /* COPY VERBATIM from profileData.languages */ ],
+        "references": [ /* COPY VERBATIM from profileData.references */ ],
+        "projectsList": [ /* COPY VERBATIM from profileData.projectsList */ ]
       }
     `;
 
@@ -127,6 +131,34 @@ export async function POST(req: NextRequest) {
       if (text.startsWith("```")) text = text.replace(/```/g, "");
 
       const optimizedCv = JSON.parse(text);
+
+      // Safety net: Always preserve these sections from the master profile
+      // even if the AI forgets to include them or returns empty arrays.
+      const preserved = {
+        educationList: profileData.educationList || [],
+        matricData: profileData.matricData || null,
+        languages: profileData.languages || [],
+        references: profileData.references || [],
+        projectsList: profileData.projectsList || [],
+      };
+
+      // Only override if AI returned empty / missing
+      if (!optimizedCv.educationList || optimizedCv.educationList.length === 0) {
+        optimizedCv.educationList = preserved.educationList;
+      }
+      if (!optimizedCv.matricData) {
+        optimizedCv.matricData = preserved.matricData;
+      }
+      if (!optimizedCv.languages || optimizedCv.languages.length === 0) {
+        optimizedCv.languages = preserved.languages;
+      }
+      if (!optimizedCv.references || optimizedCv.references.length === 0) {
+        optimizedCv.references = preserved.references;
+      }
+      if (!optimizedCv.projectsList || optimizedCv.projectsList.length === 0) {
+        optimizedCv.projectsList = preserved.projectsList;
+      }
+
       return NextResponse.json({ ...optimizedCv, version: "ai" });
     } catch (aiError: any) {
       console.error("CV Optimization AI Failed:", aiError.message);

@@ -156,7 +156,28 @@ const GenerateStudio = () => {
             const data = await res.json();
             if (data.error) throw new Error(data.error);
 
-            setOptimizedData(data);
+            // Client-side safety net: merge preserved sections from the master profile
+            // This ensures education, languages, references, and matricData are NEVER lost,
+            // even if the AI forgets to include them despite server-side checks.
+            const mergedData = {
+                ...data,
+                // Preserve these sections from profileData if AI returned empty/missing
+                educationList: (data.educationList && data.educationList.length > 0)
+                    ? data.educationList
+                    : (profileData?.educationList || []),
+                matricData: data.matricData || profileData?.matricData || null,
+                languages: (data.languages && data.languages.length > 0)
+                    ? data.languages
+                    : (profileData?.languages || []),
+                references: (data.references && data.references.length > 0)
+                    ? data.references
+                    : (profileData?.references || []),
+                projectsList: (data.projectsList && data.projectsList.length > 0)
+                    ? data.projectsList
+                    : (profileData?.projectsList || []),
+            };
+
+            setOptimizedData(mergedData);
             setViewMode("optimized");
             setStep("preview"); // Move to preview step automatically
         } catch (err: any) {
