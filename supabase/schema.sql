@@ -185,3 +185,18 @@ create table public.secondary_education (
   distinctions_count integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- SAVED JOBS
+create table public.saved_jobs (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  job_data jsonb not null,
+  status text default 'saved',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- RLS for Saved Jobs
+alter table public.saved_jobs enable row level security;
+create policy "Users can manage their own saved jobs" on public.saved_jobs for all using (auth.uid() = user_id);
+

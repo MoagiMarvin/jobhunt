@@ -146,3 +146,16 @@ CREATE POLICY "Users can update own profile" ON public.profiles
 CREATE POLICY "Users can insert own profile" ON public.profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 
+-- 10. SAVED JOBS
+CREATE TABLE IF NOT EXISTS public.saved_jobs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  job_data JSONB NOT NULL,
+  status TEXT DEFAULT 'saved',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.saved_jobs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage their own saved jobs" ON public.saved_jobs FOR ALL USING (auth.uid() = user_id);
+
