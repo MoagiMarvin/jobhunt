@@ -18,7 +18,8 @@ import {
     Menu,
     X,
     Shield,
-    HelpCircle
+    HelpCircle,
+    BookOpen
 } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,7 @@ const navItems = [
     { name: 'Saved Jobs', href: '/jobs/saved', icon: Bookmark },
     { name: 'AI Tailor', href: '/generate', icon: Sparkles },
     { name: 'Interview', href: '/interview/practice', icon: Mic2 },
+    { name: 'Courses', href: '/courses', icon: BookOpen },
     { name: 'Profile', href: '/profile', icon: User },
 ];
 
@@ -104,7 +106,7 @@ export default function Sidebar() {
 
     const isAuthPage = pathname === "/" || pathname === "/register" || pathname === "/login";
     const isPublicProfile = pathname?.startsWith("/p/");
-    const isPublicFeature = pathname?.startsWith("/search") || pathname?.startsWith("/jobs/view");
+    const isPublicFeature = pathname?.startsWith("/search") || pathname?.startsWith("/jobs/view") || pathname?.startsWith("/courses");
 
     if (isAuthPage || isPublicProfile) return null;
     

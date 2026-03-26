@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Vitah | Smart AI Career Intelligence",
   description: "Find your dream job in South Africa with Vitah. Advanced AI job search, automated CV tailoring, and professional interview practice.",
-  keywords: ["jobs south africa", "career AI", "job search", "CV tailoring", "interview practice", "Vitah"],
+  keywords: ["jobs south africa", "career AI", "job search", "CV tailoring", "interview practice", "Vitah", "jobs in polokwane", "limpopo career", "south africa youth employment"],
   openGraph: {
     title: "Vitah | Your Career, Powered by AI",
     description: "Launch your career with the most advanced job discovery platform in SA.",

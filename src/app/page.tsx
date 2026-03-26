@@ -26,6 +26,7 @@ import {
     Calendar,
     Target
 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const FAQItem = ({ question, answer }: { question: string, answer: string }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -53,12 +54,20 @@ export default function LandingPage() {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                router.push("/profile");
+            }
+        };
+        checkUser();
+
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    }, [router]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
